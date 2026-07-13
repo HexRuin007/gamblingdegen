@@ -3543,6 +3543,17 @@
                         <div id="dailySpinResetText" class="small"></div>
                     </div>
 
+                    <div class="panel bankerOnly" id="dailySpinAdminPanel">
+                        <div class="panelHeader">
+                            <div class="panelTitle">🎟️ Grant Extra Spins</div>
+                            <div class="panelHint">Banker only</div>
+                        </div>
+                        <input id="dailySpinGrantPlayerId" type="text" inputmode="numeric" placeholder="Player ID" />
+                        <input id="dailySpinGrantAmount" type="number" min="1" max="1000" value="1" placeholder="Number of extra spins" />
+                        <button id="dailySpinGrantButton" class="green">Give Extra Spins</button>
+                        <div id="dailySpinGrantStatus" class="small"></div>
+                    </div>
+
                     <div class="panel">
                         <div class="panelHeader">
                             <div class="panelTitle">Possible Prizes</div>
@@ -7378,6 +7389,8 @@
 
             const last = status.lastResult;
 
+            const remainingSpins = Math.max(0, Number(status.remainingSpins || 0));
+
             if (status.claimedToday && last) {
                 resultBox.innerHTML = `
                     <div class="panelTitle">${escapeHtml(last.prizeLabel || "Daily prize")}</div>
@@ -7386,24 +7399,27 @@
                             ? `${shortMoney(last.amount || 0)} chips were added instantly.`
                             : last.prizeType === "item"
                                 ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
-                                : "Better luck tomorrow!"}
+                                : "Better luck this time!"}
                     </div>
                 `;
-                button.disabled = true;
-                button.textContent = "Already Spun Today";
             } else {
                 resultBox.textContent = "Your free daily spin is ready.";
-                button.disabled = dailySpinBusy;
-                button.textContent = dailySpinBusy ? "Spinning..." : "Spin Daily Wheel";
             }
+
+            button.disabled = dailySpinBusy || remainingSpins <= 0;
+            button.textContent = dailySpinBusy
+                ? "Spinning..."
+                : remainingSpins > 0
+                    ? `Spin Daily Wheel (${remainingSpins} remaining)`
+                    : "No Spins Remaining";
 
             if (resetText && status.nextSpinAt) {
                 const remaining = Math.max(0, Number(status.nextSpinAt) - Date.now());
                 const hours = Math.floor(remaining / 3_600_000);
                 const minutes = Math.floor((remaining % 3_600_000) / 60_000);
-                resetText.textContent = status.claimedToday
-                    ? `Next spin in ${hours}h ${minutes}m (UTC reset)`
-                    : "Available now";
+                resetText.textContent = remainingSpins > 0
+                    ? `${Number(status.bonusSpins || 0)} bonus spin(s) available`
+                    : `Next free spin in ${hours}h ${minutes}m (UTC reset)`;
             }
         }
 
@@ -7427,6 +7443,38 @@
                 const box = $("dailySpinResult");
                 if (box) box.textContent = error.message;
             }
+        }
+
+        async function grantDailySpins() {
+            if (!isBanker() || !adminToken) {
+                throw new Error("Unlock Banker controls first");
+            }
+
+            const playerId = String($("dailySpinGrantPlayerId")?.value || "").trim();
+            const amount = Math.floor(Number($("dailySpinGrantAmount")?.value || 0));
+            const statusBox = $("dailySpinGrantStatus");
+
+            if (!playerId) throw new Error("Enter a player ID");
+            if (!Number.isSafeInteger(amount) || amount < 1 || amount > 1000) {
+                throw new Error("Enter between 1 and 1000 spins");
+            }
+
+            const json = await apiRequest("/daily-spin/grant", {
+                method: "POST",
+                token: adminToken,
+                body: { playerId, amount }
+            });
+
+            if (statusBox) {
+                statusBox.textContent = `Added ${json.added} spin(s) to ID ${json.playerId}. They now have ${json.bonusSpins} bonus spin(s).`;
+            }
+
+            if (String(playerId) === String(autoUserId)) {
+                dailySpinStatus = json.status;
+                renderDailySpin();
+            }
+
+            setStatus(`Gave ${amount} extra daily spin(s) to ${playerId}`, 3500);
         }
 
         async function spinDailyWheel() {
@@ -9915,6 +9963,16 @@ function render() {
             $('minesCashoutButton').addEventListener('click', cashoutMines);
             MoveIndicator(document.querySelector(".tabButton.active"))
             $("dailySpinButton")?.addEventListener("click", spinDailyWheel);
+            $("dailySpinGrantButton")?.addEventListener("click", async () => {
+                try {
+                    await grantDailySpins();
+                } catch (error) {
+                    console.error(error);
+                    const statusBox = $("dailySpinGrantStatus");
+                    if (statusBox) statusBox.textContent = error.message;
+                    setStatus(error.message, 3500);
+                }
+            });
             $("roundResultClose").addEventListener("click", hideRoundResultPopup);
             $("cashoutChipsButton").addEventListener("click", cashoutPlayerChips);
 
