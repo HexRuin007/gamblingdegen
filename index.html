@@ -742,6 +742,77 @@
             gap: 6px;
         }
 
+
+        .playerAuditPanel {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 14px;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(124, 77, 255, 0.14),
+                    rgba(255, 255, 255, 0.035)
+                );
+            border: 1px solid rgba(124, 77, 255, 0.3);
+        }
+
+        .playerAuditSummary {
+            margin: 8px 0;
+            padding: 9px;
+            border-radius: 10px;
+            text-align: left;
+            background: rgba(5, 8, 14, 0.52);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            font-size: 11px;
+        }
+
+        .playerAuditResult {
+            margin-top: 7px;
+            padding: 9px;
+            border-radius: 10px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #aeb8c6;
+        }
+
+        .playerAuditResult.win {
+            border-left-color: #6ee77c;
+        }
+
+        .playerAuditResult.loss {
+            border-left-color: #ff6262;
+        }
+
+        .playerAuditResult.pending,
+        .playerAuditResult.break-even,
+        .playerAuditResult.refund {
+            border-left-color: #ffd84d;
+        }
+
+        .playerAuditTop,
+        .playerAuditBalance {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .playerAuditTop {
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .playerAuditBalance {
+            margin-top: 5px;
+            font-size: 10px;
+            color: var(--text-soft);
+        }
+
+        .playerAuditAmounts {
+            margin-top: 5px;
+            font-size: 10px;
+            color: #edf2f7;
+        }
+
         .chipResetDangerZone {
             display: none;
             margin-top: 12px;
@@ -3356,9 +3427,8 @@
                             <input id="chipRequestAmount" type="number" min="1" step="1" placeholder="Chips to buy" />
                             <button id="requestChipsButton" class="gold">Request Chips</button>
                         </div>
-                        <div class="chipRequestStatus" id="chipRequestStatus">Ask the banker to approve your chip
-                            purchase.</div>
-                            <div class=""chipValueStatus" id="chipValueStatus">1 Chip = 1$ In-Game Cash</div>
+                        <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire, Nunu or Crackaddict to fulfill these requests.</div>
+                            <div class="chipValueStatus" id="chipValueStatus">1 Chip = 1$ In-Game Cash, All Requests are sent to discord, so be patient!</div>
 
                         <div class="panelHeader" style="margin-top:14px;">
                             <div>
@@ -3417,7 +3487,7 @@
                             class="chipRequestStatus"
                             id="withdrawRequestStatus"
                         >
-                            Enter how many chips you want a banker to cash out.
+                            Organise with Poire, Nunu or Crackaddict to fulfill these requests.
                         </div>
                     </div>
 
@@ -3476,6 +3546,36 @@
                         <input id="cashoutAmountInput" type="number" min="1" step="1"
                             placeholder="Amount of chips to cash out" />
                         <button id="cashoutChipsButton" class="danger">Cash Out Chips</button>
+
+
+                        <div class="playerAuditPanel">
+                            <div class="panelHeader">
+                                <div>
+                                    <div class="panelTitle">🕵️ Player Gambling Audit</div>
+                                    <div class="panelHint">Latest 20 wins and losses</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <input
+                                    id="auditPlayerIdInput"
+                                    type="text"
+                                    placeholder="Player ID to inspect"
+                                />
+                                <button
+                                    id="loadPlayerAuditButton"
+                                    type="button"
+                                >
+                                    Check Player
+                                </button>
+                            </div>
+
+                            <div id="playerAuditBox">
+                                <div class="emptyState">
+                                    Enter a player ID to inspect their recent gambling.
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">♻️ Reset Individual Player</div>
@@ -4315,6 +4415,143 @@
                             String(parsed);
                     }
                 });
+            }
+        }
+
+
+        function formatAuditDate(timestamp) {
+            const value = Number(timestamp || 0);
+
+            if (!value) return "Unknown time";
+
+            return new Date(value).toLocaleString();
+        }
+
+        function auditOutcomeLabel(outcome) {
+            const labels = {
+                win: "WIN",
+                loss: "LOSS",
+                pending: "PENDING",
+                refund: "REFUND",
+                "break-even": "BREAK EVEN"
+            };
+
+            return labels[outcome] || String(outcome || "").toUpperCase();
+        }
+
+        async function loadPlayerAudit() {
+            const input = $("auditPlayerIdInput");
+            const box = $("playerAuditBox");
+            const button = $("loadPlayerAuditButton");
+            const playerId = String(input?.value || "").trim();
+
+            if (!box || !button) return;
+
+            if (!adminToken) {
+                box.innerHTML =
+                    '<div class="emptyState">Unlock banker controls first.</div>';
+                return;
+            }
+
+            if (!playerId) {
+                box.innerHTML =
+                    '<div class="emptyState">Enter a player ID.</div>';
+                return;
+            }
+
+            button.disabled = true;
+            button.textContent = "Loading...";
+
+            try {
+                const json = await apiRequest(
+                    "/chips/player-audit?playerId=" +
+                    encodeURIComponent(playerId) +
+                    "&limit=20",
+                    {
+                        token: adminToken
+                    }
+                );
+
+                const player = json.player || {};
+                const results = Array.isArray(json.results)
+                    ? json.results
+                    : [];
+
+                const summary = `
+                    <div class="playerAuditSummary">
+                        <b>${escapeHtml(player.playerName || "Player")}</b>
+                        (${escapeHtml(player.playerId || playerId)})
+                        <br>
+                        Current balance:
+                        <b>${shortMoney(player.currentBalance || 0)} chips</b>
+                    </div>
+                `;
+
+                if (!results.length) {
+                    box.innerHTML =
+                        summary +
+                        '<div class="emptyState">No recorded gambling results for this player yet.</div>';
+                    return;
+                }
+
+                box.innerHTML =
+                    summary +
+                    results.map(result => {
+                        const outcome =
+                            String(result.outcome || "pending");
+
+                        const net = Number(result.net || 0);
+                        const netText =
+                            (net > 0 ? "+" : "") +
+                            shortMoney(net);
+
+                        return `
+                            <div class="playerAuditResult ${escapeHtml(outcome)}">
+                                <div class="playerAuditTop">
+                                    <span>
+                                        ${escapeHtml(auditOutcomeLabel(outcome))}
+                                        • ${escapeHtml(result.gameType || "casino")}
+                                    </span>
+                                    <span class="${
+                                        net > 0
+                                            ? "win"
+                                            : net < 0
+                                                ? "loss"
+                                                : "neutral"
+                                    }">
+                                        ${escapeHtml(netText)}
+                                    </span>
+                                </div>
+
+                                <div class="playerAuditAmounts">
+                                    Bet: ${shortMoney(result.wager || 0)}
+                                    • Payout: ${shortMoney(result.payout || 0)}
+                                </div>
+
+                                <div class="playerAuditBalance">
+                                    <span>
+                                        Before:
+                                        <b>${shortMoney(result.balanceBefore || 0)}</b>
+                                    </span>
+                                    <span>→</span>
+                                    <span>
+                                        After:
+                                        <b>${shortMoney(result.balanceAfter || 0)}</b>
+                                    </span>
+                                </div>
+
+                                <div class="small">
+                                    ${escapeHtml(formatAuditDate(result.completedAt))}
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+            } catch (error) {
+                box.innerHTML =
+                    `<div class="emptyState">${escapeHtml(error.message)}</div>`;
+            } finally {
+                button.disabled = false;
+                button.textContent = "Check Player";
             }
         }
 
@@ -8915,7 +9152,7 @@ function render() {
             $('chipPlayerLabel').textContent = autoName ? `${autoName} (${autoUserId})` : 'Waiting for player...';
             $('chipRequestStatus').textContent = myRequest
                 ? `Pending request: ${shortMoney(myRequest.amount)} chips`
-                : 'Ask the banker to approve your chip purchase.';
+                : 'Organise with Poire, Nunu or Crackaddict to fulfill these requests.';
             $('requestChipsButton').disabled = !autoUserId || !autoName || !!myRequest;
 
             if ($("withdrawRequestStatus")) {
@@ -8924,7 +9161,7 @@ function render() {
                         ? `Pending withdrawal: ${shortMoney(
                             myWithdrawalRequest.amount
                         )} chips`
-                        : "Enter how many chips you want a banker to cash out.";
+                        : "Organise with Poire, Nunu or Crackaddict to fulfill this requests.";
             }
 
             const withdrawalButton =
@@ -10113,6 +10350,19 @@ function render() {
 
             $('requestChipsButton').addEventListener('click', requestChips);
             $('grantChipsButton').addEventListener('click', () => grantChips());
+            $("loadPlayerAuditButton").addEventListener(
+                "click",
+                loadPlayerAudit
+            );
+
+            $("auditPlayerIdInput").addEventListener(
+                "keydown",
+                event => {
+                    if (event.key === "Enter") {
+                        loadPlayerAudit();
+                    }
+                }
+            );
             $('submitBetButton').addEventListener('click', submitBet);
             $('loginAdminButton').addEventListener('click', loginAdmin);
             $('confirmAllButton').addEventListener('click', () => adminAction('confirmAll'));
