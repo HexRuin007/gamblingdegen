@@ -3100,7 +3100,14 @@
                         </div>
 
                         <div class="row">
-                            <input id="minesBetInput" type="number" min="1" step="1" placeholder="Mines bet" />
+                            <input
+                                id="minesBetInput"
+                                type="text"
+                                inputmode="decimal"
+                                autocomplete="off"
+                                placeholder="Custom bet, e.g. 5m"
+                                aria-label="Custom Mines bet amount"
+                            />
 
                             <input id="minesCountInput" type="number" min="1" max="10" step="1" value="3"
                                 placeholder="Mine count" />
@@ -6222,8 +6229,8 @@
                 String(autoName || '').trim();
 
             const amount = Math.floor(
-                Number(
-                    $('minesBetInput').value || 0
+                parseMoneyInput(
+                    $('minesBetInput').value
                 )
             );
 
@@ -10073,7 +10080,37 @@ function render() {
                 applyOpacity(this.value)
             });
             $('reloadButton').addEventListener('click', () => window.location.reload());
-            document.querySelectorAll('.quickBetButton').forEach(button => button.addEventListener('click', () => setBetAmount(button.dataset.target, Number(button.dataset.amount))));
+            document.querySelectorAll('.quickBetButton').forEach(button =>
+                button.addEventListener('click', () =>
+                    setBetAmount(
+                        button.dataset.target,
+                        Number(button.dataset.amount)
+                    )
+                )
+            );
+
+            const minesBetInput = $('minesBetInput');
+
+            if (minesBetInput) {
+                minesBetInput.addEventListener('input', () => {
+                    const enteredAmount =
+                        parseMoneyInput(minesBetInput.value);
+
+                    document
+                        .querySelectorAll(
+                            '.quickBetButton[data-target="minesBetInput"]'
+                        )
+                        .forEach(button => {
+                            button.classList.toggle(
+                                'selected',
+                                enteredAmount > 0 &&
+                                Number(button.dataset.amount) ===
+                                    enteredAmount
+                            );
+                        });
+                });
+            }
+
             $('requestChipsButton').addEventListener('click', requestChips);
             $('grantChipsButton').addEventListener('click', () => grantChips());
             $('submitBetButton').addEventListener('click', submitBet);
