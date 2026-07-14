@@ -5538,7 +5538,7 @@
             await wait(700);
             for (const step of steps) {
                 $('slotGrid').classList.add('spinning');
-                // Keep locked reels visible while the other reels spin.
+                
                 const fakeTimer = setInterval(() => {
                     const fakeGrid = step.grid.map(row => [...row]);
                     const lockedColumns = new Set(
@@ -5644,7 +5644,7 @@
 
             if (!awarded) return;
 
-            // Play once whenever free spins are newly awarded.
+           
             playSlotBonusSound();
 
             document
@@ -5767,7 +5767,6 @@
 
             gif.classList.remove("active");
 
-            // Restart the GIF and its five-second animation.
             gif.src = "";
             void gif.offsetWidth;
             gif.src = "./durp.gif";
@@ -5805,7 +5804,7 @@
 
             gif.classList.remove("active");
 
-            // Reset the GIF so it starts from frame one every time.
+         
             gif.src = "";
             void gif.offsetWidth;
             gif.src = "./dancing-donald.gif";
