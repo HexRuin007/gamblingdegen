@@ -3463,6 +3463,19 @@
                         <input id="cashoutAmountInput" type="number" min="1" step="1"
                             placeholder="Amount of chips to cash out" />
                         <button id="cashoutChipsButton" class="danger">Cash Out Chips</button>
+
+                        <div class="panelHeader" style="margin-top:12px;">
+                            <div class="panelTitle">♻️ Reset Individual Player</div>
+                            <div class="panelHint">Clear one casino account</div>
+                        </div>
+                        <input id="resetPlayerIdInput" type="text" placeholder="Player ID to reset" />
+                        <input id="resetPlayerConfirmation" type="text" placeholder='Type RESET PLAYER' />
+                        <button id="resetPlayerButton" class="danger" type="button">
+                            Reset Player
+                        </button>
+                        <div class="chipRequestStatus">
+                            Clears only that player's casino balance, statistics, requests, spins and active games. They will receive the normal starting chips when they register again.
+                        </div>
                     </div>
                     <div id="chipResetDangerZone" class="chipResetDangerZone bankerOnly">
                         <div class="chipResetDangerTitle">⚠️ Reset All Casino Chips</div>
@@ -4506,6 +4519,74 @@
 
                 backdrop.classList.add("active");
             });
+        }
+
+        async function resetIndividualCasinoPlayer() {
+            if (!adminToken) {
+                throw new Error("Unlock banker controls first");
+            }
+
+            const playerId = String(
+                $("resetPlayerIdInput")?.value || ""
+            ).trim();
+
+            const confirmation = String(
+                $("resetPlayerConfirmation")?.value || ""
+            ).trim();
+
+            if (!playerId) {
+                throw new Error("Enter the player ID to reset");
+            }
+
+            if (confirmation !== "RESET PLAYER") {
+                throw new Error('Type "RESET PLAYER" exactly');
+            }
+
+            const playerName =
+                state?.chips?.playerNames?.[playerId] ||
+                state?.playerNames?.[playerId] ||
+                "Player";
+
+            const confirmed = await showCasinoConfirm({
+                title: "♻️ Reset Individual Player",
+                message:
+                    `Reset ${playerName} (${playerId})? This clears their casino balance, statistics, requests, spins and active games.`,
+                confirmText: "Yes, Reset Player",
+                cancelText: "Cancel"
+            });
+
+            if (!confirmed) return;
+
+            setStatus(`Resetting player ${playerId}...`, 0);
+
+            const json = await apiRequest(
+                "/chips/reset-player",
+                {
+                    method: "POST",
+                    token: adminToken,
+                    body: {
+                        requesterId: autoUserId,
+                        playerId,
+                        confirmation
+                    }
+                }
+            );
+
+            if (!json.ok) {
+                throw new Error(json.error || "Player reset failed");
+            }
+
+            state = json.state || state;
+            $("resetPlayerIdInput").value = "";
+            $("resetPlayerConfirmation").value = "";
+
+            setStatus(
+                `Reset ${json.playerName || "Player"} (${json.playerId}) — ${shortMoney(json.previousBalance || 0)} chips cleared`,
+                7000
+            );
+
+            render();
+            await refreshState(true);
         }
 
         async function resetAllCasinoChips() {
@@ -9899,6 +9980,23 @@ function render() {
             "input",
             renderDealGame
         );
+
+        const resetPlayerButton =
+            $("resetPlayerButton");
+
+        if (resetPlayerButton) {
+            resetPlayerButton.addEventListener(
+                "click",
+                () => {
+                    resetIndividualCasinoPlayer().catch(error => {
+                        setStatus(
+                            error.message || "Player reset failed",
+                            4000
+                        );
+                    });
+                }
+            );
+        }
 
         const resetAllChipsButton =
             $("resetAllChipsButton");
