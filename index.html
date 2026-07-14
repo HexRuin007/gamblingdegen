@@ -518,7 +518,8 @@
             margin-top: 7px;
         }
 
-        input {
+        input,
+        select {
             width: 100%;
             box-sizing: border-box;
             border: none;
@@ -530,7 +531,8 @@
             font-size: 12px;
         }
 
-        input:focus {
+        input:focus,
+        select:focus {
             outline-color: rgba(124, 77, 255, 0.7);
             box-shadow: 0 0 0 3px rgba(124, 77, 255, 0.13);
         }
@@ -3445,6 +3447,10 @@
                         <input id="grantChipPlayerId" type="text" placeholder="Player ID" />
                         <input id="grantChipPlayerName" type="text" placeholder="Player name (optional)" />
                         <input id="grantChipAmount" type="number" min="1" step="1" placeholder="Chips to give" />
+                        <select id="grantChipType" aria-label="How the chips were supplied">
+                            <option value="paid">Paid chips — player paid for them</option>
+                            <option value="free">Free chips — banker gave them free</option>
+                        </select>
                         <button id="grantChipsButton" class="gold">Give Chips</button>
 
                         <div class="panelHeader" style="margin-top:12px;">
@@ -4884,23 +4890,62 @@
             }
         }
 
-        async function grantChips(playerId, amount, requestId, playerName) {
+        async function grantChips(playerId, amount, requestId, playerName, selectedGrantType) {
             if (!adminToken) return setStatus('LOCKED', 1500);
-            const id = String(playerId || $('grantChipPlayerId').value || '').trim();
-            const name = String(playerName || $('grantChipPlayerName').value || '').trim();
-            const value = parseMoneyInput(amount || $('grantChipAmount').value);
-            if (!id || !value || value < 1) return setStatus('PLAYER/AMOUNT NEEDED', 2000);
+
+            const id = String(
+                playerId || $('grantChipPlayerId').value || ''
+            ).trim();
+
+            const name = String(
+                playerName || $('grantChipPlayerName').value || ''
+            ).trim();
+
+            const value = parseMoneyInput(
+                amount || $('grantChipAmount').value
+            );
+
+            const grantType = String(
+                selectedGrantType ||
+                $('grantChipType')?.value ||
+                'paid'
+            ).toLowerCase() === 'free'
+                ? 'free'
+                : 'paid';
+
+            if (!id || !value || value < 1) {
+                return setStatus('PLAYER/AMOUNT NEEDED', 2000);
+            }
+
             try {
                 const json = await apiRequest('/chips/grant', {
                     method: 'POST',
                     token: adminToken,
-                    body: { playerId: id, playerName: name, amount: value, requestId: requestId || null }
+                    body: {
+                        playerId: id,
+                        playerName: name,
+                        amount: value,
+                        requestId: requestId || null,
+                        grantType
+                    }
                 });
+
                 state = json.state || state;
                 $('grantChipPlayerId').value = '';
                 $('grantChipPlayerName').value = '';
                 $('grantChipAmount').value = '';
-                setStatus('CHIPS GIVEN', 1800);
+
+                if ($('grantChipType')) {
+                    $('grantChipType').value = 'paid';
+                }
+
+                setStatus(
+                    grantType === 'free'
+                        ? 'FREE CHIPS GIVEN'
+                        : 'PAID CHIPS GIVEN',
+                    1800
+                );
+
                 render();
             } catch (e) {
                 setStatus(String(e.message || e), 2500);
@@ -8913,8 +8958,9 @@ function render() {
                             <div class="betLeft"><b>${escapeHtml(r.playerName)}</b> (${escapeHtml(r.playerId)})</div>
                             <div class="betRight">${shortMoney(r.amount)} chips</div>
                           </div>
-                          <div class="bankerRequestActions">
-                            <button class="green" onclick="grantChips('${escapeHtml(r.playerId)}', ${Number(r.amount) || 0}, '${escapeHtml(r.requestId || r.id || '')}', '${escapeHtml(r.playerName)}')">Approve</button>
+                          <div class="bankerRequestActions" style="grid-template-columns:1fr 1fr 1fr;">
+                            <button class="green" onclick="grantChips('${escapeHtml(r.playerId)}', ${Number(r.amount) || 0}, '${escapeHtml(r.requestId || r.id || '')}', '${escapeHtml(r.playerName)}', 'paid')">Approve Paid</button>
+                            <button class="gold" onclick="grantChips('${escapeHtml(r.playerId)}', ${Number(r.amount) || 0}, '${escapeHtml(r.requestId || r.id || '')}', '${escapeHtml(r.playerName)}', 'free')">Approve Free</button>
                             <button class="danger" onclick="rejectChipRequest('${escapeHtml(r.requestId || r.id || '')}')">Reject</button>
                           </div>
                         </div>`).join('');
