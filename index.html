@@ -21,6 +21,7 @@
 
         :root {
             --overlay-opacity: 0.82;
+            --ui-opacity: 0.78;
             --card-bg: rgba(15, 20, 31, calc(var(--overlay-opacity) * 0.74));
             --text-soft: #aeb8c6;
             --accent: #7c4dff;
@@ -82,6 +83,10 @@
             resize: none;
             pointer-events: auto;
             position: fixed;
+
+          
+            opacity: var(--ui-opacity);
+            transition: opacity 0.12s ease;
         }
 
 
@@ -2293,24 +2298,21 @@
             width: 91px;
         }
 
-        /*
-         * Keep every panel inside the active game visible in Compact Mode.
-         * Different games place their bet/spin/play controls in different
-         * panels, so hiding "all panels after the first" removed controls.
-         */
+        
+       
         #overlay.compactMode .tabPage.active > .bankerOnly,
         #overlay.compactMode .tabPage.active > .dailyProfitPanel,
         #overlay.compactMode .tabPage.active > .chipResetDangerZone {
             display: none !important;
         }
 
-        /* Utility-only pages can still be reduced. */
+        
         #overlay.compactMode #chipsPage > .bankerOnly,
         #overlay.compactMode #userSettingsPage > .bankerOnly {
             display: none !important;
         }
 
-        /* Compress playable panels instead of removing them. */
+        
         #overlay.compactMode .tabPage.active > .panel,
         #overlay.compactMode .tabPage.active > .heroCard {
             display: block;
@@ -2405,6 +2407,35 @@
 
         .settingsOptionText {
             min-width: 0;
+        }
+
+        .settingsOptionRange {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .settingsRangeControl {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 44px 1fr;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .settingsRangeControl span {
+            font-size: 12px;
+            font-weight: 900;
+            color: #ffd84d;
+            text-align: center;
+        }
+
+        .settingsRangeControl input[type="range"] {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            outline: none;
+            cursor: pointer;
         }
 
         .settingsOptionTitle {
@@ -3516,8 +3547,6 @@
                     Server is set inside the file with SERVER_URL. Use your proxy URL
                     ending in /proxy.
                 </div>
-                <label class="small">Background Opacity</label>
-                <input id="opacityInput" type="range" min="5" max="100" value="78" />
                 <button id="reloadButton">Reload App</button>
             </div>
 
@@ -3587,6 +3616,19 @@
                                     <input id="settingCompactMode" type="checkbox" />
                                     <span class="settingsToggleSlider"></span>
                                 </label>
+                            </div>
+
+                            <div class="settingsOption settingsOptionRange">
+                                <div class="settingsOptionText">
+                                    <div class="settingsOptionTitle">UI Transparency</div>
+                                    <div class="settingsOptionHint">
+                                       Adjust the Transparency of the UI
+                                    </div>
+                                </div>
+                                <div class="settingsRangeControl">
+                                    <span id="opacityValue">78%</span>
+                                    <input id="opacityInput" type="range" min="5" max="100" value="78" aria-label="Whole UI transparency" />
+                                </div>
                             </div>
 
                             <div class="settingsOption">
@@ -5471,7 +5513,7 @@
                 ['pear', '🍐', 3, 0.5, 4, 1.5, 5, 5], ['cherry', '🍒', 3, 0.8, 4, 2.5, 5, 8],
                 ['bell', '🔔', 3, 1, 4, 4, 5, 12], ['gem', '💎', 3, 1.5, 4, 6, 5, 20],
                 ['crown', '👑', 3, 2, 4, 10, 5, 40], ['seven', '7️⃣', 3, 3, 4, 15, 5, 75],
-                ['wild', '🃏', 3, 4, 4, 20, 5, 100], ['scatter', '⭐', 3, 2, 4, 8, 5, 30]
+                ['wild', '🃏', 3, 4, 4, 20, 5, 100], ['scatter', '🐉', 3, 2, 4, 8, 5, 30]
             ];
             const items = (state.slots?.paytable?.length ? state.slots.paytable : fallback.map(x => ({ symbol: x[0], label: x[1], pays: { 3: x[3], 4: x[5], 5: x[7] } })));
             $('slotPaytable').innerHTML = items.map(item =>
@@ -5908,19 +5950,16 @@
                 $('slotResultSub').textContent =
                     json.result.message || 'Spin complete';
 
-                // Leave the final symbols and winning lines visible briefly
-                // before showing any payout or jackpot overlays.
+            
                 await wait(650);
 
-                // The server state already contains the awarded free spins,
-                // but keep them hidden until the reels have fully settled.
+             
                 heldSlotFreeSpinDisplay = null;
                 slotAnimating = false;
 
                 render();
 
-                // Let render finish updating the balance/free-spin counters
-                // before displaying the result effects.
+                
                 await wait(100);
 
                 if (json.result.payout > 0) {
@@ -7014,8 +7053,7 @@
 
                         render();
 
-                        // Very short visual spacing while still
-                        // allowing rapid queued crossings.
+                       
                         await new Promise(resolve =>
                             setTimeout(resolve, 75)
                         );
@@ -8264,9 +8302,7 @@
                 state.chicken?.maxSteps || 12
             );
 
-            // currentStep is the number of roads already crossed.
-            // Therefore after crossing road 1, the chicken must be
-            // positioned at road 2, not back on road 1.
+           
             const numericStep = Math.max(
                 0,
                 Math.min(
@@ -8279,7 +8315,7 @@
             let focusLane = null;
 
             if (numericStep === 0) {
-                // Starting position: immediately before road 1.
+              
                 const firstLane =
                     getChickenLane(1);
 
@@ -8291,7 +8327,7 @@
                     focusLane = firstLane;
                 }
             } else if (numericStep < maxSteps) {
-                // After N successful crossings, stand at the next road.
+               
                 const nextLane =
                     getChickenLane(
                         numericStep + 1
@@ -8307,7 +8343,7 @@
                     focusLane = nextLane;
                 }
             } else {
-                // All roads completed: stand just beyond the final road.
+              
                 const finalLane =
                     getChickenLane(maxSteps);
 
@@ -8386,16 +8422,12 @@
         }
 
         function animateChickenSafeCross(crossedStep) {
-            // crossedStep is the road just completed.
-            // positionChicken(crossedStep) places the chicken at the
-            // entrance to the NEXT road.
+            
             positionChicken(
                 crossedStep,
                 true
             );
 
-            // The car belongs to the road the chicken just cleared,
-            // never the road the chicken is currently waiting at.
             setTimeout(() => {
                 driveCarDownLane(
                     crossedStep,
@@ -8507,9 +8539,7 @@
                         lane.dataset.step || 0
                     );
 
-                    // Remove any previous failed-lane marker.
-                    // A hit should only remain visible during its animation,
-                    // never across later games or renders.
+               
                     lane.classList.remove("hit");
 
                     lane.classList.toggle(
@@ -8982,14 +9012,35 @@ function render() {
             document.querySelectorAll(`.quickBetButton[data-target="${inputId}"]`).forEach(b => b.classList.toggle('selected', Number(b.dataset.amount) === Number(amount)))
         }
         function applyOpacity(v) {
-            const o = Math.max(.05, Math.min(1, Number(v) / 100));
-            document.documentElement.style.setProperty('--overlay-opacity', String(o));
-            localStorage.setItem(STORAGE_OPACITY, String(Math.round(o * 100)))
+            const percentage = Math.max(5, Math.min(100, Number(v) || 78));
+            const opacity = percentage / 100;
+
+        
+            document.documentElement.style.setProperty(
+                '--ui-opacity',
+                String(opacity)
+            );
+
+            const valueLabel = $('opacityValue');
+            if (valueLabel) {
+                valueLabel.textContent = `${Math.round(percentage)}%`;
+            }
+
+            localStorage.setItem(
+                STORAGE_OPACITY,
+                String(Math.round(percentage))
+            );
         }
+
         function loadOpacity() {
-            const saved = localStorage.getItem(STORAGE_OPACITY) || '72';
-            $('opacityInput').value = saved;
-            applyOpacity(saved)
+            const saved = localStorage.getItem(STORAGE_OPACITY) || '78';
+            const opacityInput = $('opacityInput');
+
+            if (opacityInput) {
+                opacityInput.value = saved;
+            }
+
+            applyOpacity(saved);
         }
         function positionSettingsPanel() {
             const panel = $('settings');
