@@ -9247,7 +9247,12 @@ function render() {
 
             if (localPlayer) {
                 $('bjPlayerCards').innerHTML = renderCards(localPlayer.hand || []);
-                $('bjPlayerTotal').textContent = 'Total: ' + (localPlayer.total || '--');
+                $('bjPlayerTotal').textContent =
+    'Total: ' + (
+        Number.isFinite(Number(localPlayer.total))
+            ? Number(localPlayer.total)
+            : '--'
+    );
             } else {
                 $('bjPlayerCards').innerHTML = '';
                 $('bjPlayerTotal').textContent = 'Total: --';
