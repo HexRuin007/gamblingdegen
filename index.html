@@ -2860,14 +2860,22 @@
             display: block;
         }
 
-        body.userappHidden #overlay,
+        /* Keep the casino fully rendered while hidden.
+           FiveM/CEF can fail to rebuild child content after display:none. */
+        body.userappHidden #overlay {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
         body.userappHidden #welcomeSplash,
         body.userappHidden #firstLoginGuide,
         body.userappHidden #winOverlay,
         body.userappHidden .sessionSpinGif,
         body.userappHidden .fivePearGif,
         body.userappHidden #roundResultPopup {
-            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
         }
 
         .pageHelpRow {
@@ -2973,7 +2981,6 @@
                     <div class="firstLoginGameCard"><b>⚙️ Settings</b><span>Adjust the app's settings, including sound, notifications, and display options.</span></div>
                     <div class="firstLoginGameCard"><b>💰 Banker</b><span>You can contact Une_Poire, Nunu or CrackAddict for any issues/resets, They also get notified on Discord, so don't message them for chip requests or winnings.</span></div>
                     <div class="firstLoginGameCard"><b>💬 Free Chips Requests</b><span>Any free chip request that keeps your balance under 100m, will be auto approved.</span></div>
-                    <div class="firstLoginGameCard"><b>💸 Hide Feature</b><span>Hide Feature is a buggy mess atm, but if you click the app it will load the UI again.</span></div>
                 </div>
             </div>
 
@@ -11154,44 +11161,16 @@ function render() {
             }
 
             function showCasinoUserapp() {
+              
                 document.body.classList.remove("userappHidden");
 
-                const overlay = document.getElementById("overlay");
-                const overlayContent = document.getElementById("overlayContent");
-
-             
-                if (overlay) {
-                    const previousTransform = overlay.style.transform;
-                    const previousVisibility = overlay.style.visibility;
-
-                    overlay.style.visibility = "hidden";
-                    overlay.style.transform = `${previousTransform || ""} translateZ(0)`.trim();
-
-                    void overlay.offsetWidth;
-                    void overlay.offsetHeight;
-
-                    requestAnimationFrame(() => {
-                        overlay.style.visibility = previousVisibility || "";
-                        overlay.style.transform = previousTransform || "";
-
-                        void overlay.offsetWidth;
-                        window.dispatchEvent(new Event("resize"));
-
-                        if (overlayContent) {
-                            const oldScrollTop = overlayContent.scrollTop;
-                            overlayContent.scrollTop = oldScrollTop + 1;
-                            overlayContent.scrollTop = oldScrollTop;
-                        }
-
-                        requestAnimationFrame(() => {
-                            overlay.style.display = "none";
-                            void overlay.offsetWidth;
-                            overlay.style.display = "";
-                            window.dispatchEvent(new Event("resize"));
-                        });
-                    });
-                } else {
-                    window.dispatchEvent(new Event("resize"));
+                
+                if (typeof render === "function") {
+                    try {
+                        render();
+                    } catch (error) {
+                        console.warn("Could not refresh casino after unhide:", error);
+                    }
                 }
             }
 
