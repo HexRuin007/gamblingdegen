@@ -4344,6 +4344,8 @@
             , minesFinishedView = null
             , minesFinishedViewUntil = 0
             , minesFinishedViewTimer = null
+            , minesRevealPending = false
+            , minesActionVersion = 0
             , dailyProfitLoading = false
             , dailyProfitLastLoadedAt = 0
             , lastRegisteredCasinoPlayerId = ""
@@ -4873,10 +4875,22 @@
         async function refreshState(silent) {
             try {
                 const requestStartedAt = Date.now();
+                const requestStartedMinesVersion = minesActionVersion;
                 const json = await apiRequest('/state');
                 const requestFinishedAt = Date.now();
 
+                const minesVersionAtRequest =
+                    requestStartedMinesVersion;
+
+                const currentMinesState = state.mines;
                 state = json.state || state;
+
+                if (
+                    minesVersionAtRequest !== minesActionVersion &&
+                    currentMinesState
+                ) {
+                    state.mines = currentMinesState;
+                }
 
                 if (Number(json.serverTime)) {
                     const estimatedNetworkDelay =
@@ -6665,6 +6679,10 @@
 
             const gameActive = !!game;
             const finished = game?.finished === true;
+            const tilesLocked =
+                minesRevealPending ||
+                !gameActive ||
+                finished;
 
             board.innerHTML = Array.from(
                 { length: 25 },
@@ -6691,7 +6709,7 @@
                           <button
                             class="${classes}"
                             data-mine-cell="${cell}"
-                            ${!gameActive || finished || isSafe || isMine ? 'disabled' : ''}
+                            ${tilesLocked || isSafe || isMine ? 'disabled' : ''}
                           >${label}</button>
                         `;
                 }
@@ -6841,7 +6859,7 @@
                 shortMoney(payout || 0);
 
             $('minesStartButton').disabled = false;
-            $('minesCashoutButton').disabled = false;
+            $('minesCashoutButton').disabled = true;
             $('minesBetInput').disabled = false;
             $('minesCountInput').disabled = false;
 
@@ -6850,8 +6868,14 @@
         }
 
         async function revealMineTile(cell) {
+            if (minesRevealPending || minesFinishedView) {
+                return;
+            }
+
             const playerId =
                 String(autoUserId || '').trim();
+
+            const currentGame = getMyMinesGame();
 
             if (!playerId) {
                 return setStatus(
@@ -6860,15 +6884,25 @@
                 );
             }
 
-            const buttons =
-                document.querySelectorAll(
-                    '.mineTile'
+            if (!currentGame?.gameId) {
+                return setStatus(
+                    'NO ACTIVE MINES GAME',
+                    1800
                 );
+            }
 
-            buttons.forEach(
-                button =>
-                    (button.disabled = true)
-            );
+            if (
+                !Number.isInteger(cell) ||
+                cell < 0 ||
+                cell >= 25 ||
+                (currentGame.revealed || []).map(Number).includes(cell)
+            ) {
+                return;
+            }
+
+            minesRevealPending = true;
+            minesActionVersion += 1;
+            renderMines();
 
             try {
                 const json = await apiRequest(
@@ -6877,12 +6911,14 @@
                         method: 'POST',
                         body: {
                             playerId,
+                            gameId: currentGame.gameId,
                             cell
                         }
                     }
                 );
 
                 state = json.state || state;
+                minesActionVersion += 1;
 
                 if (json.hitMine) {
                     showFinishedMinesBoard({
@@ -6935,21 +6971,34 @@
                     showWinEffect();
                     return;
                 }
-
-                render();
             } catch (error) {
+           
+                try {
+                    await refreshState(true);
+                } catch (_) {
+                 
+                }
+
                 setStatus(
                     String(error.message || error),
                     2500
                 );
-
-                render();
+            } finally {
+                minesRevealPending = false;
+                minesActionVersion += 1;
+                renderMines();
             }
         }
 
         async function cashoutMines() {
+            if (minesRevealPending || minesFinishedView) {
+                return;
+            }
+
             const playerId =
                 String(autoUserId || '').trim();
+
+            const currentGame = getMyMinesGame();
 
             if (!playerId) {
                 return setStatus(
@@ -6964,12 +7013,14 @@
                     {
                         method: 'POST',
                         body: {
-                            playerId
+                            playerId,
+                            gameId: currentGame?.gameId || ''
                         }
                     }
                 );
 
                 state = json.state || state;
+                minesActionVersion += 1;
 
                 showFinishedMinesBoard({
                     minePositions:
@@ -8701,7 +8752,7 @@
                     );
 
                 $('minesStartButton').disabled = false;
-                $('minesCashoutButton').disabled = false;
+                $('minesCashoutButton').disabled = true;
                 $('minesBetInput').disabled = false;
                 $('minesCountInput').disabled = false;
 
@@ -8747,11 +8798,13 @@
                     : 'Start a game';
 
             $('minesStartButton').disabled =
+                minesRevealPending ||
                 !!game ||
                 !autoUserId ||
                 !autoName;
 
             $('minesCashoutButton').disabled =
+                minesRevealPending ||
                 !game ||
                 Number(game.safeReveals || 0) < 1;
 
