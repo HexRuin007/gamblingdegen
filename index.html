@@ -2803,10 +2803,140 @@
             }
         }
 
+
+        /* Hide/show launcher and reusable page help */
+        #hideUserappButton {
+            position: absolute;
+            right: 101px;
+            top: 5px;
+            z-index: 12001;
+            width: auto;
+            min-width: 34px;
+            margin: 0;
+            padding: 5px 8px;
+            border-radius: 9px;
+            font-size: 10px;
+            line-height: 1.1;
+            background: rgba(8, 11, 18, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.38);
+            opacity: 0.72;
+        }
+
+        #hideUserappButton:hover {
+            opacity: 1;
+        }
+
+        #showUserappButton {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 250000;
+            display: none;
+            width: auto;
+            min-width: 50px;
+            height: 50px;
+            margin: 0;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #7c4dff, #4f35bc);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow:
+                0 10px 28px rgba(0, 0, 0, 0.52),
+                0 0 18px rgba(124, 77, 255, 0.36);
+            color: white;
+            font-size: 21px;
+            font-weight: 950;
+            cursor: pointer;
+            opacity: 0.9;
+        }
+
+        #showUserappButton:hover {
+            opacity: 1;
+            transform: translateY(-1px);
+        }
+
+        body.userappHidden #showUserappButton {
+            display: block;
+        }
+
+        body.userappHidden #overlay,
+        body.userappHidden #welcomeSplash,
+        body.userappHidden #firstLoginGuide,
+        body.userappHidden #winOverlay,
+        body.userappHidden .sessionSpinGif,
+        body.userappHidden .fivePearGif,
+        body.userappHidden #roundResultPopup {
+            display: none !important;
+        }
+
+        .pageHelpRow {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 31px;
+            margin: 0 0 6px;
+            padding: 0 2px;
+        }
+
+        .pageHelpButton {
+            position: static;
+            z-index: 60;
+            width: 29px;
+            height: 29px;
+            min-width: 29px;
+            margin: 0;
+            padding: 0;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(124, 77, 255, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.38);
+            color: white;
+            font-size: 16px;
+            font-weight: 950;
+            line-height: 1;
+        }
+
+        .pageHelpButton:hover {
+            background: #7c4dff;
+        }
+
+        .tabPage {
+            position: relative;
+        }
+
+        #overlay.compactMode #hideUserappButton {
+            right: 102px;
+            top: 3px;
+        }
+
+        #overlay.compactMode .pageHelpRow {
+            min-height: 27px;
+            margin-bottom: 4px;
+        }
+
+        #overlay.compactMode .pageHelpButton {
+            width: 25px;
+            height: 25px;
+            min-width: 25px;
+            font-size: 13px;
+        }
+
     </style>
 </head>
 
 <body>
+
+    <button
+        id="showUserappButton"
+        type="button"
+        title="Show Pearadise Casino"
+        aria-label="Show Pearadise Casino"
+    >🍐</button>
+
     <div id="welcomeSplash">
         <img
             src="./pearadise-welcome.png"
@@ -2843,6 +2973,7 @@
                     <div class="firstLoginGameCard"><b>⚙️ Settings</b><span>Adjust the app's settings, including sound, notifications, and display options.</span></div>
                     <div class="firstLoginGameCard"><b>💰 Banker</b><span>You can contact Une_Poire, Nunu or CrackAddict for any issues/resets, They also get notified on Discord, so don't message them for chip requests or winnings.</span></div>
                     <div class="firstLoginGameCard"><b>💬 Free Chips Requests</b><span>Any free chip request that keeps your balance under 100m, will be auto approved.</span></div>
+                    <div class="firstLoginGameCard"><b>💸 Hide Feature</b><span>Hide Feature is a buggy mess atm, but if you click the app it will load the UI again.</span></div>
                 </div>
             </div>
 
@@ -2853,6 +2984,15 @@
     </div>
 
     <div id="overlay">
+
+        <button
+            id="hideUserappButton"
+            type="button"
+            title="Hide the userapp"
+        >
+            ✕ Hide
+        </button>
+
         <button
             id="compactModeButton"
             type="button"
@@ -10976,17 +11116,23 @@ function render() {
         (() => {
             const FIRST_LOGIN_GUIDE_KEY = "pearadiseCasinoGuideSeenx";
 
-            function openFirstLoginGuide() {
+            function openFirstLoginGuide(force = false) {
                 const guide = document.getElementById("firstLoginGuide");
                 if (!guide) return;
 
-                try {
-                    if (localStorage.getItem(FIRST_LOGIN_GUIDE_KEY) === "true") return;
-                } catch (error) {
-                    console.warn("Could not read casino guide status:", error);
+                if (!force) {
+                    try {
+                        if (localStorage.getItem(FIRST_LOGIN_GUIDE_KEY) === "true") return;
+                    } catch (error) {
+                        console.warn("Could not read casino guide status:", error);
+                    }
                 }
 
+                document.body.classList.remove("userappHidden");
                 guide.classList.add("active");
+
+                const body = guide.querySelector(".firstLoginGuideBody");
+                if (body) body.scrollTop = 0;
             }
 
             function closeFirstLoginGuide() {
@@ -11002,12 +11148,105 @@ function render() {
                 }
             }
 
-            window.addEventListener("DOMContentLoaded", () => {
-                const closeButton = document.getElementById("firstLoginGuideClose");
-                closeButton?.addEventListener("click", closeFirstLoginGuide);
+            function hideCasinoUserapp() {
+                closeFirstLoginGuide();
+                document.body.classList.add("userappHidden");
+            }
 
-                
-                setTimeout(openFirstLoginGuide, 5200);
+            function showCasinoUserapp() {
+                document.body.classList.remove("userappHidden");
+
+                const overlay = document.getElementById("overlay");
+                const overlayContent = document.getElementById("overlayContent");
+
+                // Force FiveM/CEF to recalculate and repaint the restored UI.
+                if (overlay) {
+                    const previousTransform = overlay.style.transform;
+                    const previousVisibility = overlay.style.visibility;
+
+                    overlay.style.visibility = "hidden";
+                    overlay.style.transform = `${previousTransform || ""} translateZ(0)`.trim();
+
+                    void overlay.offsetWidth;
+                    void overlay.offsetHeight;
+
+                    requestAnimationFrame(() => {
+                        overlay.style.visibility = previousVisibility || "";
+                        overlay.style.transform = previousTransform || "";
+
+                        void overlay.offsetWidth;
+                        window.dispatchEvent(new Event("resize"));
+
+                        if (overlayContent) {
+                            const oldScrollTop = overlayContent.scrollTop;
+                            overlayContent.scrollTop = oldScrollTop + 1;
+                            overlayContent.scrollTop = oldScrollTop;
+                        }
+
+                        requestAnimationFrame(() => {
+                            overlay.style.display = "none";
+                            void overlay.offsetWidth;
+                            overlay.style.display = "";
+                            window.dispatchEvent(new Event("resize"));
+                        });
+                    });
+                } else {
+                    window.dispatchEvent(new Event("resize"));
+                }
+            }
+
+            function addHelpButtonsToPages() {
+                document.querySelectorAll(".tabPage").forEach(page => {
+                    if (page.querySelector(":scope > .pageHelpRow")) return;
+
+                    const row = document.createElement("div");
+                    row.className = "pageHelpRow";
+
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "pageHelpButton";
+                    button.textContent = "?";
+                    button.title = "Show the casino guide";
+                    button.setAttribute("aria-label", "Show the casino guide");
+
+                    button.addEventListener("click", event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        openFirstLoginGuide(true);
+                    });
+
+                    row.appendChild(button);
+                    page.prepend(row);
+                });
+            }
+
+            window.showCasinoGuide = () => openFirstLoginGuide(true);
+            window.hideCasinoUserapp = hideCasinoUserapp;
+            window.showCasinoUserapp = showCasinoUserapp;
+
+            window.addEventListener("DOMContentLoaded", () => {
+                document
+                    .getElementById("firstLoginGuideClose")
+                    ?.addEventListener("click", closeFirstLoginGuide);
+
+                document
+                    .getElementById("hideUserappButton")
+                    ?.addEventListener("click", event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        hideCasinoUserapp();
+                    });
+
+                document
+                    .getElementById("showUserappButton")
+                    ?.addEventListener("click", event => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        showCasinoUserapp();
+                    });
+
+                addHelpButtonsToPages();
+                setTimeout(() => openFirstLoginGuide(false), 5200);
             });
         })();
     </script>
