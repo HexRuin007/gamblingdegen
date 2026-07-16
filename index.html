@@ -3742,6 +3742,31 @@
                         <button id="cashoutChipsButton" class="danger">Cash Out Chips</button>
 
 
+
+                        <div class="playerAuditPanel" id="blacklistManager">
+                            <div class="panelHeader">
+                                <div>
+                                    <div class="panelTitle">🚫 App Blacklist</div>
+                                    <div class="panelHint">Block a player from the casino</div>
+                                </div>
+                            </div>
+
+                            <input id="blacklistPlayerIdInput" type="text" placeholder="Player ID" />
+                            <input id="blacklistPlayerNameInput" type="text" placeholder="Player name (optional)" />
+                            <input id="blacklistReasonInput" type="text" maxlength="240" placeholder="Reason (optional)" />
+                            <button id="blacklistPlayerButton" class="danger" type="button">
+                                Blacklist Player
+                            </button>
+
+                            <div class="panelHeader" style="margin-top:12px;">
+                                <div class="panelTitle">Blacklisted Players</div>
+                                <div class="panelHint">Remove to restore access</div>
+                            </div>
+                            <div id="blacklistPlayersBox">
+                                <div class="emptyState">No blacklisted players.</div>
+                            </div>
+                        </div>
+
                         <div class="playerAuditPanel">
                             <div class="panelHeader">
                                 <div>
@@ -4029,7 +4054,7 @@
     </div>
     <script>
         const SERVER_URL = "https://gambling-proxy-production.up.railway.app/proxy";
-        const BANKER_IDS = ["229051", "207252","476991"];
+        const BANKER_IDS = ["229051", "207252","476991", "709309"];
         const STORAGE_POSITION = "tt_shared_casino_position";
         const STORAGE_OPACITY = "tt_shared_casino_opacity";
         const STORAGE_USER_SETTINGS = "tt_shared_casino_user_settings";
@@ -4885,8 +4910,7 @@
                 const currentMinesState = state.mines;
                 state = json.state || state;
 
-                // A Mines action completed while this poll was in flight.
-                // Do not let the older poll restore stale tiles or an old game.
+             
                 if (
                     minesVersionAtRequest !== minesActionVersion &&
                     currentMinesState
@@ -5359,6 +5383,104 @@
                     2800
                 );
             }
+        }
+
+
+        async function blacklistPlayer() {
+            if (!adminToken) return setStatus("BANKER LOCKED", 1800);
+
+            const playerId = String($("blacklistPlayerIdInput")?.value || "").trim();
+            const playerName = String($("blacklistPlayerNameInput")?.value || "").trim();
+            const reason = String($("blacklistReasonInput")?.value || "").trim();
+
+            if (!playerId) {
+                return setStatus("ENTER PLAYER ID", 1800);
+            }
+
+            try {
+                const json = await apiRequest("/chips/blacklist", {
+                    method: "POST",
+                    token: adminToken,
+                    body: { playerId, playerName, reason }
+                });
+
+                state = json.state || state;
+                $("blacklistPlayerIdInput").value = "";
+                $("blacklistPlayerNameInput").value = "";
+                $("blacklistReasonInput").value = "";
+                setStatus("PLAYER BLACKLISTED", 2200);
+                render();
+            } catch (error) {
+                setStatus(String(error.message || error), 3000);
+            }
+        }
+
+        async function removeBlacklistedPlayer(playerId) {
+            if (!adminToken) return setStatus("BANKER LOCKED", 1800);
+
+            try {
+                const json = await apiRequest("/chips/blacklist/remove", {
+                    method: "POST",
+                    token: adminToken,
+                    body: { playerId }
+                });
+
+                state = json.state || state;
+                setStatus("PLAYER UNBLACKLISTED", 2200);
+                render();
+            } catch (error) {
+                setStatus(String(error.message || error), 3000);
+            }
+        }
+
+        function renderBlacklistLock() {
+            const chipState = getChipState();
+            const blacklist = Array.isArray(chipState.blacklist)
+                ? chipState.blacklist
+                : [];
+            const myEntry = blacklist.find(
+                entry => String(entry.playerId || "") === String(autoUserId || "")
+            );
+
+            let lock = document.getElementById("casinoBlacklistLock");
+
+            if (!myEntry) {
+                if (lock) lock.remove();
+                if ($("overlay")) $("overlay").style.display = "";
+                return;
+            }
+
+            if (!lock) {
+                lock = document.createElement("div");
+                lock.id = "casinoBlacklistLock";
+                lock.style.cssText = [
+                    "position:fixed",
+                    "inset:0",
+                    "z-index:999999",
+                    "display:flex",
+                    "align-items:center",
+                    "justify-content:center",
+                    "background:rgba(0,0,0,.88)",
+                    "color:white",
+                    "font-family:Segoe UI,Arial,sans-serif",
+                    "padding:20px",
+                    "box-sizing:border-box"
+                ].join(";");
+                document.body.appendChild(lock);
+            }
+
+            lock.innerHTML = `
+                <div style="width:min(420px,100%);padding:24px;border-radius:16px;text-align:center;background:#121722;border:1px solid rgba(255,98,98,.45);box-shadow:0 20px 60px rgba(0,0,0,.6);">
+                    <div style="font-size:42px;">🚫</div>
+                    <div style="font-size:24px;font-weight:950;margin-top:8px;">Casino Access Blocked</div>
+                    <div style="margin-top:10px;color:#aeb8c6;line-height:1.5;">
+                        Your player ID <b>${escapeHtml(myEntry.playerId)}</b> has been blacklisted from this app.
+                    </div>
+                    ${myEntry.reason ? `<div style="margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,98,98,.1);color:#ff9b9b;">${escapeHtml(myEntry.reason)}</div>` : ""}
+                </div>
+            `;
+
+            if ($("overlay")) $("overlay").style.display = "none";
         }
 
         async function grantChips(playerId, amount, requestId, playerName, selectedGrantType) {
@@ -6982,12 +7104,11 @@
                     return;
                 }
             } catch (error) {
-                // Refresh after a rejected stale request so the board matches
-                // the currently active backend game.
+             
                 try {
                     await refreshState(true);
                 } catch (_) {
-                    // refreshState already handles its own error display.
+                   
                 }
 
                 setStatus(
@@ -9451,6 +9572,26 @@ function render() {
             }
 
             const chipState = getChipState();
+            const blacklist = Array.isArray(chipState.blacklist) ? chipState.blacklist : [];
+            const blacklistBox = $("blacklistPlayersBox");
+            if (blacklistBox) {
+                blacklistBox.innerHTML = !blacklist.length
+                    ? '<div class="emptyState">No blacklisted players.</div>'
+                    : blacklist.map(entry => `
+                        <div class="bankerRequest">
+                            <div class="betRow">
+                                <div class="betLeft"><b>${escapeHtml(entry.playerName || "Player")}</b> (${escapeHtml(entry.playerId || "")})</div>
+                                <div class="betRight">🚫 Blocked</div>
+                            </div>
+                            ${entry.reason ? `<div class="small">${escapeHtml(entry.reason)}</div>` : ""}
+                            <button class="green" type="button" onclick="removeBlacklistedPlayer('${escapeHtml(entry.playerId || "")}')">
+                                Remove Blacklist
+                            </button>
+                        </div>
+                    `).join("");
+            }
+            renderBlacklistLock();
+
             const chipBalance = getMyChipBalance();
             const requests = Array.isArray(chipState.requests) ? chipState.requests : [];
             const myRequest = requests.find(r => String(r.playerId) === String(autoUserId));
@@ -10687,6 +10828,10 @@ function render() {
 
             $('requestChipsButton').addEventListener('click', requestChips);
             $('grantChipsButton').addEventListener('click', () => grantChips());
+            $("blacklistPlayerButton")?.addEventListener("click", blacklistPlayer);
+            $("blacklistPlayerIdInput")?.addEventListener("keydown", event => {
+                if (event.key === "Enter") blacklistPlayer();
+            });
             $("loadPlayerAuditButton").addEventListener(
                 "click",
                 loadPlayerAudit
