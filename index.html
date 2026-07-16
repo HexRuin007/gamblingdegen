@@ -2842,6 +2842,7 @@
                     <div class="firstLoginGameCard"><b>🪙 Chips</b><span>View your balance, buy or request chips, request a cashout, and check the status of requests.</span></div>
                     <div class="firstLoginGameCard"><b>⚙️ Settings</b><span>Adjust the app's settings, including sound, notifications, and display options.</span></div>
                     <div class="firstLoginGameCard"><b>💰 Banker</b><span>You can contact Une_Poire, Nunu or CrackAddict for any issues/resets, They also get notified on Discord, so don't message them for chip requests or winnings.</span></div>
+                    <div class="firstLoginGameCard"><b>💬 Free Chips Requests</b><span>Any free chip request that keeps your balance under 100m, will be auto approved.</span></div>
                 </div>
             </div>
 
@@ -3613,7 +3614,11 @@
                             <div class="panelHint" id="chipPlayerLabel">Waiting for player...</div>
                         </div>
                         <div class="row">
-                            <input id="chipRequestAmount" type="number" min="1" step="1" placeholder="Chips to buy" />
+                            <input id="chipRequestAmount" type="text" placeholder="Amount, e.g. 50m" />
+                            <select id="chipRequestType" aria-label="Chip request type">
+                                <option value="paid">Paid chips</option>
+                                <option value="free">Free chips</option>
+                            </select>
                             <button id="requestChipsButton" class="gold">Request Chips</button>
                         </div>
                         <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire, Nunu or Crackaddict to fulfill these requests.</div>
@@ -5180,16 +5185,22 @@
             const playerId = String(autoUserId || '').trim();
             const playerName = String(autoName || '').trim();
             const amount = parseMoneyInput($('chipRequestAmount').value);
+            const requestType = $('chipRequestType')?.value === 'free' ? 'free' : 'paid';
             if (!playerId || !playerName) return setStatus('NO GAME DATA', 1800);
             if (!amount || amount < 1) return setStatus('NO CHIP AMOUNT', 1800);
             try {
                 const json = await apiRequest('/chips/request', {
                     method: 'POST',
-                    body: { playerId, playerName, amount }
+                    body: { playerId, playerName, amount, requestType }
                 });
                 state = json.state || state;
                 $('chipRequestAmount').value = '';
-                setStatus('CHIPS REQUESTED', 1800);
+                setStatus(
+                    json.autoApproved
+                        ? `FREE CHIPS AUTO-APPROVED: ${shortMoney(amount)}`
+                        : `${requestType.toUpperCase()} CHIPS REQUESTED`,
+                    2500
+                );
                 render();
             } catch (e) {
                 setStatus(String(e.message || e), 2500);
@@ -9401,7 +9412,7 @@ function render() {
             document.querySelectorAll('.gameChipBalance').forEach(el => el.textContent = shortMoney(chipBalance) + ' chips');
             $('chipPlayerLabel').textContent = autoName ? `${autoName} (${autoUserId})` : 'Waiting for player...';
             $('chipRequestStatus').textContent = myRequest
-                ? `Pending request: ${shortMoney(myRequest.amount)} chips`
+                ? `Pending ${myRequest.requestType === 'free' ? 'free' : 'paid'} request: ${shortMoney(myRequest.amount)} chips`
                 : 'Organise with Poire, Nunu or Crackaddict to fulfill these requests.';
             $('requestChipsButton').disabled = !autoUserId || !autoName || !!myRequest;
 
@@ -9452,9 +9463,9 @@ function render() {
                             <div class="betLeft"><b>${escapeHtml(r.playerName)}</b> (${escapeHtml(r.playerId)})</div>
                             <div class="betRight">${shortMoney(r.amount)} chips</div>
                           </div>
-                          <div class="bankerRequestActions" style="grid-template-columns:1fr 1fr 1fr;">
-                            <button class="green" onclick="grantChips('${escapeHtml(r.playerId)}', ${Number(r.amount) || 0}, '${escapeHtml(r.requestId || r.id || '')}', '${escapeHtml(r.playerName)}', 'paid')">Approve Paid</button>
-                            <button class="gold" onclick="grantChips('${escapeHtml(r.playerId)}', ${Number(r.amount) || 0}, '${escapeHtml(r.requestId || r.id || '')}', '${escapeHtml(r.playerName)}', 'free')">Approve Free</button>
+                          <div class="small">Requested type: <b>${r.requestType === 'free' ? '🎁 Free chips' : '💷 Paid chips'}</b></div>
+                          <div class="bankerRequestActions">
+                            <button class="${r.requestType === 'free' ? 'gold' : 'green'}" onclick="grantChips('${escapeHtml(r.playerId)}', ${Number(r.amount) || 0}, '${escapeHtml(r.requestId || r.id || '')}', '${escapeHtml(r.playerName)}', '${r.requestType === 'free' ? 'free' : 'paid'}')">Approve ${r.requestType === 'free' ? 'Free' : 'Paid'}</button>
                             <button class="danger" onclick="rejectChipRequest('${escapeHtml(r.requestId || r.id || '')}')">Reject</button>
                           </div>
                         </div>`).join('');
@@ -10755,7 +10766,7 @@ function render() {
 
     <script>
         (() => {
-            const FIRST_LOGIN_GUIDE_KEY = "pearadiseCasinoGuideSeen";
+            const FIRST_LOGIN_GUIDE_KEY = "pearadiseCasinoGuideSeenx";
 
             function openFirstLoginGuide() {
                 const guide = document.getElementById("firstLoginGuide");
