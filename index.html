@@ -899,6 +899,37 @@
             font-weight: 950;
         }
 
+
+        .dailyProfitSplit {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .dailyProfitSplitCard {
+            padding: 10px 7px;
+            text-align: center;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.055);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+
+        .dailyProfitSplitCard span {
+            display: block;
+            font-size: 9px;
+            color: var(--text-soft);
+            text-transform: uppercase;
+            letter-spacing: 0.45px;
+        }
+
+        .dailyProfitSplitCard strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 17px;
+            font-weight: 950;
+        }
+
         .dailyProfitStats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -2912,7 +2943,7 @@
                     <div class="panel">
                         <div class="panelHeader">
                             <div class="panelTitle">🏇 Pick Your Horse</div>
-                            <div class="panelHint">Winner pays x6</div>
+                            <div class="panelHint" id="raceOddsResetText">Odds change daily</div>
                         </div>
                         <div class="playerIdentityBox">
                             <div class="playerIdentityLabel">Detected Player</div>
@@ -3611,8 +3642,19 @@
                         </div>
 
                         <div class="dailyProfitTotal">
-                            <span>Net house profit</span>
+                            <span>All chip house profit</span>
                             <strong id="dailyProfitValue">Loading...</strong>
+                        </div>
+
+                        <div class="dailyProfitSplit">
+                            <div class="dailyProfitSplitCard">
+                                <span>Real / paid-chip profit</span>
+                                <strong id="dailyRealProfitValue">0</strong>
+                            </div>
+                            <div class="dailyProfitSplitCard">
+                                <span>Promo-chip profit</span>
+                                <strong id="dailyPromoProfitValue">0</strong>
+                            </div>
                         </div>
 
                         <div class="dailyProfitStats">
@@ -3635,7 +3677,7 @@
                         </div>
 
                         <div class="dailyProfitFootnote">
-                            Profit = bets received − payouts − refunds. Resets at 00:00 UTC.
+                            Real/paid excludes welcome bonuses, daily-spin chips and banker grants marked free. Source tracking applies going forward and resets daily at 00:00 UTC.
                         </div>
                     </div>
                 </div>
@@ -5286,17 +5328,18 @@
                 );
 
                 const profitElement = $('dailyProfitValue');
+                const realProfit = Math.floor(Number(stats.realMoney?.profit || 0));
+                const promoProfit = Math.floor(Number(stats.promotional?.profit || 0));
 
-                profitElement.textContent =
-                    (profit >= 0 ? '+' : '-') +
-                    formatProfitAmount(profit);
+                const setProfitDisplay = (element, value) => {
+                    if (!element) return;
+                    element.textContent = (value >= 0 ? '+' : '-') + formatProfitAmount(value);
+                    element.className = value > 0 ? 'win' : value < 0 ? 'loss' : 'neutral';
+                };
 
-                profitElement.className =
-                    profit > 0
-                        ? 'win'
-                        : profit < 0
-                            ? 'loss'
-                            : 'neutral';
+                setProfitDisplay(profitElement, profit);
+                setProfitDisplay($('dailyRealProfitValue'), realProfit);
+                setProfitDisplay($('dailyPromoProfitValue'), promoProfit);
 
                 $('dailyBetsValue').textContent =
                     shortMoney(stats.bets || 0);
@@ -5333,6 +5376,10 @@
                                                 : 'neutral'
                                     }">
                                         ${gameProfit >= 0 ? '+' : '-'}${formatProfitAmount(gameProfit)}
+                                        <span style="display:block;font-size:9px;opacity:.72;font-weight:700;">
+                                            Real ${Number(game?.realMoney?.profit || 0) >= 0 ? '+' : '-'}${formatProfitAmount(game?.realMoney?.profit || 0)}
+                                            • Promo ${Number(game?.promotional?.profit || 0) >= 0 ? '+' : '-'}${formatProfitAmount(game?.promotional?.profit || 0)}
+                                        </span>
                                     </strong>
                                 </div>
                             `;
@@ -5569,15 +5616,58 @@
                 setStatus(String(e.message || e), 2500)
             }
         }
+        function getHorseDecimalOdds(horse) {
+            const value = Number(
+                horse?.decimalOdds ??
+                horse?.odds ??
+                horse?.payoutMultiplier ??
+                horse?.multiplier ??
+                0
+            );
+            return Number.isFinite(value) && value > 0 ? value : 0;
+        }
+
+        function getHorseWinChance(horse) {
+            const value = Number(
+                horse?.winChancePercent ??
+                horse?.chancePercent ??
+                horse?.winChance ??
+                horse?.probabilityPercent ??
+                0
+            );
+            if (!Number.isFinite(value) || value <= 0) return 0;
+            return value <= 1 ? value * 100 : value;
+        }
+
+        function horseOddsLabel(horse) {
+            const odds = getHorseDecimalOdds(horse);
+            const chance = getHorseWinChance(horse);
+            const oddsText = odds ? `${odds.toFixed(2)}x` : 'Odds pending';
+            const chanceText = chance ? `${chance.toFixed(1)}% chance` : '';
+            return { oddsText, chanceText };
+        }
+
+        function formatRaceOddsReset(timestamp) {
+            const value = Number(timestamp || 0);
+            if (!value) return 'Odds change daily';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return 'Odds change daily';
+            return `New odds ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        }
+
         function buildRaceHorseSelect() {
             const sel = $('raceHorseSelect');
-            if (!sel)
-                return;
+            if (!sel) return;
             const horses = (state.racing && state.racing.horses) || [];
             const current = sel.value;
-            sel.innerHTML = '<option value="">Choose a horse...</option>' + horses.map(h => `<option value="${escapeHtml(h.id)}">${escapeHtml(h.name)}</option>`).join('');
-            if (current && horses.some(h => h.id === current))
-                sel.value = current
+            sel.innerHTML = '<option value="">Choose a horse...</option>' + horses.map(h => {
+                const labels = horseOddsLabel(h);
+                const chance = labels.chanceText ? ` • ${labels.chanceText}` : '';
+                return `<option value="${escapeHtml(h.id)}">${escapeHtml(h.name)} — ${escapeHtml(labels.oddsText)}${escapeHtml(chance)}</option>`;
+            }).join('');
+            if (current && horses.some(h => String(h.id) === String(current))) {
+                sel.value = current;
+            }
         }
         let currentRaceTrackKey = '';
         let localRace = null;
@@ -5624,17 +5714,19 @@
         }
 
         function ensureRaceTrack(horses, raceId) {
-            const key = horses.map(h => h.id).join('|') + '|' + raceId;
+            const key = horses.map(h => `${h.id}:${getHorseDecimalOdds(h)}:${getHorseWinChance(h)}`).join('|') + '|' + raceId;
 
             if (currentRaceTrackKey !== key) {
                 currentRaceTrackKey = key;
 
-                $('raceTrack').innerHTML = horses.map((h, index) => `
+                $('raceTrack').innerHTML = horses.map((h, index) => {
+                    return `
             <div class="horseLane" id="horseLane_${escapeHtml(h.id)}">
                 <span class="horseDot" id="horseDot_${escapeHtml(h.id)}">🐎</span>
                 <span class="horseName">${index + 1}. ${escapeHtml(h.name)}</span>
             </div>
-        `).join('');
+        `;
+                }).join('');
             }
         }
 
@@ -9367,11 +9459,19 @@ function render() {
             const race = state.racing || {};
             buildRaceHorseSelect();
             $('raceStatus').textContent = race.racing ? 'Race running...' : 'Choose a horse, bet chips, then watch the race.';
+            const raceOddsResetText = $('raceOddsResetText');
+            if (raceOddsResetText) {
+                raceOddsResetText.textContent = formatRaceOddsReset(race.oddsNextChangeAt);
+            }
             $('raceWinnerText').textContent = race.activeRace ? ('Winner: ' + race.activeRace.winnerHorseName) : (race.history && race.history[0] ? ('Last winner: ' + race.history[0].winnerHorseName) : 'Waiting');
             renderRaceTrack(race);
             const raceBets = race.bets || []
                 , raceConfirmed = raceBets.filter(b => b.confirmed).length;
-            $('raceBetsBox').innerHTML = !raceBets.length ? '<div class="emptyState">No racing bets yet.</div>' : raceBets.map(b => `<div class="betRow"><div class="betLeft">${escapeHtml(b.playerName)} ${b.confirmed ? '✅' : '⌛'}<div class="small">Horse: ${escapeHtml(b.horseName)}</div></div><div class="betRight">${shortMoney(b.amount)}</div></div>`).join('');
+            $('raceBetsBox').innerHTML = !raceBets.length ? '<div class="emptyState">No racing bets yet.</div>' : raceBets.map(b => {
+                const horse = (race.horses || []).find(h => String(h.id) === String(b.horseId));
+                const labels = horseOddsLabel(horse || b);
+                return `<div class="betRow"><div class="betLeft">${escapeHtml(b.playerName)} ${b.confirmed ? '✅' : '⌛'}<div class="small">Horse: ${escapeHtml(b.horseName)} • ${escapeHtml(labels.oddsText)}</div></div><div class="betRight">${shortMoney(b.amount)}</div></div>`;
+            }).join('');
             $('raceConfirmAllButton').disabled = !unlocked || !raceBets.length || race.racing;
             $('raceStartButton').disabled = !unlocked || !raceBets.length || race.racing || raceConfirmed !== raceBets.length;
             $('raceClearButton').disabled = !unlocked || race.racing;
