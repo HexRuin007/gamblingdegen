@@ -2682,6 +2682,127 @@
             text-align: center;
         }
 
+
+        .firstLoginGuideBackdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 210000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(5px);
+        }
+
+        .firstLoginGuideBackdrop.active {
+            display: flex;
+        }
+
+        .firstLoginGuideModal {
+            width: min(720px, calc(100vw - 36px));
+            max-height: min(82vh, 760px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 20px;
+            color: white;
+            text-align: left;
+            background:
+                radial-gradient(circle at top, rgba(124, 77, 255, 0.24), transparent 38%),
+                rgba(8, 11, 18, 0.99);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 28px 90px rgba(0, 0, 0, 0.75);
+        }
+
+        .firstLoginGuideHeader {
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .firstLoginGuideTitle {
+            font-size: 24px;
+            font-weight: 950;
+            color: #ffd84d;
+        }
+
+        .firstLoginGuideIntro {
+            margin-top: 5px;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-soft);
+        }
+
+        .firstLoginGuideBody {
+            overflow-y: auto;
+            padding: 15px 20px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+        }
+
+        .firstLoginGuideImportant {
+            margin-bottom: 14px;
+            padding: 13px;
+            border-radius: 13px;
+            background: rgba(255, 216, 77, 0.10);
+            border: 1px solid rgba(255, 216, 77, 0.30);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .firstLoginGuideImportant strong {
+            color: #ffd84d;
+        }
+
+        .firstLoginGameGrid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .firstLoginGameCard {
+            padding: 11px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.055);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
+
+        .firstLoginGameCard b {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #fff;
+        }
+
+        .firstLoginGameCard span {
+            display: block;
+            font-size: 11px;
+            line-height: 1.45;
+            color: var(--text-soft);
+        }
+
+        .firstLoginGuideFooter {
+            padding: 13px 20px 17px;
+            border-top: 1px solid rgba(255, 255, 255, 0.10);
+            background: rgba(5, 8, 14, 0.72);
+        }
+
+        #firstLoginGuideClose {
+            margin: 0;
+            background: linear-gradient(180deg, #37b45d, #268642);
+        }
+
+        @media (max-width: 620px) {
+            .firstLoginGameGrid {
+                grid-template-columns: 1fr;
+            }
+
+            .firstLoginGuideTitle {
+                font-size: 20px;
+            }
+        }
+
     </style>
 </head>
 
@@ -2691,6 +2812,43 @@
             src="./pearadise-welcome.png"
             alt="Welcome to Peardise Casino and Resort"
         />
+    </div>
+
+
+    <div id="firstLoginGuide" class="firstLoginGuideBackdrop" role="dialog" aria-modal="true" aria-labelledby="firstLoginGuideTitle">
+        <div class="firstLoginGuideModal">
+            <div class="firstLoginGuideHeader">
+                <div id="firstLoginGuideTitle" class="firstLoginGuideTitle">Welcome to Pearadise Casino & Resort</div>
+                <div class="firstLoginGuideIntro">Here is everything you need to know before placing your first bet.</div>
+            </div>
+
+            <div class="firstLoginGuideBody">
+                <div class="firstLoginGuideImportant">
+                    <strong>Chips and cashouts:</strong><br>
+                    You can buy chips using in-game money at a rate of <strong>$1 = 1 chip</strong>. Purchased chips and chips won through games can be cashed out. Chips won from the <strong>Daily Spin can also be cashed out</strong>.<br><br>
+                    A banker may grant you free chips so you can play. Once you receive any chips marked as <strong>free from a banker</strong>, you will not be allowed to cash out your chip balance unless your casino account is wiped and you start again. This restriction only applies to banker-granted free chips, not Daily Spin winnings.
+                </div>
+
+                <div class="firstLoginGameGrid">
+                    <div class="firstLoginGameCard"><b>🎡 Wheel</b><span>Choose your bet and place it before the countdown ends. The wheel multiplier decides your payout.</span></div>
+                    <div class="firstLoginGameCard"><b>🃏 Blackjack</b><span>Try to reach 21 without going over. Beat the dealer's hand to win.</span></div>
+                    <div class="firstLoginGameCard"><b>🐎 Horse Racing</b><span>Pick a horse and place your bet. Each horse has displayed odds that determine its payout.</span></div>
+                    <div class="firstLoginGameCard"><b>🎰 Slots</b><span>Select a bet and spin. Matching symbols on paylines award payouts, and scatters can unlock free spins.</span></div>
+                    <div class="firstLoginGameCard"><b>💣 Mines</b><span>Choose your bet and mine count, then reveal safe tiles. Each safe tile increases the cashout value.</span></div>
+                    <div class="firstLoginGameCard"><b>💼 Deal or No Deal</b><span>Choose your case, open the others, and decide whether to accept the banker's offers or keep playing.</span></div>
+                    <div class="firstLoginGameCard"><b>🎯 Roulette</b><span>Bet on a number, colour, range, or other option before the wheel spins.</span></div>
+                    <div class="firstLoginGameCard"><b>🐔 Chicken</b><span>Move the chicken across lanes to increase the multiplier. Cash out before the chicken is hit.</span></div>
+                    <div class="firstLoginGameCard"><b>🎁 Daily Spin</b><span>Use your available daily spins for a chance to win chips, extra spins, items, or nothing. Chip prizes are cashout-eligible.</span></div>
+                    <div class="firstLoginGameCard"><b>🪙 Chips</b><span>View your balance, buy or request chips, request a cashout, and check the status of requests.</span></div>
+                    <div class="firstLoginGameCard"><b>⚙️ Settings</b><span>Adjust the app's settings, including sound, notifications, and display options.</span></div>
+                    <div class="firstLoginGameCard"><b>💰 Banker</b><span>You can contact Une_Poire, Nunu or CrackAddict for any issues/resets, They also get notified on Discord, so don't message them for chip requests or winnings.</span></div>
+                </div>
+            </div>
+
+            <div class="firstLoginGuideFooter">
+                <button id="firstLoginGuideClose" type="button">I Understand — Enter the Casino</button>
+            </div>
+        </div>
     </div>
 
     <div id="overlay">
@@ -10594,6 +10752,47 @@ function render() {
             render()
         });
     </script>
+
+    <script>
+        (() => {
+            const FIRST_LOGIN_GUIDE_KEY = "pearadiseCasinoGuideSeen";
+
+            function openFirstLoginGuide() {
+                const guide = document.getElementById("firstLoginGuide");
+                if (!guide) return;
+
+                try {
+                    if (localStorage.getItem(FIRST_LOGIN_GUIDE_KEY) === "true") return;
+                } catch (error) {
+                    console.warn("Could not read casino guide status:", error);
+                }
+
+                guide.classList.add("active");
+            }
+
+            function closeFirstLoginGuide() {
+                const guide = document.getElementById("firstLoginGuide");
+                if (!guide) return;
+
+                guide.classList.remove("active");
+
+                try {
+                    localStorage.setItem(FIRST_LOGIN_GUIDE_KEY, "true");
+                } catch (error) {
+                    console.warn("Could not save casino guide status:", error);
+                }
+            }
+
+            window.addEventListener("DOMContentLoaded", () => {
+                const closeButton = document.getElementById("firstLoginGuideClose");
+                closeButton?.addEventListener("click", closeFirstLoginGuide);
+
+                
+                setTimeout(openFirstLoginGuide, 5200);
+            });
+        })();
+    </script>
+
 </body>
 
 </html
