@@ -4885,6 +4885,8 @@
                 const currentMinesState = state.mines;
                 state = json.state || state;
 
+                // A Mines action completed while this poll was in flight.
+                // Do not let the older poll restore stale tiles or an old game.
                 if (
                     minesVersionAtRequest !== minesActionVersion &&
                     currentMinesState
@@ -6742,7 +6744,7 @@
                 String(autoUserId || '').trim();
 
             const playerName =
-                String(autoName || '').trim();
+                String(autoName || 'Player').trim() || 'Player';
 
             const amount = Math.floor(
                 parseMoneyInput(
@@ -6756,7 +6758,7 @@
                 )
             );
 
-            if (!playerId || !playerName) {
+            if (!playerId) {
                 return setStatus(
                     'NO GAME DATA',
                     1800
@@ -6885,10 +6887,18 @@
             }
 
             if (!currentGame?.gameId) {
-                return setStatus(
-                    'NO ACTIVE MINES GAME',
-                    1800
-                );
+                await refreshState(true);
+
+                const refreshedGame = getMyMinesGame();
+
+                if (!refreshedGame?.gameId) {
+                    return setStatus(
+                        'MINES GAME IS UPDATING — TRY AGAIN',
+                        2200
+                    );
+                }
+
+                return revealMineTile(cell);
             }
 
             if (
@@ -6972,11 +6982,12 @@
                     return;
                 }
             } catch (error) {
-           
+                // Refresh after a rejected stale request so the board matches
+                // the currently active backend game.
                 try {
                     await refreshState(true);
                 } catch (_) {
-                 
+                    // refreshState already handles its own error display.
                 }
 
                 setStatus(
@@ -8800,8 +8811,7 @@
             $('minesStartButton').disabled =
                 minesRevealPending ||
                 !!game ||
-                !autoUserId ||
-                !autoName;
+                !String(autoUserId || '').trim();
 
             $('minesCashoutButton').disabled =
                 minesRevealPending ||
