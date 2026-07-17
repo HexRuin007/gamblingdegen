@@ -2860,8 +2860,31 @@
             display: block;
         }
 
-        /* Keep the casino fully rendered while hidden.
-           FiveM/CEF can fail to rebuild child content after display:none. */
+        .showUserappBadge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: #ff3b3b;
+            border: 2px solid rgba(8, 11, 18, 0.92);
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+            display: none;
+            pointer-events: none;
+        }
+
+        .showUserappBadge.visible {
+            display: block;
+        }
+
+   
         body.userappHidden #overlay {
             opacity: 0 !important;
             pointer-events: none !important;
@@ -2943,7 +2966,7 @@
         type="button"
         title="Show Pearadise Casino"
         aria-label="Show Pearadise Casino"
-    >🍐</button>
+    >🍐<span id="showUserappBadge" class="showUserappBadge" aria-hidden="true"></span></button>
 
     <div id="welcomeSplash">
         <img
@@ -4952,6 +4975,21 @@
         }
         function isBanker() {
             return BANKER_IDS.includes(String(autoUserId))
+        }
+        function updatePearBadge(count) {
+            const badge = $('showUserappBadge');
+            if (!badge) return;
+
+            const pendingCount = isBanker() ? Number(count) || 0 : 0;
+
+            if (pendingCount <= 0) {
+                badge.classList.remove('visible');
+                badge.textContent = '';
+                return;
+            }
+
+            badge.textContent = pendingCount > 99 ? '99+' : String(pendingCount);
+            badge.classList.add('visible');
         }
         function updateBankerUI() {
             const banker = isBanker();
@@ -9742,6 +9780,7 @@ function render() {
             const chipBalance = getMyChipBalance();
             const requests = Array.isArray(chipState.requests) ? chipState.requests : [];
             const myRequest = requests.find(r => String(r.playerId) === String(autoUserId));
+            updatePearBadge(requests.length);
 
             const withdrawalRequests =
                 Array.isArray(
