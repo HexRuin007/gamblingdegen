@@ -4566,6 +4566,76 @@
             , dailySpinStatus = null
             , dailySpinRotation = 0
             , dailySpinBusy = false;
+            const POLL_ACTIVE_MS = 2500;
+const POLL_IDLE_MS = 9000;
+const POLL_HIDDEN_MS = 25000;
+const ACTIVITY_IDLE_THRESHOLD_MS = 45000;
+const COUNTDOWN_URGENCY_WINDOW_MS = 15000;
+
+let lastUserActivityAt = Date.now();
+let pollTimeoutHandle = null;
+
+function markCasinoUserActivity() {
+    lastUserActivityAt = Date.now();
+}
+
+function bindCasinoActivityTracking() {
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel', 'click']
+        .forEach(eventName => {
+            document.addEventListener(eventName, markCasinoUserActivity, { passive: true });
+        });
+}
+
+function casinoHasUrgentActivity() {
+    if (state.wheel?.spinning) return true;
+    if (state.blackjack?.status === 'playing') return true;
+    if (state.racing?.racing) return true;
+    if (state.roulette?.spinning) return true;
+
+    const myId = String(autoUserId || '');
+    if (!myId) return false;
+
+    if ((state.wheel?.bets || []).some(b => String(b.playerId) === myId)) return true;
+    if ((state.blackjack?.bets || []).some(b => String(b.playerId) === myId)) return true;
+    if ((state.racing?.bets || []).some(b => String(b.playerId) === myId)) return true;
+    if ((state.roulette?.bets || []).some(b => String(b.playerId) === myId)) return true;
+
+    if (state.mines?.games?.[myId]) return true;
+    if (state.deal?.games?.[myId]) return true;
+    if (state.chicken?.games?.[myId]) return true;
+    if (minesRevealPending) return true;
+    if (slotAnimating || slotAutoSpinActive) return true;
+    if (dailySpinBusy) return true;
+
+    const countdowns = [
+        state.wheel?.autoStartAt,
+        state.blackjack?.autoStartAt,
+        state.racing?.autoStartAt,
+        state.roulette?.autoStartAt
+    ];
+
+    if (countdowns.some(t => t && (Number(t) - Date.now()) < COUNTDOWN_URGENCY_WINDOW_MS)) {
+        return true;
+    }
+
+    return false;
+}
+
+function getCasinoPollIntervalMs() {
+    if (document.body.classList.contains('userappHidden')) {
+        return POLL_HIDDEN_MS;
+    }
+
+    if (casinoHasUrgentActivity()) {
+        return POLL_ACTIVE_MS;
+    }
+
+    const idleFor = Date.now() - lastUserActivityAt;
+
+    return idleFor < ACTIVITY_IDLE_THRESHOLD_MS
+        ? POLL_ACTIVE_MS
+        : POLL_IDLE_MS;
+}
         const WHEEL_SEGMENTS = [{
             multiplier: 0,
             label: "x0",
@@ -4617,6 +4687,7 @@
         }];
         window.addEventListener("DOMContentLoaded", () => {
             bindUserSettingsControls();
+            bindCasinoActivityTracking();
 
             const compactButton =
                 document.getElementById(
@@ -5137,12 +5208,38 @@
                     setStatus(lastPollError.substring(0, 28))
             }
         }
-        function startPolling() {
-            if (pollInterval)
-                clearInterval(pollInterval);
-            refreshState(false);
-            pollInterval = setInterval(() => refreshState(true), 2500)
-        }
+     function scheduleNextCasinoPoll() {
+    if (pollTimeoutHandle) {
+        clearTimeout(pollTimeoutHandle);
+    }
+
+    const interval = getCasinoPollIntervalMs();
+
+    pollTimeoutHandle = setTimeout(async () => {
+        await refreshState(true);
+        scheduleNextCasinoPoll();
+    }, interval);
+}
+
+function startPolling() {
+    if (pollTimeoutHandle) {
+        clearTimeout(pollTimeoutHandle);
+        pollTimeoutHandle = null;
+    }
+
+    refreshState(false).finally(scheduleNextCasinoPoll);
+}
+
+function pokeCasinoPolling() {
+    markCasinoUserActivity();
+
+    if (pollTimeoutHandle) {
+        clearTimeout(pollTimeoutHandle);
+        pollTimeoutHandle = null;
+    }
+
+    refreshState(true).finally(scheduleNextCasinoPoll);
+}
         function getChipState() {
             return state.chips || { balances: {}, requests: [] };
         }
@@ -8309,14 +8406,16 @@
                 loadGamblingLeaderboard;
         }
 
-        setInterval(() => {
-            if (
-                typeof loadGamblingLeaderboard ===
-                "function"
-            ) {
-                loadGamblingLeaderboard();
-            }
-        }, 30000);
+    setInterval(() => {
+    if (document.body.classList.contains('userappHidden')) return;
+
+    const idleFor = Date.now() - lastUserActivityAt;
+    if (idleFor > ACTIVITY_IDLE_THRESHOLD_MS && !casinoHasUrgentActivity()) return;
+
+    if (typeof loadGamblingLeaderboard === "function") {
+        loadGamblingLeaderboard();
+    }
+}, 30000);
 
         setTimeout(() => {
             if (
@@ -11214,19 +11313,21 @@ function render() {
                 document.body.classList.add("userappHidden");
             }
 
-            function showCasinoUserapp() {
-              
-                document.body.classList.remove("userappHidden");
+           function showCasinoUserapp() {
+    document.body.classList.remove("userappHidden");
 
-                
-                if (typeof render === "function") {
-                    try {
-                        render();
-                    } catch (error) {
-                        console.warn("Could not refresh casino after unhide:", error);
-                    }
-                }
-            }
+    if (typeof pokeCasinoPolling === "function") {
+        pokeCasinoPolling();
+    }
+
+    if (typeof render === "function") {
+        try {
+            render();
+        } catch (error) {
+            console.warn("Could not refresh casino after unhide:", error);
+        }
+    }
+}
 
             function addHelpButtonsToPages() {
                 document.querySelectorAll(".tabPage").forEach(page => {
