@@ -4200,6 +4200,14 @@
                         <div class="settingsSavedNote">
                             Jelly Beans Requested to disable this, 'Confetti is like snow blocking my screen' Blah Blah Blah
                         </div>
+
+                        <div class="panel" style="margin-top:14px;">
+                            <div class="panelHeader">
+                                <div class="panelTitle">🔄 Reload App</div>
+                                <div class="panelHint">Reload the current userapp link.</div>
+                            </div>
+                            <button id="reloadAppButton" class="gold">Reload App</button>
+                        </div>
                     </div>
                 </div>
 
@@ -11054,6 +11062,11 @@ function render() {
             $('slotSpinButton').addEventListener(
                 'click',
                 slotSpin
+            );
+
+            $('reloadAppButton')?.addEventListener(
+                'click',
+                () => window.location.reload()
             );
 
             $('slotAutoSpinButton').addEventListener(
