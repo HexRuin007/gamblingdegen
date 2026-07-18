@@ -4543,10 +4543,6 @@
             , minesActionVersion = 0
             , dailyProfitLoading = false
             , dailyProfitLastLoadedAt = 0
-            , pollDelayActive = 2500
-            , pollDelayIdle = 15000
-            , pollDelayHidden = 60000
-            , currentPollDelay = 2500
             , lastRegisteredCasinoPlayerId = ""
             , dealFinishedView = null
             , dealFinishedViewUntil = 0
@@ -5124,7 +5120,6 @@
                     playSpin(active)
                 }
                 render()
-                updatePollingDelay();
             } catch (err) {
                 failedPolls++;
                 lastPollError = String(err.message || err);
@@ -5132,31 +5127,11 @@
                     setStatus(lastPollError.substring(0, 28))
             }
         }
-        function getPollDelay() {
-            if (document.hidden)
-                return pollDelayHidden;
-            if (slotAutoSpinActive || state.wheel?.activeSpin || state.mines?.activeSpin)
-                return pollDelayActive;
-            return pollDelayIdle;
-        }
-        function schedulePolling() {
-            if (pollInterval)
-                clearInterval(pollInterval);
-            pollInterval = setInterval(() => refreshState(true), currentPollDelay);
-        }
-        function updatePollingDelay() {
-            const nextDelay = getPollDelay();
-            if (nextDelay === currentPollDelay)
-                return;
-            currentPollDelay = nextDelay;
-            schedulePolling();
-        }
         function startPolling() {
             if (pollInterval)
                 clearInterval(pollInterval);
             refreshState(false);
-            currentPollDelay = getPollDelay();
-            schedulePolling();
+            pollInterval = setInterval(() => refreshState(true), 2500)
         }
         function getChipState() {
             return state.chips || { balances: {}, requests: [] };
@@ -6744,7 +6719,6 @@
         ) {
             slotAutoSpinActive = false;
             updateSlotAutoSpinButton();
-            updatePollingDelay();
 
             if (message) {
                 setStatus(message, 2200);
@@ -11179,7 +11153,6 @@ function render() {
             }, 1500);
             setTimeout(() => clearInterval(gameDataRetry), 15000);
             startPolling();
-            document.addEventListener('visibilitychange', updatePollingDelay);
             setInterval(updateAutomaticGameCountdowns, 250);
             render()
         });
