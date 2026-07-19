@@ -4791,6 +4791,7 @@ function getCasinoPollIntervalMs() {
                 setTimeout(() => $('status').textContent = 'Connected', ms)
         }
         function shortMoney(value) {
+            if (value === infinity) return "∞";
             const n = Number(value || 0);
             const abs = Math.abs(n);
 
@@ -5250,11 +5251,17 @@ function pokeCasinoPolling() {
             return state.chips || { balances: {}, requests: [] };
         }
 
-        function getMyChipBalance() {
-            const balances = getChipState().balances || {};
-            const entry = balances[String(autoUserId)] ?? 0;
-            return Math.max(0, Math.floor(Number(typeof entry === 'object' ? entry.balance : entry) || 0));
-        }
+       function getMyChipBalance() {
+    const balances = getChipState().balances || {};
+    const entry = balances[String(autoUserId)] ?? 0;
+    const raw = typeof entry === 'object' ? entry.balance : entry;
+
+    if (raw === "∞") {
+        return Infinity;
+    }
+
+    return Math.max(0, Math.floor(Number(raw) || 0));
+}
 
         function showCasinoConfirm({
             title = "Confirm Action",
