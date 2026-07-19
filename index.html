@@ -4791,7 +4791,7 @@ function getCasinoPollIntervalMs() {
                 setTimeout(() => $('status').textContent = 'Connected', ms)
         }
         function shortMoney(value) {
-            if (value === infinity) return "∞";
+            if (value === "∞" || value === Number.MAX_SAFE_INTEGER) return "∞";
             const n = Number(value || 0);
             const abs = Math.abs(n);
 
@@ -5251,13 +5251,13 @@ function pokeCasinoPolling() {
             return state.chips || { balances: {}, requests: [] };
         }
 
-       function getMyChipBalance() {
+   function getMyChipBalance() {
     const balances = getChipState().balances || {};
     const entry = balances[String(autoUserId)] ?? 0;
     const raw = typeof entry === 'object' ? entry.balance : entry;
 
     if (raw === "∞") {
-        return Infinity;
+        return Number.MAX_SAFE_INTEGER;
     }
 
     return Math.max(0, Math.floor(Number(raw) || 0));
