@@ -5167,7 +5167,13 @@ function getCasinoPollIntervalMs() {
             try {
                 const requestStartedAt = Date.now();
                 const requestStartedMinesVersion = minesActionVersion;
-                const json = await apiRequest('/state');
+                const stateQuery = autoUserId
+    ? '?playerId=' + encodeURIComponent(autoUserId)
+    : '';
+
+const json = await apiRequest('/state' + stateQuery, {
+    token: adminToken || undefined
+});
                 const requestFinishedAt = Date.now();
 
                 const minesVersionAtRequest =
