@@ -3903,6 +3903,13 @@
                         <div id="chipRequestsBox">
                             <div class="emptyState">No chip requests.</div>
                         </div>
+                        <div class="panelHeader" style="margin-top:12px;">
+    <div class="panelTitle">💵 Withdrawal Requests</div>
+    <div class="panelHint">Approve or deny</div>
+</div>
+<div id="withdrawalRequestsBox">
+    <div class="emptyState">No withdrawal requests.</div>
+</div>
 
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">💵 Cash Out Player</div>
@@ -5865,6 +5872,38 @@ function pokeCasinoPolling() {
                 setStatus(String(e.message || e), 2500);
             }
         }
+
+        async function approveWithdrawalRequest(withdrawalRequestId) {
+    if (!adminToken) return setStatus('LOCKED', 1500);
+    try {
+        const json = await apiRequest('/chips/withdrawal-approve', {
+            method: 'POST',
+            token: adminToken,
+            body: { withdrawalRequestId, requesterId: autoUserId }
+        });
+        state = json.state || state;
+        setStatus('WITHDRAWAL APPROVED', 2200);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2800);
+    }
+}
+
+async function denyWithdrawalRequest(withdrawalRequestId) {
+    if (!adminToken) return setStatus('LOCKED', 1500);
+    try {
+        const json = await apiRequest('/chips/withdrawal-deny', {
+            method: 'POST',
+            token: adminToken,
+            body: { withdrawalRequestId, requesterId: autoUserId }
+        });
+        state = json.state || state;
+        setStatus('WITHDRAWAL DENIED', 2200);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2800);
+    }
+}
 
         async function submitBet() {
             const playerName = String(autoName || '').trim()
@@ -9899,17 +9938,35 @@ function render() {
             }
             renderBlacklistLock();
 
-            const chipBalance = getMyChipBalance();
-            const requests = Array.isArray(chipState.requests) ? chipState.requests : [];
-            const myRequest = requests.find(r => String(r.playerId) === String(autoUserId));
-            updatePearBadge(requests.length);
+          const chipBalance = getMyChipBalance();
+const requests = Array.isArray(chipState.requests) ? chipState.requests : [];
+const myRequest = requests.find(r => String(r.playerId) === String(autoUserId));
 
-            const withdrawalRequests =
-                Array.isArray(
-                    chipState?.withdrawalRequests
-                )
-                    ? chipState.withdrawalRequests
-                    : [];
+const withdrawalRequests =
+    Array.isArray(chipState?.withdrawalRequests)
+        ? chipState.withdrawalRequests
+        : [];
+
+updatePearBadge(requests.length + withdrawalRequests.length);
+
+const withdrawalBox = $('withdrawalRequestsBox');
+if (withdrawalBox) {
+    withdrawalBox.innerHTML = !withdrawalRequests.length
+        ? '<div class="emptyState">No withdrawal requests.</div>'
+        : withdrawalRequests.map(r => `
+            <div class="bankerRequest">
+                <div class="betRow">
+                    <div class="betLeft"><b>${escapeHtml(r.playerName)}</b> (${escapeHtml(r.playerId)})</div>
+                    <div class="betRight">${shortMoney(r.amount)} chips</div>
+                </div>
+                <div class="small">Balance when requested: ${shortMoney(r.currentBalance || 0)}</div>
+                <div class="bankerRequestActions">
+                    <button class="green" onclick="approveWithdrawalRequest('${escapeHtml(r.withdrawalRequestId)}')">Approve</button>
+                    <button class="danger" onclick="denyWithdrawalRequest('${escapeHtml(r.withdrawalRequestId)}')">Deny</button>
+                </div>
+            </div>
+        `).join('');
+}
 
             const myWithdrawalRequest =
                 withdrawalRequests.find(
