@@ -5189,6 +5189,9 @@ const json = await apiRequest('/state' + stateQuery, {
 
                 const currentMinesState = state.mines;
                 state = json.state || state;
+                if ((minesRevealPending || minesFinishedView) && currentMinesState) {
+                state.mines = currentMinesState;
+                }
 
              
                 if (
@@ -7335,37 +7338,28 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             minesFinishedViewTimer = null;
         }
 
-        async function revealMineTile(cell) {
-            if (minesRevealPending || minesFinishedView) {
-                return;
-            }
+      async function revealMineTile(cell) {
+    if (minesRevealPending || minesFinishedView) return;
 
-            const playerId =
-                String(autoUserId || '').trim();
+    const playerId = String(autoUserId || '').trim();
+    let currentGame = getMyMinesGame();
+    if (!playerId) return setStatus('NO GAME DATA', 1800);
 
-            const currentGame = getMyMinesGame();
+    if (!currentGame?.gameId) {
+        minesRevealPending = true;      
+        renderMines();
+        try {
+            await refreshState(true);
+            currentGame = getMyMinesGame();
+        } finally {
+            minesRevealPending = false;
+        }
+        if (!currentGame?.gameId) {
+            return setStatus('MINES GAME IS UPDATING — TRY AGAIN', 2200);
+        }
+        return revealMineTile(cell);
+    }
 
-            if (!playerId) {
-                return setStatus(
-                    'NO GAME DATA',
-                    1800
-                );
-            }
-
-            if (!currentGame?.gameId) {
-                await refreshState(true);
-
-                const refreshedGame = getMyMinesGame();
-
-                if (!refreshedGame?.gameId) {
-                    return setStatus(
-                        'MINES GAME IS UPDATING — TRY AGAIN',
-                        2200
-                    );
-                }
-
-                return revealMineTile(cell);
-            }
 
             if (
                 !Number.isInteger(cell) ||
