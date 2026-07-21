@@ -8596,7 +8596,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                             ? `${shortMoney(last.amount || 0)} chips were added instantly.`
                             : last.prizeType === "item"
                                 ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
-                                : "Better luck this time!"}
+                                : "Better luck next time!"}
                     </div>
                 `;
             } else {
