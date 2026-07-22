@@ -4969,14 +4969,22 @@ function getCasinoPollIntervalMs() {
                     : [];
 
                 const summary = `
-                    <div class="playerAuditSummary">
-                        <b>${escapeHtml(player.playerName || "Player")}</b>
-                        (${escapeHtml(player.playerId || playerId)})
-                        <br>
-                        Current balance:
-                        <b>${shortMoney(player.currentBalance || 0)} chips</b>
-                    </div>
-                `;
+    <div class="playerAuditSummary">
+        <b>${escapeHtml(player.playerName || "Player")}</b>
+        (${escapeHtml(player.playerId || playerId)})
+        <br>
+        Current balance:
+        <b>${shortMoney(player.currentBalance || 0)} chips</b>
+        <br>
+        Max balance since last withdrawal:
+        <b>${shortMoney(player.maxBalanceSinceLastWithdrawal || 0)} chips</b>
+        ${
+            player.hadWithdrawal
+                ? `<br><span class="small">Last withdrawal: ${shortMoney(player.lastWithdrawalAmount || 0)} chips on ${formatAuditDate(player.lastWithdrawalAt)}</span>`
+                : `<br><span class="small">No completed withdrawals on record — tracked since this player's first transaction.</span>`
+        }
+    </div>
+`;
 
                 if (!results.length) {
                     box.innerHTML =
