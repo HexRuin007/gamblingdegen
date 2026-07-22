@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Gambling Addicts v1</title>
+    <title>Gambling Addicts v2</title>
     <style>
         html,
         body {
@@ -8583,15 +8583,16 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             const remainingSpins = Math.max(0, Number(status.remainingSpins || 0));
 
             if (status.claimedToday && last) {
+                const resultMessage =
+                    last.prizeType === "chips"
+                        ? `${shortMoney(last.amount || 0)} chips were added instantly.`
+                        : last.prizeType === "item"
+                            ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
+                            : `You landed on ${escapeHtml(last.prizeLabel || "nothing")}. Better luck next time!`;
+
                 resultBox.innerHTML = `
                     <div class="panelTitle">${escapeHtml(last.prizeLabel || "Daily prize")}</div>
-                    <div class="small">
-                        ${last.prizeType === "chips"
-                            ? `${shortMoney(last.amount || 0)} chips were added instantly.`
-                            : last.prizeType === "item"
-                                ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
-                                : "Better luck next time!"}
-                    </div>
+                    <div class="small">${resultMessage}</div>
                 `;
             } else {
                 resultBox.textContent = "Your free daily spin is ready.";
