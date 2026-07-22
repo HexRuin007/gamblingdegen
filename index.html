@@ -4968,7 +4968,7 @@ function getCasinoPollIntervalMs() {
                     ? json.results
                     : [];
 
-                const summary = `
+const summary = `
     <div class="playerAuditSummary">
         <b>${escapeHtml(player.playerName || "Player")}</b>
         (${escapeHtml(player.playerId || playerId)})
@@ -4978,6 +4978,22 @@ function getCasinoPollIntervalMs() {
         <br>
         Max balance since last withdrawal:
         <b>${shortMoney(player.maxBalanceSinceLastWithdrawal || 0)} chips</b>
+        <br>
+        Paid chips received since last withdrawal:
+        <b>${shortMoney(player.paidChipsSinceLastWithdrawal || 0)} chips</b>
+        ${player.paidGrantCountSinceLastWithdrawal ? ` (${player.paidGrantCountSinceLastWithdrawal}x)` : ""}
+        <br>
+        Free chips received since last withdrawal:
+        <b>${shortMoney(player.freeChipsSinceLastWithdrawal || 0)} chips</b>
+        ${player.freeGrantCountSinceLastWithdrawal ? ` (${player.freeGrantCountSinceLastWithdrawal}x)` : ""}
+        <br>
+        Welcome bonus since last withdrawal:
+        <b>${shortMoney(player.welcomeBonusSinceLastWithdrawal || 0)} chips</b>
+        ${player.welcomeBonusCountSinceLastWithdrawal ? ` (${player.welcomeBonusCountSinceLastWithdrawal}x)` : ""}
+        <br>
+        Daily spin chips since last withdrawal:
+        <b>${shortMoney(player.dailySpinChipsSinceLastWithdrawal || 0)} chips</b>
+        ${player.dailySpinCountSinceLastWithdrawal ? ` (${player.dailySpinCountSinceLastWithdrawal}x)` : ""}
         ${
             player.hadWithdrawal
                 ? `<br><span class="small">Last withdrawal: ${shortMoney(player.lastWithdrawalAmount || 0)} chips on ${formatAuditDate(player.lastWithdrawalAt)}</span>`
