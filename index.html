@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Gambling Addicts v2</title>
+    <title>Gambling Addicts</title>
     <style>
         html,
         body {
@@ -5189,9 +5189,6 @@ const json = await apiRequest('/state' + stateQuery, {
 
                 const currentMinesState = state.mines;
                 state = json.state || state;
-                if ((minesRevealPending || minesFinishedView) && currentMinesState) {
-                state.mines = currentMinesState;
-                }
 
              
                 if (
@@ -7338,28 +7335,37 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             minesFinishedViewTimer = null;
         }
 
-      async function revealMineTile(cell) {
-    if (minesRevealPending || minesFinishedView) return;
+        async function revealMineTile(cell) {
+            if (minesRevealPending || minesFinishedView) {
+                return;
+            }
 
-    const playerId = String(autoUserId || '').trim();
-    let currentGame = getMyMinesGame();
-    if (!playerId) return setStatus('NO GAME DATA', 1800);
+            const playerId =
+                String(autoUserId || '').trim();
 
-    if (!currentGame?.gameId) {
-        minesRevealPending = true;      
-        renderMines();
-        try {
-            await refreshState(true);
-            currentGame = getMyMinesGame();
-        } finally {
-            minesRevealPending = false;
-        }
-        if (!currentGame?.gameId) {
-            return setStatus('MINES GAME IS UPDATING — TRY AGAIN', 2200);
-        }
-        return revealMineTile(cell);
-    }
+            const currentGame = getMyMinesGame();
 
+            if (!playerId) {
+                return setStatus(
+                    'NO GAME DATA',
+                    1800
+                );
+            }
+
+            if (!currentGame?.gameId) {
+                await refreshState(true);
+
+                const refreshedGame = getMyMinesGame();
+
+                if (!refreshedGame?.gameId) {
+                    return setStatus(
+                        'MINES GAME IS UPDATING — TRY AGAIN',
+                        2200
+                    );
+                }
+
+                return revealMineTile(cell);
+            }
 
             if (
                 !Number.isInteger(cell) ||
@@ -8583,16 +8589,15 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             const remainingSpins = Math.max(0, Number(status.remainingSpins || 0));
 
             if (status.claimedToday && last) {
-                const resultMessage =
-                    last.prizeType === "chips"
-                        ? `${shortMoney(last.amount || 0)} chips were added instantly.`
-                        : last.prizeType === "item"
-                            ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
-                            : `You landed on ${escapeHtml(last.prizeLabel || "nothing")}. Better luck next time!`;
-
                 resultBox.innerHTML = `
                     <div class="panelTitle">${escapeHtml(last.prizeLabel || "Daily prize")}</div>
-                    <div class="small">${resultMessage}</div>
+                    <div class="small">
+                        ${last.prizeType === "chips"
+                            ? `${shortMoney(last.amount || 0)} chips were added instantly.`
+                            : last.prizeType === "item"
+                                ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
+                                : "Better luck this time!"}
+                    </div>
                 `;
             } else {
                 resultBox.textContent = "Your free daily spin is ready.";
