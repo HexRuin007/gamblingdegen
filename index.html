@@ -84,7 +84,7 @@
             pointer-events: auto;
             position: fixed;
 
-          
+
             opacity: var(--ui-opacity);
             transition: opacity 0.12s ease;
         }
@@ -748,11 +748,9 @@
             padding: 12px;
             border-radius: 14px;
             background:
-                linear-gradient(
-                    180deg,
+                linear-gradient(180deg,
                     rgba(124, 77, 255, 0.14),
-                    rgba(255, 255, 255, 0.035)
-                );
+                    rgba(255, 255, 255, 0.035));
             border: 1px solid rgba(124, 77, 255, 0.3);
         }
 
@@ -819,11 +817,9 @@
             padding: 12px;
             border-radius: 14px;
             text-align: left;
-            background: linear-gradient(
-                180deg,
-                rgba(224, 82, 82, 0.18),
-                rgba(169, 50, 50, 0.08)
-            );
+            background: linear-gradient(180deg,
+                    rgba(224, 82, 82, 0.18),
+                    rgba(169, 50, 50, 0.08));
             border: 1px solid rgba(255, 98, 98, 0.42);
         }
 
@@ -853,11 +849,9 @@
             padding: 12px;
             border-radius: 14px;
             background:
-                linear-gradient(
-                    180deg,
+                linear-gradient(180deg,
                     rgba(110, 231, 124, 0.11),
-                    rgba(255, 255, 255, 0.04)
-                );
+                    rgba(255, 255, 255, 0.04));
             border: 1px solid rgba(110, 231, 124, 0.22);
         }
 
@@ -987,15 +981,13 @@
             overflow-y: hidden;
             overscroll-behavior-x: contain;
             scrollbar-width: thin;
-            scrollbar-color: rgba(255,255,255,.28) transparent;
+            scrollbar-color: rgba(255, 255, 255, .28) transparent;
             border-radius: 16px;
             background:
-                linear-gradient(
-                    180deg,
+                linear-gradient(180deg,
                     rgba(39, 48, 63, 0.98),
-                    rgba(17, 22, 31, 0.98)
-                );
-            border: 1px solid rgba(255,255,255,.14);
+                    rgba(17, 22, 31, 0.98));
+            border: 1px solid rgba(255, 255, 255, .14);
         }
 
         .chickenRoad::-webkit-scrollbar {
@@ -1007,7 +999,7 @@
         }
 
         .chickenRoad::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,.28);
+            background: rgba(255, 255, 255, .28);
             border-radius: 999px;
         }
 
@@ -1018,16 +1010,12 @@
             border-radius: 8px;
             overflow: hidden;
             background:
-                repeating-linear-gradient(
-                    180deg,
-                    rgba(255,255,255,.72) 0 13px,
-                    transparent 13px 28px
-                ),
-                linear-gradient(
-                    90deg,
-                    rgba(255,255,255,.035),
-                    rgba(255,255,255,.01)
-                );
+                repeating-linear-gradient(180deg,
+                    rgba(255, 255, 255, .72) 0 13px,
+                    transparent 13px 28px),
+                linear-gradient(90deg,
+                    rgba(255, 255, 255, .035),
+                    rgba(255, 255, 255, .01));
             background-size:
                 3px 100%,
                 100% 100%;
@@ -1037,21 +1025,21 @@
             background-repeat:
                 repeat-y,
                 no-repeat;
-            border: 1px solid rgba(255,255,255,.08);
+            border: 1px solid rgba(255, 255, 255, .08);
         }
 
         .chickenLane.safe {
-            background-color: rgba(55,180,93,.18);
-            outline: 1px solid rgba(110,231,124,.55);
+            background-color: rgba(55, 180, 93, .18);
+            outline: 1px solid rgba(110, 231, 124, .55);
         }
 
         .chickenLane.current {
             outline: 2px solid #ffd84d;
-            box-shadow: 0 0 13px rgba(255,216,77,.42);
+            box-shadow: 0 0 13px rgba(255, 216, 77, .42);
         }
 
         .chickenLane.hit {
-            background-color: rgba(224,82,82,.25);
+            background-color: rgba(224, 82, 82, .25);
             outline: 2px solid #ff6262;
         }
 
@@ -1062,7 +1050,7 @@
             bottom: 4px;
             text-align: center;
             font-size: 9px;
-            color: rgba(255,255,255,.66);
+            color: rgba(255, 255, 255, .66);
             z-index: 2;
         }
 
@@ -1079,10 +1067,10 @@
             font-size: 35px;
             line-height: 1;
             transition:
-                left .16s cubic-bezier(.22,1,.36,1),
-                top .16s cubic-bezier(.22,1,.36,1),
-                transform .16s cubic-bezier(.22,1,.36,1);
-            filter: drop-shadow(0 4px 4px rgba(0,0,0,.65));
+                left .16s cubic-bezier(.22, 1, .36, 1),
+                top .16s cubic-bezier(.22, 1, .36, 1),
+                transform .16s cubic-bezier(.22, 1, .36, 1);
+            filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .65));
             pointer-events: none;
         }
 
@@ -1107,7 +1095,7 @@
             pointer-events: none;
             transform: rotate(90deg);
             animation: chickenCarDriveDown .38s linear forwards;
-            filter: drop-shadow(0 4px 4px rgba(0,0,0,.55));
+            filter: drop-shadow(0 4px 4px rgba(0, 0, 0, .55));
         }
 
         .laneCar.hitCar {
@@ -1155,15 +1143,15 @@
             font-size: 38px;
             font-weight: 950;
             color: #ffd84d;
-            text-shadow: 0 0 18px rgba(255,216,77,.38);
+            text-shadow: 0 0 18px rgba(255, 216, 77, .38);
         }
 
         .chickenGameStatus {
             margin-top: 7px;
             padding: 9px;
             border-radius: 10px;
-            background: rgba(255,255,255,.055);
-            border: 1px solid rgba(255,255,255,.09);
+            background: rgba(255, 255, 255, .055);
+            border: 1px solid rgba(255, 255, 255, .09);
             font-size: 11px;
         }
 
@@ -1176,8 +1164,8 @@
 
         .chickenRiskButton {
             margin: 0;
-            background: rgba(255,255,255,.075);
-            border: 1px solid rgba(255,255,255,.1);
+            background: rgba(255, 255, 255, .075);
+            border: 1px solid rgba(255, 255, 255, .1);
         }
 
         .chickenRiskButton.selected {
@@ -1186,19 +1174,39 @@
         }
 
         @keyframes chickenHop {
-            0% { transform: translateY(0) rotate(0); }
-            45% { transform: translateY(-24px) rotate(-8deg); }
-            100% { transform: translateY(0) rotate(0); }
+            0% {
+                transform: translateY(0) rotate(0);
+            }
+
+            45% {
+                transform: translateY(-24px) rotate(-8deg);
+            }
+
+            100% {
+                transform: translateY(0) rotate(0);
+            }
         }
 
         @keyframes chickenHit {
-            0% { transform: rotate(0) scale(1); opacity: 1; }
-            100% { transform: rotate(540deg) scale(.25); opacity: .15; }
+            0% {
+                transform: rotate(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: rotate(540deg) scale(.25);
+                opacity: .15;
+            }
         }
 
         @keyframes chickenCarDrive {
-            from { left: -80px; }
-            to { left: calc(100% + 80px); }
+            from {
+                left: -80px;
+            }
+
+            to {
+                left: calc(100% + 80px);
+            }
         }
 
         #settings {
@@ -1343,11 +1351,9 @@
             padding: 11px;
             border-radius: 12px;
             text-align: left;
-            background: linear-gradient(
-                180deg,
-                rgba(55, 180, 93, 0.18),
-                rgba(55, 180, 93, 0.07)
-            );
+            background: linear-gradient(180deg,
+                    rgba(55, 180, 93, 0.18),
+                    rgba(55, 180, 93, 0.07));
             border: 1px solid rgba(110, 231, 124, 0.38);
             box-shadow: 0 0 14px rgba(110, 231, 124, 0.14);
         }
@@ -1700,11 +1706,9 @@
             border-radius: 14px;
             text-align: center;
             background:
-                radial-gradient(
-                    circle at center,
+                radial-gradient(circle at center,
                     rgba(255, 216, 77, 0.30),
-                    rgba(124, 77, 255, 0.14)
-                );
+                    rgba(124, 77, 255, 0.14));
             border: 2px solid #ffd84d;
             box-shadow:
                 0 0 18px rgba(255, 216, 77, 0.50),
@@ -1963,8 +1967,7 @@
             margin: 8px auto 12px;
             border-radius: 50%;
             background:
-                conic-gradient(
-                    #138a3d 0deg 9.73deg,
+                conic-gradient(#138a3d 0deg 9.73deg,
                     #b72d2d 9.73deg 19.46deg,
                     #171717 19.46deg 29.19deg,
                     #b72d2d 29.19deg 38.92deg,
@@ -2000,14 +2003,13 @@
                     #b72d2d 321.09deg 330.82deg,
                     #171717 330.82deg 340.55deg,
                     #b72d2d 340.55deg 350.28deg,
-                    #171717 350.28deg 360deg
-                );
+                    #171717 350.28deg 360deg);
             border: 8px solid #b57b12;
             box-shadow:
-                inset 0 0 0 6px rgba(255,255,255,.12),
-                0 12px 30px rgba(0,0,0,.45);
+                inset 0 0 0 6px rgba(255, 255, 255, .12),
+                0 12px 30px rgba(0, 0, 0, .45);
             transition:
-                transform 4.3s cubic-bezier(.08,.82,.17,1.05);
+                transform 4.3s cubic-bezier(.08, .82, .17, 1.05);
         }
 
         .rouletteWheel::after {
@@ -2056,7 +2058,7 @@
             min-height: 38px;
             padding: 6px 3px;
             background: #171717;
-            border: 1px solid rgba(255,255,255,.12);
+            border: 1px solid rgba(255, 255, 255, .12);
             overflow: visible;
         }
 
@@ -2074,12 +2076,10 @@
             justify-content: center;
             box-sizing: border-box;
             background:
-                radial-gradient(
-                    circle at 35% 30%,
+                radial-gradient(circle at 35% 30%,
                     #fff5ad,
                     #e0ad2c 48%,
-                    #8d5d0d 100%
-                );
+                    #8d5d0d 100%);
             border: 2px dashed rgba(92, 53, 4, 0.8);
             box-shadow:
                 0 3px 8px rgba(0, 0, 0, 0.55),
@@ -2109,7 +2109,7 @@
 
         .rouletteBetButton.selected {
             outline: 3px solid #ffd84d;
-            box-shadow: 0 0 14px rgba(255,216,77,.4);
+            box-shadow: 0 0 14px rgba(255, 216, 77, .4);
         }
 
         .rouletteOutsideGrid {
@@ -2186,11 +2186,9 @@
             margin-top: 10px;
             padding: 14px;
             border-radius: 14px;
-            background: linear-gradient(
-                180deg,
-                rgba(124, 77, 255, 0.22),
-                rgba(255, 216, 77, 0.09)
-            );
+            background: linear-gradient(180deg,
+                    rgba(124, 77, 255, 0.22),
+                    rgba(255, 216, 77, 0.09));
             border: 1px solid rgba(255, 216, 77, 0.35);
             box-shadow: 0 0 18px rgba(255, 216, 77, 0.14);
         }
@@ -2402,23 +2400,23 @@
             width: 91px;
         }
 
-        
-       
-        #overlay.compactMode .tabPage.active > .bankerOnly,
-        #overlay.compactMode .tabPage.active > .dailyProfitPanel,
-        #overlay.compactMode .tabPage.active > .chipResetDangerZone {
+
+
+        #overlay.compactMode .tabPage.active>.bankerOnly,
+        #overlay.compactMode .tabPage.active>.dailyProfitPanel,
+        #overlay.compactMode .tabPage.active>.chipResetDangerZone {
             display: none !important;
         }
 
-        
-        #overlay.compactMode #chipsPage > .bankerOnly,
-        #overlay.compactMode #userSettingsPage > .bankerOnly {
+
+        #overlay.compactMode #chipsPage>.bankerOnly,
+        #overlay.compactMode #userSettingsPage>.bankerOnly {
             display: none !important;
         }
 
-        
-        #overlay.compactMode .tabPage.active > .panel,
-        #overlay.compactMode .tabPage.active > .heroCard {
+
+        #overlay.compactMode .tabPage.active>.panel,
+        #overlay.compactMode .tabPage.active>.heroCard {
             display: block;
             margin-top: 5px;
         }
@@ -2591,12 +2589,12 @@
             transition: 0.18s ease;
         }
 
-        .settingsToggle input:checked + .settingsToggleSlider {
+        .settingsToggle input:checked+.settingsToggleSlider {
             background: rgba(55, 180, 93, 0.82);
             box-shadow: 0 0 12px rgba(110, 231, 124, 0.24);
         }
 
-        .settingsToggle input:checked + .settingsToggleSlider::before {
+        .settingsToggle input:checked+.settingsToggleSlider::before {
             transform: translateX(21px);
         }
 
@@ -2628,7 +2626,7 @@
             border-left: 14px solid transparent;
             border-right: 14px solid transparent;
             border-top: 28px solid white;
-            filter: drop-shadow(0 3px 4px rgba(0,0,0,.55));
+            filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .55));
         }
 
         .dailySpinWheel {
@@ -2638,8 +2636,8 @@
             overflow: hidden;
             border: 7px solid #d79a28;
             background: conic-gradient(#7c4dff 0 60deg, #2f8fd9 60deg 120deg, #37b45d 120deg 180deg, #d79a28 180deg 240deg, #e05252 240deg 300deg, #4f35bc 300deg 360deg);
-            box-shadow: inset 0 0 0 5px rgba(255,255,255,.13), 0 14px 28px rgba(0,0,0,.48);
-            transition: transform 4.2s cubic-bezier(.08,.82,.17,1.05);
+            box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .13), 0 14px 28px rgba(0, 0, 0, .48);
+            transition: transform 4.2s cubic-bezier(.08, .82, .17, 1.05);
         }
 
         .dailySpinWheel::after {
@@ -2667,8 +2665,8 @@
         .dailySpinPrizeItem {
             padding: 8px;
             border-radius: 9px;
-            background: rgba(255,255,255,.055);
-            border: 1px solid rgba(255,255,255,.08);
+            background: rgba(255, 255, 255, .055);
+            border: 1px solid rgba(255, 255, 255, .08);
             font-size: 10px;
             text-align: left;
         }
@@ -2677,8 +2675,8 @@
             margin-top: 10px;
             padding: 13px;
             border-radius: 13px;
-            background: rgba(255,216,77,.10);
-            border: 1px solid rgba(255,216,77,.30);
+            background: rgba(255, 216, 77, .10);
+            border: 1px solid rgba(255, 216, 77, .30);
             text-align: center;
         }
 
@@ -2884,7 +2882,7 @@
             display: block;
         }
 
-   
+
         body.userappHidden #overlay {
             opacity: 0 !important;
             pointer-events: none !important;
@@ -2955,55 +2953,70 @@
             min-width: 25px;
             font-size: 13px;
         }
-
     </style>
 </head>
 
 <body>
 
-    <button
-        id="showUserappButton"
-        type="button"
-        title="Show Pearadise Casino"
-        aria-label="Show Pearadise Casino"
-    >🍐<span id="showUserappBadge" class="showUserappBadge" aria-hidden="true"></span></button>
+    <button id="showUserappButton" type="button" title="Show Pearadise Casino"
+        aria-label="Show Pearadise Casino">🍐<span id="showUserappBadge" class="showUserappBadge"
+            aria-hidden="true"></span></button>
 
     <div id="welcomeSplash">
-        <img
-            src="./pearadise-welcome.png"
-            alt="Welcome to Peardise Casino and Resort"
-        />
+        <img src="./pearadise-welcome.png" alt="Welcome to Peardise Casino and Resort" />
     </div>
 
 
-    <div id="firstLoginGuide" class="firstLoginGuideBackdrop" role="dialog" aria-modal="true" aria-labelledby="firstLoginGuideTitle">
+    <div id="firstLoginGuide" class="firstLoginGuideBackdrop" role="dialog" aria-modal="true"
+        aria-labelledby="firstLoginGuideTitle">
         <div class="firstLoginGuideModal">
             <div class="firstLoginGuideHeader">
                 <div id="firstLoginGuideTitle" class="firstLoginGuideTitle">Welcome to Pearadise Casino & Resort</div>
-                <div class="firstLoginGuideIntro">Here is everything you need to know before placing your first bet.</div>
+                <div class="firstLoginGuideIntro">Here is everything you need to know before placing your first bet.
+                </div>
             </div>
 
             <div class="firstLoginGuideBody">
                 <div class="firstLoginGuideImportant">
                     <strong>Chips and cashouts:</strong><br>
-                    You can buy chips using in-game money at a rate of <strong>$1 = 1 chip</strong>. Purchased chips and chips won through games can be cashed out. Chips won from the <strong>Daily Spin can also be cashed out</strong>.<br><br>
-                    A banker may grant you free chips so you can play. Once you receive any chips marked as <strong>free from a banker</strong>, you will not be allowed to cash out your chip balance unless your casino account is wiped and you start again. This restriction only applies to banker-granted free chips, not Daily Spin winnings.
+                    You can buy chips using in-game money at a rate of <strong>$1 = 1 chip</strong>. Purchased chips and
+                    chips won through games can be cashed out. Chips won from the <strong>Daily Spin can also be cashed
+                        out</strong>.<br><br>
+                    A banker may grant you free chips so you can play. Once you receive any chips marked as <strong>free
+                        from a banker</strong>, you will not be allowed to cash out your chip balance unless your casino
+                    account is wiped and you start again. This restriction only applies to banker-granted free chips,
+                    not Daily Spin winnings.
                 </div>
 
                 <div class="firstLoginGameGrid">
-                    <div class="firstLoginGameCard"><b>🎡 Wheel</b><span>Choose your bet and place it before the countdown ends. The wheel multiplier decides your payout.</span></div>
-                    <div class="firstLoginGameCard"><b>🃏 Blackjack</b><span>Try to reach 21 without going over. Beat the dealer's hand to win.</span></div>
-                    <div class="firstLoginGameCard"><b>🐎 Horse Racing</b><span>Pick a horse and place your bet. Each horse has displayed odds that determine its payout.</span></div>
-                    <div class="firstLoginGameCard"><b>🎰 Slots</b><span>Select a bet and spin. Matching symbols on paylines award payouts, and scatters can unlock free spins.</span></div>
-                    <div class="firstLoginGameCard"><b>💣 Mines</b><span>Choose your bet and mine count, then reveal safe tiles. Each safe tile increases the cashout value.</span></div>
-                    <div class="firstLoginGameCard"><b>💼 Deal or No Deal</b><span>Choose your case, open the others, and decide whether to accept the banker's offers or keep playing.</span></div>
-                    <div class="firstLoginGameCard"><b>🎯 Roulette</b><span>Bet on a number, colour, range, or other option before the wheel spins.</span></div>
-                    <!-- <div class="firstLoginGameCard"><b>🐔 Chicken</b><span>Move the chicken across lanes to increase the multiplier. Cash out before the chicken is hit.</span></div> -->
-                    <div class="firstLoginGameCard"><b>🎁 Daily Spin</b><span>Use your available daily spins for a chance to win chips, extra spins, items, or nothing. Chip prizes are cashout-eligible.</span></div>
-                    <div class="firstLoginGameCard"><b>🪙 Chips</b><span>View your balance, buy or request chips, request a cashout, and check the status of requests.</span></div>
-                    <div class="firstLoginGameCard"><b>⚙️ Settings</b><span>Adjust the app's settings, including sound, notifications, and display options.</span></div>
-                    <div class="firstLoginGameCard"><b>💰 Banker</b><span>You can contact Une_Poire, Nunu or CrackAddict for any issues/resets, They also get notified on Discord, so don't message them for chip requests or winnings.</span></div>
-                    <div class="firstLoginGameCard"><b>💬 Free Chips Requests</b><span>Any free chip request that keeps your balance under 100m, will be auto approved.</span></div>
+                    <div class="firstLoginGameCard"><b>🎡 Wheel</b><span>Choose your bet and place it before the
+                            countdown ends. The wheel multiplier decides your payout.</span></div>
+                    <div class="firstLoginGameCard"><b>🃏 Blackjack</b><span>Try to reach 21 without going over. Beat
+                            the dealer's hand to win.</span></div>
+                    <div class="firstLoginGameCard"><b>🐎 Horse Racing</b><span>Pick a horse and place your bet. Each
+                            horse has displayed odds that determine its payout.</span></div>
+                    <div class="firstLoginGameCard"><b>🎰 Slots</b><span>Select a bet and spin. Matching symbols on
+                            paylines award payouts, and scatters can unlock free spins.</span></div>
+                    <div class="firstLoginGameCard"><b>💣 Mines</b><span>Choose your bet and mine count, then reveal
+                            safe tiles. Each safe tile increases the cashout value.</span></div>
+                    <div class="firstLoginGameCard"><b>💼 Deal or No Deal</b><span>Choose your case, open the others,
+                            and decide whether to accept the banker's offers or keep playing.</span></div>
+                    <div class="firstLoginGameCard"><b>🎯 Roulette</b><span>Bet on a number, colour, range, or other
+                            option before the wheel spins.</span></div>
+                    <div class="firstLoginGameCard"><b>🐔 Chicken</b><span>Move the chicken across lanes to increase the
+                            multiplier. Cash out before the chicken is hit.</span></div>
+                    <div class="firstLoginGameCard"><b>🎁 Daily Spin</b><span>Use your available daily spins for a
+                            chance to win chips, extra spins, items, or nothing. Chip prizes are
+                            cashout-eligible.</span></div>
+                    <div class="firstLoginGameCard"><b>🪙 Chips</b><span>View your balance, buy or request chips,
+                            request a cashout, and check the status of requests.</span></div>
+                    <div class="firstLoginGameCard"><b>⚙️ Settings</b><span>Adjust the app's settings, including sound,
+                            notifications, and display options.</span></div>
+                    <div class="firstLoginGameCard"><b>💰 Banker</b><span>You can contact Une_Poire, Nunu or CrackAddict
+                            for any issues/resets, They also get notified on Discord, so don't message them for chip
+                            requests or winnings.</span></div>
+                    <div class="firstLoginGameCard"><b>💬 Free Chips Requests</b><span>Any free chip request that keeps
+                            your balance under 100m, will be auto approved.</span></div>
                 </div>
             </div>
 
@@ -3015,19 +3028,11 @@
 
     <div id="overlay">
 
-        <button
-            id="hideUserappButton"
-            type="button"
-            title="Hide the userapp"
-        >
+        <button id="hideUserappButton" type="button" title="Hide the userapp">
             ✕ Hide
         </button>
 
-        <button
-            id="compactModeButton"
-            type="button"
-            title="Toggle compact mode"
-        >
+        <button id="compactModeButton" type="button" title="Toggle compact mode">
             ↙ Compact
         </button>
         <div id="overlayContent">
@@ -3063,7 +3068,7 @@
                         <button id="MinesTabButton" class="tabButton">💣 Mines</button>
                         <button id="dealTabButton" class="tabButton">💼 Deal OR No Deal</button>
                         <button id="rouletteTabButton" class="tabButton">🎯 Roulette</button>
-                        <!-- <button id="chickenTabButton" class="tabButton">🐔 Chicken</button> -->
+                        <button id="chickenTabButton" class="tabButton">🐔 Chicken</button>
                         <button id="dailySpinTabButton" class="tabButton">🎁 Daily Spin</button>
                         <button id="chipsTabButton" class="tabButton">🪙 Chips</button>
                         <button id="userSettingsTabButton" class="tabButton">⚙️ Settings</button>
@@ -3455,13 +3460,17 @@
 
                         <div class="quickBetGrid">
                             <button class="quickBetButton" data-target="dealBetInput" data-amount="1000000">1M</button>
-                            <button class="quickBetButton" data-target="dealBetInput" data-amount="10000000">10M</button>
-                            <button class="quickBetButton" data-target="dealBetInput" data-amount="100000000">100M</button>
-                            <button class="quickBetButton" data-target="dealBetInput" data-amount="1000000000">1B</button>
+                            <button class="quickBetButton" data-target="dealBetInput"
+                                data-amount="10000000">10M</button>
+                            <button class="quickBetButton" data-target="dealBetInput"
+                                data-amount="100000000">100M</button>
+                            <button class="quickBetButton" data-target="dealBetInput"
+                                data-amount="1000000000">1B</button>
                         </div>
 
                         <div class="small">
-                            Pick your case, then open three other cases per round. Accept the banker offer or keep playing.
+                            Pick your case, then open three other cases per round. Accept the banker offer or keep
+                            playing.
                         </div>
                     </div>
 
@@ -3531,14 +3540,8 @@
                         </div>
 
                         <div class="row">
-                            <input
-                                id="minesBetInput"
-                                type="text"
-                                inputmode="decimal"
-                                autocomplete="off"
-                                placeholder="Custom bet, e.g. 5m"
-                                aria-label="Custom Mines bet amount"
-                            />
+                            <input id="minesBetInput" type="text" inputmode="decimal" autocomplete="off"
+                                placeholder="Custom bet, e.g. 5m" aria-label="Custom Mines bet amount" />
 
                             <input id="minesCountInput" type="number" min="1" max="10" step="1" value="3"
                                 placeholder="Mine count" />
@@ -3587,10 +3590,7 @@
                         <span class="gameChipBalance">0 chips</span>
                     </div>
 
-                    <div
-                        class="autoGameCountdown"
-                        id="rouletteAutoCountdown"
-                    >
+                    <div class="autoGameCountdown" id="rouletteAutoCountdown">
                         Waiting for first bet
                     </div>
 
@@ -3649,23 +3649,21 @@
                         </div>
 
                         <div class="row">
-                            <input
-                                id="rouletteBetInput"
-                                type="number"
-                                min="1"
-                                step="1"
-                                placeholder="Bet amount"
-                            />
+                            <input id="rouletteBetInput" type="number" min="1" step="1" placeholder="Bet amount" />
                             <button id="roulettePlaceBetButton" class="green">
                                 Place Bet
                             </button>
                         </div>
 
                         <div class="quickBetGrid">
-                            <button class="quickBetButton" data-target="rouletteBetInput" data-amount="1000000">1M</button>
-                            <button class="quickBetButton" data-target="rouletteBetInput" data-amount="10000000">10M</button>
-                            <button class="quickBetButton" data-target="rouletteBetInput" data-amount="100000000">100M</button>
-                            <button class="quickBetButton" data-target="rouletteBetInput" data-amount="1000000000">1B</button>
+                            <button class="quickBetButton" data-target="rouletteBetInput"
+                                data-amount="1000000">1M</button>
+                            <button class="quickBetButton" data-target="rouletteBetInput"
+                                data-amount="10000000">10M</button>
+                            <button class="quickBetButton" data-target="rouletteBetInput"
+                                data-amount="100000000">100M</button>
+                            <button class="quickBetButton" data-target="rouletteBetInput"
+                                data-amount="1000000000">1B</button>
                         </div>
 
                         <button id="rouletteClearBetsButton" class="danger">
@@ -3678,11 +3676,7 @@
                             <div class="panelTitle">🧾 Your Bets</div>
                             <div class="panelHint">Current round</div>
                         </div>
-                        <div
-                            id="rouletteRoundStakeSummary"
-                            class="small"
-                            style="margin:0 0 7px;text-align:center;"
-                        >
+                        <div id="rouletteRoundStakeSummary" class="small" style="margin:0 0 7px;text-align:center;">
                             Total staked this round: 0 chips
                         </div>
                         <div id="rouletteBetsBox" class="rouletteBetList">
@@ -3701,7 +3695,7 @@
                     </div>
                 </div>
 
-                <!--
+
                 <div id="chickenPage" class="tabPage">
                     <div class="heroCard">
                         <div class="panelHeader">
@@ -3736,20 +3730,21 @@
                         </div>
 
                         <div class="row">
-                            <input
-                                id="chickenBetAmount"
-                                placeholder="Bet amount (e.g. 10m)"
-                            />
+                            <input id="chickenBetAmount" placeholder="Bet amount (e.g. 10m)" />
                             <button id="chickenStartButton">
                                 Start Crossing
                             </button>
                         </div>
 
                         <div class="quickBetGrid">
-                            <button class="quickBetButton" data-target="chickenBetAmount" data-amount="1000000">1M</button>
-                            <button class="quickBetButton" data-target="chickenBetAmount" data-amount="10000000">10M</button>
-                            <button class="quickBetButton" data-target="chickenBetAmount" data-amount="100000000">100M</button>
-                            <button class="quickBetButton" data-target="chickenBetAmount" data-amount="1000000000">1B</button>
+                            <button class="quickBetButton" data-target="chickenBetAmount"
+                                data-amount="1000000">1M</button>
+                            <button class="quickBetButton" data-target="chickenBetAmount"
+                                data-amount="10000000">10M</button>
+                            <button class="quickBetButton" data-target="chickenBetAmount"
+                                data-amount="100000000">100M</button>
+                            <button class="quickBetButton" data-target="chickenBetAmount"
+                                data-amount="1000000000">1B</button>
                         </div>
 
                         <button id="chickenCrossButton" class="gold" disabled>
@@ -3774,7 +3769,7 @@
                         </div>
                     </div>
                 </div>
-                -->
+
 
                 <div id="chipsPage" class="tabPage">
                     <div class="chipWallet">
@@ -3793,8 +3788,10 @@
                             </select>
                             <button id="requestChipsButton" class="gold">Request Chips</button>
                         </div>
-                        <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire, Nunu or Crackaddict to fulfill these requests.</div>
-                            <div class="chipValueStatus" id="chipValueStatus">1 Chip = 1$ In-Game Cash, All Requests are sent to discord, so be patient!</div>
+                        <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire, Nunu or Crackaddict
+                            to fulfill these requests.</div>
+                        <div class="chipValueStatus" id="chipValueStatus">1 Chip = 1$ In-Game Cash, All Requests are
+                            sent to discord, so be patient!</div>
 
                         <div class="panelHeader" style="margin-top:14px;">
                             <div>
@@ -3804,55 +3801,28 @@
                         </div>
 
                         <div class="row">
-                            <input
-                                id="withdrawRequestAmount"
-                                type="text"
-                                placeholder="Withdrawal amount, e.g. 100m"
-                            />
-                            <button
-                                id="requestWithdrawalButton"
-                                class="danger"
-                                type="button"
-                            >
+                            <input id="withdrawRequestAmount" type="text" placeholder="Withdrawal amount, e.g. 100m" />
+                            <button id="requestWithdrawalButton" class="danger" type="button">
                                 Request Withdrawal
                             </button>
                         </div>
 
                         <div class="quickBetGrid">
-                            <button
-                                class="quickBetButton"
-                                data-target="withdrawRequestAmount"
-                                data-amount="1000000"
-                            >
+                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="1000000">
                                 1M
                             </button>
-                            <button
-                                class="quickBetButton"
-                                data-target="withdrawRequestAmount"
-                                data-amount="10000000"
-                            >
+                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="10000000">
                                 10M
                             </button>
-                            <button
-                                class="quickBetButton"
-                                data-target="withdrawRequestAmount"
-                                data-amount="100000000"
-                            >
+                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="100000000">
                                 100M
                             </button>
-                            <button
-                                class="quickBetButton"
-                                data-target="withdrawRequestAmount"
-                                data-amount="1000000000"
-                            >
+                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="1000000000">
                                 1B
                             </button>
                         </div>
 
-                        <div
-                            class="chipRequestStatus"
-                            id="withdrawRequestStatus"
-                        >
+                        <div class="chipRequestStatus" id="withdrawRequestStatus">
                             Organise with Poire, Nunu or Crackaddict to fulfill these requests.
                         </div>
                     </div>
@@ -3904,12 +3874,12 @@
                             <div class="emptyState">No chip requests.</div>
                         </div>
                         <div class="panelHeader" style="margin-top:12px;">
-    <div class="panelTitle">💵 Withdrawal Requests</div>
-    <div class="panelHint">Approve or deny</div>
-</div>
-<div id="withdrawalRequestsBox">
-    <div class="emptyState">No withdrawal requests.</div>
-</div>
+                            <div class="panelTitle">💵 Withdrawal Requests</div>
+                            <div class="panelHint">Approve or deny</div>
+                        </div>
+                        <div id="withdrawalRequestsBox">
+                            <div class="emptyState">No withdrawal requests.</div>
+                        </div>
 
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">💵 Cash Out Player</div>
@@ -3932,7 +3902,8 @@
 
                             <input id="blacklistPlayerIdInput" type="text" placeholder="Player ID" />
                             <input id="blacklistPlayerNameInput" type="text" placeholder="Player name (optional)" />
-                            <input id="blacklistReasonInput" type="text" maxlength="240" placeholder="Reason (optional)" />
+                            <input id="blacklistReasonInput" type="text" maxlength="240"
+                                placeholder="Reason (optional)" />
                             <button id="blacklistPlayerButton" class="danger" type="button">
                                 Blacklist Player
                             </button>
@@ -3955,15 +3926,8 @@
                             </div>
 
                             <div class="row">
-                                <input
-                                    id="auditPlayerIdInput"
-                                    type="text"
-                                    placeholder="Player ID to inspect"
-                                />
-                                <button
-                                    id="loadPlayerAuditButton"
-                                    type="button"
-                                >
+                                <input id="auditPlayerIdInput" type="text" placeholder="Player ID to inspect" />
+                                <button id="loadPlayerAuditButton" type="button">
                                     Check Player
                                 </button>
                             </div>
@@ -3985,7 +3949,8 @@
                             Reset Player
                         </button>
                         <div class="chipRequestStatus">
-                            Clears only that player's casino balance, statistics, requests, spins and active games. They will receive the normal starting chips when they register again.
+                            Clears only that player's casino balance, statistics, requests, spins and active games. They
+                            will receive the normal starting chips when they register again.
                         </div>
                     </div>
                     <div id="chipResetDangerZone" class="chipResetDangerZone bankerOnly">
@@ -4044,7 +4009,8 @@
                         </div>
 
                         <div class="dailyProfitFootnote">
-                            Real/paid excludes welcome bonuses, daily-spin chips and banker grants marked free. Source tracking applies going forward and resets daily at 00:00 UTC.
+                            Real/paid excludes welcome bonuses, daily-spin chips and banker grants marked free. Source
+                            tracking applies going forward and resets daily at 00:00 UTC.
                         </div>
                     </div>
                 </div>
@@ -4087,138 +4053,141 @@
 
 
 
-                <div id="dailySpinPage" class="tabPage">
-                    <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
+            <div id="dailySpinPage" class="tabPage">
+                <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
 
-                    <div class="heroCard">
-                        <div class="panelTitle">🎁 Daily Spin</div>
-                        <div class="small">One free spin per player every UTC day.</div>
+                <div class="heroCard">
+                    <div class="panelTitle">🎁 Daily Spin</div>
+                    <div class="small">One free spin per player every UTC day.</div>
 
-                        <div class="dailySpinWheelWrap">
-                            <div class="dailySpinPointer"></div>
-                            <div id="dailySpinWheel" class="dailySpinWheel"></div>
-                        </div>
-
-                        <div id="dailySpinResult" class="dailySpinResultBox">
-                            Loading your daily spin...
-                        </div>
-
-                        <button id="dailySpinButton" class="gold" disabled>Spin Daily Wheel</button>
-                        <div id="dailySpinResetText" class="small"></div>
+                    <div class="dailySpinWheelWrap">
+                        <div class="dailySpinPointer"></div>
+                        <div id="dailySpinWheel" class="dailySpinWheel"></div>
                     </div>
 
-                    <div class="panel bankerOnly" id="dailySpinAdminPanel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🎟️ Grant Extra Spins</div>
-                            <div class="panelHint">Banker only</div>
-                        </div>
-                        <input id="dailySpinGrantPlayerId" type="text" inputmode="numeric" placeholder="Player ID" />
-                        <input id="dailySpinGrantAmount" type="number" min="1" max="1000" value="1" placeholder="Number of extra spins" />
-                        <button id="dailySpinGrantButton" class="green">Give Extra Spins</button>
-                        <div id="dailySpinGrantStatus" class="small"></div>
+                    <div id="dailySpinResult" class="dailySpinResultBox">
+                        Loading your daily spin...
                     </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">Possible Prizes</div>
-                            <div class="panelHint">Server selected</div>
-                        </div>
-                        <div id="dailySpinPrizeList" class="dailySpinPrizeList"></div>
-                        <div class="small">
-                            Chip prizes are credited instantly. In-Game items will be delivered when a Banker is online, We get notified on Discord if you win in game Items
-                        </div>
-                    </div>
+                    <button id="dailySpinButton" class="gold" disabled>Spin Daily Wheel</button>
+                    <div id="dailySpinResetText" class="small"></div>
                 </div>
 
-                <div id="userSettingsPage" class="tabPage">
-                    <div class="gameBalanceLine">Hopefully saved between relogs</div>
+                <div class="panel bankerOnly" id="dailySpinAdminPanel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🎟️ Grant Extra Spins</div>
+                        <div class="panelHint">Banker only</div>
+                    </div>
+                    <input id="dailySpinGrantPlayerId" type="text" inputmode="numeric" placeholder="Player ID" />
+                    <input id="dailySpinGrantAmount" type="number" min="1" max="1000" value="1"
+                        placeholder="Number of extra spins" />
+                    <button id="dailySpinGrantButton" class="green">Give Extra Spins</button>
+                    <div id="dailySpinGrantStatus" class="small"></div>
+                </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">⚙️ User Settings</div>
-                            <div class="panelHint">ON = Green</div>
-                        </div>
-
-                        <div class="settingsOptions">
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Compact Game View</div>
-                                    <div class="settingsOptionHint">
-                                        Shows only the tabs, active game and essential controls.
-                                    </div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingCompactMode" type="checkbox" />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-
-                            <div class="settingsOption settingsOptionRange">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">UI Transparency</div>
-                                    <div class="settingsOptionHint">
-                                       Adjust the Transparency of the UI
-                                    </div>
-                                </div>
-                                <div class="settingsRangeControl">
-                                    <span id="opacityValue">78%</span>
-                                    <input id="opacityInput" type="range" min="5" max="100" value="78" aria-label="Whole UI transparency" />
-                                </div>
-                            </div>
-
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Casino Sounds</div>
-                                    <div class="settingsOptionHint">
-                                        Enables slot payout sounds and free-spin bonus sounds.
-                                    </div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingSoundsEnabled" type="checkbox" checked />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Winning Confetti</div>
-                                    <div class="settingsOptionHint">
-                                        Confetti winning (Snowfall)
-                                    </div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingConfettiEnabled" type="checkbox" checked />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">GIFs and Pictures</div>
-                                    <div class="settingsOptionHint">
-                                        Pear and Mr President will be missed!.
-                                    </div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingMediaEnabled" type="checkbox" checked />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="settingsSavedNote">
-                            Jelly Beans Requested to disable this, 'Confetti is like snow blocking my screen' Blah Blah Blah
-                        </div>
-
-                        <div class="panel" style="margin-top:14px;">
-                            <div class="panelHeader">
-                                <div class="panelTitle">🔄 Reload App</div>
-                                <div class="panelHint">Reload the current userapp link.</div>
-                            </div>
-                            <button id="reloadAppButton" class="gold">Reload App</button>
-                        </div>
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">Possible Prizes</div>
+                        <div class="panelHint">Server selected</div>
+                    </div>
+                    <div id="dailySpinPrizeList" class="dailySpinPrizeList"></div>
+                    <div class="small">
+                        Chip prizes are credited instantly. In-Game items will be delivered when a Banker is online, We
+                        get notified on Discord if you win in game Items
                     </div>
                 </div>
+            </div>
+
+            <div id="userSettingsPage" class="tabPage">
+                <div class="gameBalanceLine">Hopefully saved between relogs</div>
+
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">⚙️ User Settings</div>
+                        <div class="panelHint">ON = Green</div>
+                    </div>
+
+                    <div class="settingsOptions">
+                        <div class="settingsOption">
+                            <div class="settingsOptionText">
+                                <div class="settingsOptionTitle">Compact Game View</div>
+                                <div class="settingsOptionHint">
+                                    Shows only the tabs, active game and essential controls.
+                                </div>
+                            </div>
+                            <label class="settingsToggle">
+                                <input id="settingCompactMode" type="checkbox" />
+                                <span class="settingsToggleSlider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settingsOption settingsOptionRange">
+                            <div class="settingsOptionText">
+                                <div class="settingsOptionTitle">UI Transparency</div>
+                                <div class="settingsOptionHint">
+                                    Adjust the Transparency of the UI
+                                </div>
+                            </div>
+                            <div class="settingsRangeControl">
+                                <span id="opacityValue">78%</span>
+                                <input id="opacityInput" type="range" min="5" max="100" value="78"
+                                    aria-label="Whole UI transparency" />
+                            </div>
+                        </div>
+
+                        <div class="settingsOption">
+                            <div class="settingsOptionText">
+                                <div class="settingsOptionTitle">Casino Sounds</div>
+                                <div class="settingsOptionHint">
+                                    Enables slot payout sounds and free-spin bonus sounds.
+                                </div>
+                            </div>
+                            <label class="settingsToggle">
+                                <input id="settingSoundsEnabled" type="checkbox" checked />
+                                <span class="settingsToggleSlider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settingsOption">
+                            <div class="settingsOptionText">
+                                <div class="settingsOptionTitle">Winning Confetti</div>
+                                <div class="settingsOptionHint">
+                                    Confetti winning (Snowfall)
+                                </div>
+                            </div>
+                            <label class="settingsToggle">
+                                <input id="settingConfettiEnabled" type="checkbox" checked />
+                                <span class="settingsToggleSlider"></span>
+                            </label>
+                        </div>
+
+                        <div class="settingsOption">
+                            <div class="settingsOptionText">
+                                <div class="settingsOptionTitle">GIFs and Pictures</div>
+                                <div class="settingsOptionHint">
+                                    Pear and Mr President will be missed!.
+                                </div>
+                            </div>
+                            <label class="settingsToggle">
+                                <input id="settingMediaEnabled" type="checkbox" checked />
+                                <span class="settingsToggleSlider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settingsSavedNote">
+                        Jelly Beans Requested to disable this, 'Confetti is like snow blocking my screen' Blah Blah Blah
+                    </div>
+
+                    <div class="panel" style="margin-top:14px;">
+                        <div class="panelHeader">
+                            <div class="panelTitle">🔄 Reload App</div>
+                            <div class="panelHint">Reload the current userapp link.</div>
+                        </div>
+                        <button id="reloadAppButton" class="gold">Reload App</button>
+                    </div>
+                </div>
+            </div>
 
             <audio id="slotPayoutSound" preload="auto">
                 <source src="./slotmachine.mp3" type="audio/mpeg">
@@ -4226,13 +4195,8 @@
             <audio id="slotBonusSound" preload="auto">
                 <source src="./bonus.mp3" type="audio/mpeg">
             </audio>
-                <img id="fivePearGif" class="fivePearGif" src="./dancing-donald.gif" alt="" />
-<img
-                id="sessionSpinGif"
-                class="sessionSpinGif"
-                src="./durp.gif"
-                alt=""
-            />
+            <img id="fivePearGif" class="fivePearGif" src="./dancing-donald.gif" alt="" />
+            <img id="sessionSpinGif" class="sessionSpinGif" src="./durp.gif" alt="" />
 
             <div id="winOverlay">
             </div>
@@ -4241,7 +4205,7 @@
     </div>
     <script>
         const SERVER_URL = "https://gambling-backend-production.up.railway.app/";
-        const BANKER_IDS = ["229051", "207252","476991",];
+        const BANKER_IDS = ["229051", "207252", "476991",];
         const STORAGE_POSITION = "tt_shared_casino_position";
         const STORAGE_OPACITY = "tt_shared_casino_opacity";
         const STORAGE_USER_SETTINGS = "tt_shared_casino_user_settings";
@@ -4573,76 +4537,76 @@
             , dailySpinStatus = null
             , dailySpinRotation = 0
             , dailySpinBusy = false;
-            const POLL_ACTIVE_MS = 2500;
-const POLL_IDLE_MS = 9000;
-const POLL_HIDDEN_MS = 25000;
-const ACTIVITY_IDLE_THRESHOLD_MS = 45000;
-const COUNTDOWN_URGENCY_WINDOW_MS = 15000;
+        const POLL_ACTIVE_MS = 2500;
+        const POLL_IDLE_MS = 9000;
+        const POLL_HIDDEN_MS = 25000;
+        const ACTIVITY_IDLE_THRESHOLD_MS = 45000;
+        const COUNTDOWN_URGENCY_WINDOW_MS = 15000;
 
-let lastUserActivityAt = Date.now();
-let pollTimeoutHandle = null;
+        let lastUserActivityAt = Date.now();
+        let pollTimeoutHandle = null;
 
-function markCasinoUserActivity() {
-    lastUserActivityAt = Date.now();
-}
+        function markCasinoUserActivity() {
+            lastUserActivityAt = Date.now();
+        }
 
-function bindCasinoActivityTracking() {
-    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel', 'click']
-        .forEach(eventName => {
-            document.addEventListener(eventName, markCasinoUserActivity, { passive: true });
-        });
-}
+        function bindCasinoActivityTracking() {
+            ['mousemove', 'mousedown', 'keydown', 'touchstart', 'wheel', 'click']
+                .forEach(eventName => {
+                    document.addEventListener(eventName, markCasinoUserActivity, { passive: true });
+                });
+        }
 
-function casinoHasUrgentActivity() {
-    if (state.wheel?.spinning) return true;
-    if (state.blackjack?.status === 'playing') return true;
-    if (state.racing?.racing) return true;
-    if (state.roulette?.spinning) return true;
+        function casinoHasUrgentActivity() {
+            if (state.wheel?.spinning) return true;
+            if (state.blackjack?.status === 'playing') return true;
+            if (state.racing?.racing) return true;
+            if (state.roulette?.spinning) return true;
 
-    const myId = String(autoUserId || '');
-    if (!myId) return false;
+            const myId = String(autoUserId || '');
+            if (!myId) return false;
 
-    if ((state.wheel?.bets || []).some(b => String(b.playerId) === myId)) return true;
-    if ((state.blackjack?.bets || []).some(b => String(b.playerId) === myId)) return true;
-    if ((state.racing?.bets || []).some(b => String(b.playerId) === myId)) return true;
-    if ((state.roulette?.bets || []).some(b => String(b.playerId) === myId)) return true;
+            if ((state.wheel?.bets || []).some(b => String(b.playerId) === myId)) return true;
+            if ((state.blackjack?.bets || []).some(b => String(b.playerId) === myId)) return true;
+            if ((state.racing?.bets || []).some(b => String(b.playerId) === myId)) return true;
+            if ((state.roulette?.bets || []).some(b => String(b.playerId) === myId)) return true;
 
-    if (state.mines?.games?.[myId]) return true;
-    if (state.deal?.games?.[myId]) return true;
-    if (state.chicken?.games?.[myId]) return true;
-    if (minesRevealPending) return true;
-    if (slotAnimating || slotAutoSpinActive) return true;
-    if (dailySpinBusy) return true;
+            if (state.mines?.games?.[myId]) return true;
+            if (state.deal?.games?.[myId]) return true;
+            if (state.chicken?.games?.[myId]) return true;
+            if (minesRevealPending) return true;
+            if (slotAnimating || slotAutoSpinActive) return true;
+            if (dailySpinBusy) return true;
 
-    const countdowns = [
-        state.wheel?.autoStartAt,
-        state.blackjack?.autoStartAt,
-        state.racing?.autoStartAt,
-        state.roulette?.autoStartAt
-    ];
+            const countdowns = [
+                state.wheel?.autoStartAt,
+                state.blackjack?.autoStartAt,
+                state.racing?.autoStartAt,
+                state.roulette?.autoStartAt
+            ];
 
-    if (countdowns.some(t => t && (Number(t) - Date.now()) < COUNTDOWN_URGENCY_WINDOW_MS)) {
-        return true;
-    }
+            if (countdowns.some(t => t && (Number(t) - Date.now()) < COUNTDOWN_URGENCY_WINDOW_MS)) {
+                return true;
+            }
 
-    return false;
-}
+            return false;
+        }
 
-function getCasinoPollIntervalMs() {
-    if (document.body.classList.contains('userappHidden')) {
-        return POLL_HIDDEN_MS;
-    }
+        function getCasinoPollIntervalMs() {
+            if (document.body.classList.contains('userappHidden')) {
+                return POLL_HIDDEN_MS;
+            }
 
-    if (casinoHasUrgentActivity()) {
-        return POLL_ACTIVE_MS;
-    }
+            if (casinoHasUrgentActivity()) {
+                return POLL_ACTIVE_MS;
+            }
 
-    const idleFor = Date.now() - lastUserActivityAt;
+            const idleFor = Date.now() - lastUserActivityAt;
 
-    return idleFor < ACTIVITY_IDLE_THRESHOLD_MS
-        ? POLL_ACTIVE_MS
-        : POLL_IDLE_MS;
-}
+            return idleFor < ACTIVITY_IDLE_THRESHOLD_MS
+                ? POLL_ACTIVE_MS
+                : POLL_IDLE_MS;
+        }
         const WHEEL_SEGMENTS = [{
             multiplier: 0,
             label: "x0",
@@ -4968,7 +4932,7 @@ function getCasinoPollIntervalMs() {
                     ? json.results
                     : [];
 
-const summary = `
+                const summary = `
     <div class="playerAuditSummary">
         <b>${escapeHtml(player.playerName || "Player")}</b>
         (${escapeHtml(player.playerId || playerId)})
@@ -4994,11 +4958,10 @@ const summary = `
         Daily spin chips since last withdrawal:
         <b>${shortMoney(player.dailySpinChipsSinceLastWithdrawal || 0)} chips</b>
         ${player.dailySpinCountSinceLastWithdrawal ? ` (${player.dailySpinCountSinceLastWithdrawal}x)` : ""}
-        ${
-            player.hadWithdrawal
-                ? `<br><span class="small">Last withdrawal: ${shortMoney(player.lastWithdrawalAmount || 0)} chips on ${formatAuditDate(player.lastWithdrawalAt)}</span>`
-                : `<br><span class="small">No completed withdrawals on record — tracked since this player's first transaction.</span>`
-        }
+        ${player.hadWithdrawal
+                        ? `<br><span class="small">Last withdrawal: ${shortMoney(player.lastWithdrawalAmount || 0)} chips on ${formatAuditDate(player.lastWithdrawalAt)}</span>`
+                        : `<br><span class="small">No completed withdrawals on record — tracked since this player's first transaction.</span>`
+                    }
     </div>
 `;
 
@@ -5027,13 +4990,12 @@ const summary = `
                                         ${escapeHtml(auditOutcomeLabel(outcome))}
                                         • ${escapeHtml(result.gameType || "casino")}
                                     </span>
-                                    <span class="${
-                                        net > 0
-                                            ? "win"
-                                            : net < 0
-                                                ? "loss"
-                                                : "neutral"
-                                    }">
+                                    <span class="${net > 0
+                                ? "win"
+                                : net < 0
+                                    ? "loss"
+                                    : "neutral"
+                            }">
                                         ${escapeHtml(netText)}
                                     </span>
                                 </div>
@@ -5200,12 +5162,12 @@ const summary = `
                 const requestStartedAt = Date.now();
                 const requestStartedMinesVersion = minesActionVersion;
                 const stateQuery = autoUserId
-    ? '?playerId=' + encodeURIComponent(autoUserId)
-    : '';
+                    ? '?playerId=' + encodeURIComponent(autoUserId)
+                    : '';
 
-const json = await apiRequest('/state' + stateQuery, {
-    token: adminToken || undefined
-});
+                const json = await apiRequest('/state' + stateQuery, {
+                    token: adminToken || undefined
+                });
                 const requestFinishedAt = Date.now();
 
                 const minesVersionAtRequest =
@@ -5214,7 +5176,7 @@ const json = await apiRequest('/state' + stateQuery, {
                 const currentMinesState = state.mines;
                 state = json.state || state;
 
-             
+
                 if (
                     minesVersionAtRequest !== minesActionVersion &&
                     currentMinesState
@@ -5246,53 +5208,53 @@ const json = await apiRequest('/state' + stateQuery, {
                     setStatus(lastPollError.substring(0, 28))
             }
         }
-     function scheduleNextCasinoPoll() {
-    if (pollTimeoutHandle) {
-        clearTimeout(pollTimeoutHandle);
-    }
+        function scheduleNextCasinoPoll() {
+            if (pollTimeoutHandle) {
+                clearTimeout(pollTimeoutHandle);
+            }
 
-    const interval = getCasinoPollIntervalMs();
+            const interval = getCasinoPollIntervalMs();
 
-    pollTimeoutHandle = setTimeout(async () => {
-        await refreshState(true);
-        scheduleNextCasinoPoll();
-    }, interval);
-}
+            pollTimeoutHandle = setTimeout(async () => {
+                await refreshState(true);
+                scheduleNextCasinoPoll();
+            }, interval);
+        }
 
-function startPolling() {
-    if (pollTimeoutHandle) {
-        clearTimeout(pollTimeoutHandle);
-        pollTimeoutHandle = null;
-    }
+        function startPolling() {
+            if (pollTimeoutHandle) {
+                clearTimeout(pollTimeoutHandle);
+                pollTimeoutHandle = null;
+            }
 
-    refreshState(false).finally(scheduleNextCasinoPoll);
-}
+            refreshState(false).finally(scheduleNextCasinoPoll);
+        }
 
-function pokeCasinoPolling() {
-    markCasinoUserActivity();
+        function pokeCasinoPolling() {
+            markCasinoUserActivity();
 
-    if (pollTimeoutHandle) {
-        clearTimeout(pollTimeoutHandle);
-        pollTimeoutHandle = null;
-    }
+            if (pollTimeoutHandle) {
+                clearTimeout(pollTimeoutHandle);
+                pollTimeoutHandle = null;
+            }
 
-    refreshState(true).finally(scheduleNextCasinoPoll);
-}
+            refreshState(true).finally(scheduleNextCasinoPoll);
+        }
         function getChipState() {
             return state.chips || { balances: {}, requests: [] };
         }
 
-   function getMyChipBalance() {
-    const balances = getChipState().balances || {};
-    const entry = balances[String(autoUserId)] ?? 0;
-    const raw = typeof entry === 'object' ? entry.balance : entry;
+        function getMyChipBalance() {
+            const balances = getChipState().balances || {};
+            const entry = balances[String(autoUserId)] ?? 0;
+            const raw = typeof entry === 'object' ? entry.balance : entry;
 
-    if (raw === "∞") {
-        return Number.MAX_SAFE_INTEGER;
-    }
+            if (raw === "∞") {
+                return Number.MAX_SAFE_INTEGER;
+            }
 
-    return Math.max(0, Math.floor(Number(raw) || 0));
-}
+            return Math.max(0, Math.floor(Number(raw) || 0));
+        }
 
         function showCasinoConfirm({
             title = "Confirm Action",
@@ -5483,12 +5445,10 @@ function pokeCasinoPolling() {
             $("resetAllChipsConfirmation").value = "";
 
             setStatus(
-                `RESET DONE: ${
-                    json.previousPlayerCount || 0
-                } players, ${
-                    shortMoney(
-                        json.previousTotalChips || 0
-                    )
+                `RESET DONE: ${json.previousPlayerCount || 0
+                } players, ${shortMoney(
+                    json.previousTotalChips || 0
+                )
                 } chips cleared`,
                 7000
             );
@@ -5545,10 +5505,9 @@ function pokeCasinoPolling() {
                 ) > 0
             ) {
                 setStatus(
-                    `Welcome bonus: +${
-                        shortMoney(
-                            json.startingBonusGranted
-                        )
+                    `Welcome bonus: +${shortMoney(
+                        json.startingBonusGranted
+                    )
                     } chips`,
                     5000
                 );
@@ -5898,36 +5857,36 @@ function pokeCasinoPolling() {
         }
 
         async function approveWithdrawalRequest(withdrawalRequestId) {
-    if (!adminToken) return setStatus('LOCKED', 1500);
-    try {
-        const json = await apiRequest('/chips/withdrawal-approve', {
-            method: 'POST',
-            token: adminToken,
-            body: { withdrawalRequestId, requesterId: autoUserId }
-        });
-        state = json.state || state;
-        setStatus('WITHDRAWAL APPROVED', 2200);
-        render();
-    } catch (e) {
-        setStatus(String(e.message || e), 2800);
-    }
-}
+            if (!adminToken) return setStatus('LOCKED', 1500);
+            try {
+                const json = await apiRequest('/chips/withdrawal-approve', {
+                    method: 'POST',
+                    token: adminToken,
+                    body: { withdrawalRequestId, requesterId: autoUserId }
+                });
+                state = json.state || state;
+                setStatus('WITHDRAWAL APPROVED', 2200);
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2800);
+            }
+        }
 
-async function denyWithdrawalRequest(withdrawalRequestId) {
-    if (!adminToken) return setStatus('LOCKED', 1500);
-    try {
-        const json = await apiRequest('/chips/withdrawal-deny', {
-            method: 'POST',
-            token: adminToken,
-            body: { withdrawalRequestId, requesterId: autoUserId }
-        });
-        state = json.state || state;
-        setStatus('WITHDRAWAL DENIED', 2200);
-        render();
-    } catch (e) {
-        setStatus(String(e.message || e), 2800);
-    }
-}
+        async function denyWithdrawalRequest(withdrawalRequestId) {
+            if (!adminToken) return setStatus('LOCKED', 1500);
+            try {
+                const json = await apiRequest('/chips/withdrawal-deny', {
+                    method: 'POST',
+                    token: adminToken,
+                    body: { withdrawalRequestId, requesterId: autoUserId }
+                });
+                state = json.state || state;
+                setStatus('WITHDRAWAL DENIED', 2200);
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2800);
+            }
+        }
 
         async function submitBet() {
             const playerName = String(autoName || '').trim()
@@ -6043,13 +6002,12 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                             return `
                                 <div class="dailyGameRow">
                                     <span>${escapeHtml(gameName)}</span>
-                                    <strong class="${
-                                        gameProfit > 0
-                                            ? 'win'
-                                            : gameProfit < 0
-                                                ? 'loss'
-                                                : 'neutral'
-                                    }">
+                                    <strong class="${gameProfit > 0
+                                    ? 'win'
+                                    : gameProfit < 0
+                                        ? 'loss'
+                                        : 'neutral'
+                                }">
                                         ${gameProfit >= 0 ? '+' : '-'}${formatProfitAmount(gameProfit)}
                                         <span style="display:block;font-size:9px;opacity:.72;font-weight:700;">
                                             Real ${Number(game?.realMoney?.profit || 0) >= 0 ? '+' : '-'}${formatProfitAmount(game?.realMoney?.profit || 0)}
@@ -6594,7 +6552,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             await wait(700);
             for (const step of steps) {
                 $('slotGrid').classList.add('spinning');
-                
+
                 const fakeTimer = setInterval(() => {
                     const fakeGrid = step.grid.map(row => [...row]);
                     const lockedColumns = new Set(
@@ -6700,7 +6658,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
             if (!awarded) return;
 
-           
+
             playSlotBonusSound();
 
             document
@@ -6752,7 +6710,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                 Math.floor(
                     Number(
                         state.slots?.freeSpins?.[
-                            String(autoUserId)
+                        String(autoUserId)
                         ] || 0
                     )
                 )
@@ -6777,8 +6735,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
             if (amountText) {
                 amountText.textContent =
-                    `${freeSpins} FREE SPIN${
-                        freeSpins === 1 ? "" : "S"
+                    `${freeSpins} FREE SPIN${freeSpins === 1 ? "" : "S"
                     } AVAILABLE`;
             }
 
@@ -6860,7 +6817,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
             gif.classList.remove("active");
 
-         
+
             gif.src = "";
             void gif.offsetWidth;
             gif.src = "./dancing-donald.gif";
@@ -6925,7 +6882,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     const freeSpins =
                         Number(
                             state.slots?.freeSpins?.[
-                                playerId
+                            playerId
                             ] || 0
                         );
 
@@ -6948,7 +6905,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     if (
                         freeSpins <= 0 &&
                         amount >
-                            getMyChipBalance()
+                        getMyChipBalance()
                     ) {
                         stopSlotAutoSpin(
                             "AUTO SPIN STOPPED: NOT ENOUGH CHIPS"
@@ -7086,16 +7043,16 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                 $('slotResultSub').textContent =
                     json.result.message || 'Spin complete';
 
-            
+
                 await wait(650);
 
-             
+
                 heldSlotFreeSpinDisplay = null;
                 slotAnimating = false;
 
                 render();
 
-                
+
                 await wait(100);
 
                 if (json.result.payout > 0) {
@@ -7472,11 +7429,11 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     return;
                 }
             } catch (error) {
-             
+
                 try {
                     await refreshState(true);
                 } catch (_) {
-                   
+
                 }
 
                 setStatus(
@@ -7786,8 +7743,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
             if ($("rouletteRoundStakeSummary")) {
                 $("rouletteRoundStakeSummary").textContent =
-                    `Total staked this round: ${
-                        shortMoney(totalRoundStake)
+                    `Total staked this round: ${shortMoney(totalRoundStake)
                     } chips`;
             }
 
@@ -7826,37 +7782,36 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                                 (${entry.winningColor})
                             </div>
                             <div class="betRight">
-                                ${
-                                    (entry.results || [])
-                                        .filter(
-                                            result =>
-                                                String(result.playerId) ===
-                                                String(autoUserId)
-                                        )
-                                        .reduce(
-                                            (sum, result) =>
-                                                sum + Number(
-                                                    result.profit || 0
-                                                ),
-                                            0
-                                        ) >= 0
-                                        ? "+"
-                                        : ""
-                                }${shortMoney(
-                                    (entry.results || [])
-                                        .filter(
-                                            result =>
-                                                String(result.playerId) ===
-                                                String(autoUserId)
-                                        )
-                                        .reduce(
-                                            (sum, result) =>
-                                                sum + Number(
-                                                    result.profit || 0
-                                                ),
-                                            0
-                                        )
-                                )}
+                                ${(entry.results || [])
+                            .filter(
+                                result =>
+                                    String(result.playerId) ===
+                                    String(autoUserId)
+                            )
+                            .reduce(
+                                (sum, result) =>
+                                    sum + Number(
+                                        result.profit || 0
+                                    ),
+                                0
+                            ) >= 0
+                            ? "+"
+                            : ""
+                        }${shortMoney(
+                            (entry.results || [])
+                                .filter(
+                                    result =>
+                                        String(result.playerId) ===
+                                        String(autoUserId)
+                                )
+                                .reduce(
+                                    (sum, result) =>
+                                        sum + Number(
+                                            result.profit || 0
+                                        ),
+                                    0
+                                )
+                        )}
                             </div>
                         </div>
                     `).join("");
@@ -7864,7 +7819,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             if (
                 roulette.activeSpin &&
                 roulette.activeSpin.spinId !==
-                    rouletteVisualSpinId
+                rouletteVisualSpinId
             ) {
                 rouletteVisualSpinId =
                     roulette.activeSpin.spinId;
@@ -7967,7 +7922,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                         () => {
                             if (
                                 state.chicken?.games?.[
-                                    String(autoUserId)
+                                String(autoUserId)
                                 ]
                             ) {
                                 return;
@@ -8185,7 +8140,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
                             const previousGame =
                                 state.chicken?.games?.[
-                                    String(autoUserId)
+                                String(autoUserId)
                                 ] || null;
 
                             chickenFinishedView = {
@@ -8234,7 +8189,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
                         render();
 
-                       
+
                         await new Promise(resolve =>
                             setTimeout(resolve, 75)
                         );
@@ -8259,7 +8214,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                 () => {
                     const game =
                         state.chicken?.games?.[
-                            String(autoUserId)
+                        String(autoUserId)
                         ];
 
                     if (!game || chickenGameEnded) {
@@ -8298,7 +8253,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
                         const previousGame =
                             state.chicken?.games?.[
-                                String(autoUserId)
+                            String(autoUserId)
                             ] || null;
 
                         chickenFinishedView = {
@@ -8412,26 +8367,24 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                                         <div class="betLeft">
                                             <b>#${entry.position}</b>
                                             ${escapeHtml(
-                                                entry.playerName
-                                            )}
-                                            ${
-                                                String(entry.playerId) ===
-                                                String(autoUserId)
-                                                    ? " 👈"
-                                                    : ""
-                                            }
+                                    entry.playerName
+                                )}
+                                            ${String(entry.playerId) ===
+                                        String(autoUserId)
+                                        ? " 👈"
+                                        : ""
+                                    }
                                         </div>
                                         <div class="betRight">
                                             Spent ${shortMoney(
-                                                entry.moneySpent
-                                            )}
+                                        entry.moneySpent
+                                    )}
                                             <br>
                                             <span style="font-size:10px;opacity:.8;">
-                                                ${
-                                                    lost >= 0
-                                                        ? `Lost ${shortMoney(lost)}`
-                                                        : `Profit +${shortMoney(Math.abs(lost))}`
-                                                }
+                                                ${lost >= 0
+                                        ? `Lost ${shortMoney(lost)}`
+                                        : `Profit +${shortMoney(Math.abs(lost))}`
+                                    }
                                             </span>
                                         </div>
                                     </div>
@@ -8482,16 +8435,16 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                 loadGamblingLeaderboard;
         }
 
-    setInterval(() => {
-    if (document.body.classList.contains('userappHidden')) return;
+        setInterval(() => {
+            if (document.body.classList.contains('userappHidden')) return;
 
-    const idleFor = Date.now() - lastUserActivityAt;
-    if (idleFor > ACTIVITY_IDLE_THRESHOLD_MS && !casinoHasUrgentActivity()) return;
+            const idleFor = Date.now() - lastUserActivityAt;
+            if (idleFor > ACTIVITY_IDLE_THRESHOLD_MS && !casinoHasUrgentActivity()) return;
 
-    if (typeof loadGamblingLeaderboard === "function") {
-        loadGamblingLeaderboard();
-    }
-}, 30000);
+            if (typeof loadGamblingLeaderboard === "function") {
+                loadGamblingLeaderboard();
+            }
+        }, 30000);
 
         setTimeout(() => {
             if (
@@ -8587,10 +8540,10 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                         <div class="dailySpinPrizeItem">
                             <b>${escapeHtml(prize.label || "Prize")}</b><br>
                             ${prize.type === "chips"
-                                ? `${shortMoney(prize.amount || 0)} chips`
-                                : prize.type === "item"
-                                    ? `${Number(prize.quantity || 1)}x in-game item`
-                                    : "No prize"}
+                            ? `${shortMoney(prize.amount || 0)} chips`
+                            : prize.type === "item"
+                                ? `${Number(prize.quantity || 1)}x in-game item`
+                                : "No prize"}
                         </div>
                     `).join("")
                     : '<div class="emptyState">Prize list unavailable.</div>';
@@ -8617,10 +8570,10 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     <div class="panelTitle">${escapeHtml(last.prizeLabel || "Daily prize")}</div>
                     <div class="small">
                         ${last.prizeType === "chips"
-                            ? `${shortMoney(last.amount || 0)} chips were added instantly.`
-                            : last.prizeType === "item"
-                                ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
-                                : "Better luck this time!"}
+                        ? `${shortMoney(last.amount || 0)} chips were added instantly.`
+                        : last.prizeType === "item"
+                            ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
+                            : "Better luck this time!"}
                     </div>
                 `;
             } else {
@@ -8786,38 +8739,32 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
                     return `
                         <button
-                            class="dealCase ${
-                                opened ? "opened" : ""
-                            } ${
-                                chosen ? "chosen" : ""
-                            } ${
-                                finishedChosen
-                                    ? "finalChosen"
-                                    : ""
-                            }"
+                            class="dealCase ${opened ? "opened" : ""
+                        } ${chosen ? "chosen" : ""
+                        } ${finishedChosen
+                            ? "finalChosen"
+                            : ""
+                        }"
                             data-case="${index}"
-                            ${
-                                showingFinishedView ||
-                                opened ||
-                                (game && chosen)
-                                    ? "disabled"
-                                    : ""
-                            }
+                            ${showingFinishedView ||
+                            opened ||
+                            (game && chosen)
+                            ? "disabled"
+                            : ""
+                        }
                         >
                             CASE ${index + 1}
-                            ${
-                                finishedChosen
-                                    ? `<span class="dealCaseValue">${
-                                        game.acceptedDeal
-                                            ? "YOUR CASE WAS"
-                                            : "YOUR CASE"
-                                    }: ${shortMoney(value)}</span>`
-                                    : opened
-                                        ? `<span class="dealCaseValue">${shortMoney(value)}</span>`
-                                        : chosen
-                                            ? `<span class="dealCaseValue">YOUR CASE</span>`
-                                            : ""
-                            }
+                            ${finishedChosen
+                            ? `<span class="dealCaseValue">${game.acceptedDeal
+                                ? "YOUR CASE WAS"
+                                : "YOUR CASE"
+                            }: ${shortMoney(value)}</span>`
+                            : opened
+                                ? `<span class="dealCaseValue">${shortMoney(value)}</span>`
+                                : chosen
+                                    ? `<span class="dealCaseValue">YOUR CASE</span>`
+                                    : ""
+                        }
                         </button>
                     `;
                 }
@@ -8876,8 +8823,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                             : `Case ${selectedDealCase + 1} selected`
                         : offer > 0
                             ? "Deal or No Deal?"
-                            : `Open ${game.casesToOpen || 0} more case${
-                                game.casesToOpen === 1 ? "" : "s"
+                            : `Open ${game.casesToOpen || 0} more case${game.casesToOpen === 1 ? "" : "s"
                             }`;
 
             $("dealStartButton").disabled =
@@ -8902,14 +8848,13 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                         <div class="dealPrize">
                             x${multiplier}
                             <b style="float:right;color:#ffd84d">
-                                ${
-                                    displayBet
-                                        ? shortMoney(
-                                            displayBet *
-                                            multiplier
-                                        )
-                                        : "—"
-                                }
+                                ${displayBet
+                            ? shortMoney(
+                                displayBet *
+                                multiplier
+                            )
+                            : "—"
+                        }
                             </b>
                         </div>
                     `
@@ -8931,8 +8876,8 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                             <div class="historyRow">
                                 <div>
                                     ${entry.result === "deal"
-                                        ? "Accepted deal"
-                                        : "Kept chosen case"}
+                                ? "Accepted deal"
+                                : "Kept chosen case"}
                                 </div>
                                 <div class="betRight">
                                     ${shortMoney(entry.payout)}
@@ -8941,7 +8886,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                             </div>
                         `)
                         .join("") ||
-                        '<div class="emptyState">No deal games yet.</div>';
+                    '<div class="emptyState">No deal games yet.</div>';
         }
 
         async function startDealGame() {
@@ -8983,7 +8928,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
         async function openDealCase(caseIndex) {
             const currentGameBeforeOpen =
                 state.deal?.games?.[
-                    String(autoUserId)
+                String(autoUserId)
                 ] || null;
 
             const previousOpenedCases = [
@@ -9095,7 +9040,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
         async function answerDealOffer(accept) {
             const currentGameBeforeAnswer =
                 state.deal?.games?.[
-                    String(autoUserId)
+                String(autoUserId)
                 ] || null;
 
             const json = await apiRequest(
@@ -9486,7 +9431,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                 state.chicken?.maxSteps || 12
             );
 
-           
+
             const numericStep = Math.max(
                 0,
                 Math.min(
@@ -9499,7 +9444,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             let focusLane = null;
 
             if (numericStep === 0) {
-              
+
                 const firstLane =
                     getChickenLane(1);
 
@@ -9511,7 +9456,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     focusLane = firstLane;
                 }
             } else if (numericStep < maxSteps) {
-               
+
                 const nextLane =
                     getChickenLane(
                         numericStep + 1
@@ -9527,7 +9472,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     focusLane = nextLane;
                 }
             } else {
-              
+
                 const finalLane =
                     getChickenLane(maxSteps);
 
@@ -9544,11 +9489,10 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                 `${Math.max(2, left)}px`;
 
             chicken.style.top =
-                `${
-                    (
-                        road.clientHeight -
-                        chicken.offsetHeight
-                    ) / 2
+                `${(
+                    road.clientHeight -
+                    chicken.offsetHeight
+                ) / 2
                 }px`;
 
             if (animate) {
@@ -9588,12 +9532,11 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             car.textContent = "🚗";
 
             car.style.left =
-                `${
-                    lane.offsetLeft +
-                    (
-                        lane.offsetWidth -
-                        38
-                    ) / 2
+                `${lane.offsetLeft +
+                (
+                    lane.offsetWidth -
+                    38
+                ) / 2
                 }px`;
 
             road.appendChild(car);
@@ -9606,7 +9549,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
         }
 
         function animateChickenSafeCross(crossedStep) {
-            
+
             positionChicken(
                 crossedStep,
                 true
@@ -9632,20 +9575,18 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                 failedLane
             ) {
                 chicken.style.left =
-                    `${
-                        failedLane.offsetLeft +
-                        (
-                            failedLane.offsetWidth -
-                            chicken.offsetWidth
-                        ) / 2
+                    `${failedLane.offsetLeft +
+                    (
+                        failedLane.offsetWidth -
+                        chicken.offsetWidth
+                    ) / 2
                     }px`;
 
                 chicken.style.top =
-                    `${
-                        (
-                            $("chickenRoad").clientHeight -
-                            chicken.offsetHeight
-                        ) / 2
+                    `${(
+                        $("chickenRoad").clientHeight -
+                        chicken.offsetHeight
+                    ) / 2
                     }px`;
             }
 
@@ -9684,7 +9625,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
 
             const activeGame =
                 chickenState.games?.[
-                    String(autoUserId)
+                String(autoUserId)
                 ] || null;
 
             const game =
@@ -9723,7 +9664,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                         lane.dataset.step || 0
                     );
 
-               
+
                     lane.classList.remove("hit");
 
                     lane.classList.toggle(
@@ -9765,12 +9706,11 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     chickenCharacter
                 ) {
                     chickenCharacter.style.left =
-                        `${
-                            failedLane.offsetLeft +
-                            (
-                                failedLane.offsetWidth -
-                                chickenCharacter.offsetWidth
-                            ) / 2
+                        `${failedLane.offsetLeft +
+                        (
+                            failedLane.offsetWidth -
+                            chickenCharacter.offsetWidth
+                        ) / 2
                         }px`;
                 }
 
@@ -9810,8 +9750,8 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
                     $("chickenGameStatus").innerHTML =
                         game
                             ? `🐔 <b>${game.riskLabel}</b> risk • ` +
-                              `Lane <b>${currentStep}/${maxSteps}</b> • ` +
-                              `Bet <b>${shortMoney(game.betAmount)}</b> chips`
+                            `Lane <b>${currentStep}/${maxSteps}</b> • ` +
+                            `Bet <b>${shortMoney(game.betAmount)}</b> chips`
                             : "Choose a risk level and enter a bet to begin.";
                 }
             }
@@ -9910,7 +9850,7 @@ async function denyWithdrawalRequest(withdrawalRequestId) {
             }
         }
 
-function render() {
+        function render() {
             registerCasinoPlayer().catch(error => {
                 console.error(
                     "Casino player registration failed:",
@@ -9933,7 +9873,7 @@ function render() {
 
             try {
                 renderChicken();
-            renderDailySpin();
+                renderDailySpin();
             } catch (error) {
                 console.error(
                     "Chicken Crossing render failed:",
@@ -9962,22 +9902,22 @@ function render() {
             }
             renderBlacklistLock();
 
-          const chipBalance = getMyChipBalance();
-const requests = Array.isArray(chipState.requests) ? chipState.requests : [];
-const myRequest = requests.find(r => String(r.playerId) === String(autoUserId));
+            const chipBalance = getMyChipBalance();
+            const requests = Array.isArray(chipState.requests) ? chipState.requests : [];
+            const myRequest = requests.find(r => String(r.playerId) === String(autoUserId));
 
-const withdrawalRequests =
-    Array.isArray(chipState?.withdrawalRequests)
-        ? chipState.withdrawalRequests
-        : [];
+            const withdrawalRequests =
+                Array.isArray(chipState?.withdrawalRequests)
+                    ? chipState.withdrawalRequests
+                    : [];
 
-updatePearBadge(requests.length + withdrawalRequests.length);
+            updatePearBadge(requests.length + withdrawalRequests.length);
 
-const withdrawalBox = $('withdrawalRequestsBox');
-if (withdrawalBox) {
-    withdrawalBox.innerHTML = !withdrawalRequests.length
-        ? '<div class="emptyState">No withdrawal requests.</div>'
-        : withdrawalRequests.map(r => `
+            const withdrawalBox = $('withdrawalRequestsBox');
+            if (withdrawalBox) {
+                withdrawalBox.innerHTML = !withdrawalRequests.length
+                    ? '<div class="emptyState">No withdrawal requests.</div>'
+                    : withdrawalRequests.map(r => `
             <div class="bankerRequest">
                 <div class="betRow">
                     <div class="betLeft"><b>${escapeHtml(r.playerName)}</b> (${escapeHtml(r.playerId)})</div>
@@ -9990,7 +9930,7 @@ if (withdrawalBox) {
                 </div>
             </div>
         `).join('');
-}
+            }
 
             const myWithdrawalRequest =
                 withdrawalRequests.find(
@@ -10102,11 +10042,11 @@ if (withdrawalBox) {
             if (localPlayer) {
                 $('bjPlayerCards').innerHTML = renderCards(localPlayer.hand || []);
                 $('bjPlayerTotal').textContent =
-    'Total: ' + (
-        Number.isFinite(Number(localPlayer.total))
-            ? Number(localPlayer.total)
-            : '--'
-    );
+                    'Total: ' + (
+                        Number.isFinite(Number(localPlayer.total))
+                            ? Number(localPlayer.total)
+                            : '--'
+                    );
             } else {
                 $('bjPlayerCards').innerHTML = '';
                 $('bjPlayerTotal').textContent = 'Total: --';
@@ -10252,7 +10192,7 @@ if (withdrawalBox) {
             const percentage = Math.max(5, Math.min(100, Number(v) || 78));
             const opacity = percentage / 100;
 
-        
+
             document.documentElement.style.setProperty(
                 '--ui-opacity',
                 String(opacity)
@@ -11071,108 +11011,108 @@ if (withdrawalBox) {
             loadOpacity();
             bindUserSettingsControls();
             $("roulettePlaceBetButton")?.addEventListener(
-            "click",
-            () => {
-                placeRouletteBet().catch(error => {
-                    setStatus(
-                        error.message ||
-                        "Roulette bet failed",
-                        4000
-                    );
-                });
-            }
-        );
-
-        $("rouletteClearBetsButton")?.addEventListener(
-            "click",
-            () => {
-                clearMyRouletteBets().catch(error => {
-                    setStatus(
-                        error.message ||
-                        "Could not clear roulette bets",
-                        4000
-                    );
-                });
-            }
-        );
-
-        $("dealStartButton")?.addEventListener(
-            "click",
-            () => {
-                startDealGame().catch(error => {
-                    setStatus(
-                        error.message || "Could not start game",
-                        4000
-                    );
-                });
-            }
-        );
-
-        $("dealAcceptButton")?.addEventListener(
-            "click",
-            () => {
-                answerDealOffer(true).catch(error => {
-                    setStatus(
-                        error.message || "Could not accept deal",
-                        4000
-                    );
-                });
-            }
-        );
-
-        $("dealRejectButton")?.addEventListener(
-            "click",
-            () => {
-                answerDealOffer(false).catch(error => {
-                    setStatus(
-                        error.message || "Could not reject deal",
-                        4000
-                    );
-                });
-            }
-        );
-
-        $("dealBetInput")?.addEventListener(
-            "input",
-            renderDealGame
-        );
-
-        const resetPlayerButton =
-            $("resetPlayerButton");
-
-        if (resetPlayerButton) {
-            resetPlayerButton.addEventListener(
                 "click",
                 () => {
-                    resetIndividualCasinoPlayer().catch(error => {
+                    placeRouletteBet().catch(error => {
                         setStatus(
-                            error.message || "Player reset failed",
+                            error.message ||
+                            "Roulette bet failed",
                             4000
                         );
                     });
                 }
             );
-        }
 
-        const resetAllChipsButton =
-            $("resetAllChipsButton");
-
-        if (resetAllChipsButton) {
-            resetAllChipsButton.addEventListener(
+            $("rouletteClearBetsButton")?.addEventListener(
                 "click",
                 () => {
-                    resetAllCasinoChips().catch(error => {
+                    clearMyRouletteBets().catch(error => {
                         setStatus(
-                            error.message || "Reset failed",
+                            error.message ||
+                            "Could not clear roulette bets",
                             4000
                         );
                     });
                 }
             );
-        }
 
-        enableMoneyInputs();
-        buildWheelFace();
+            $("dealStartButton")?.addEventListener(
+                "click",
+                () => {
+                    startDealGame().catch(error => {
+                        setStatus(
+                            error.message || "Could not start game",
+                            4000
+                        );
+                    });
+                }
+            );
+
+            $("dealAcceptButton")?.addEventListener(
+                "click",
+                () => {
+                    answerDealOffer(true).catch(error => {
+                        setStatus(
+                            error.message || "Could not accept deal",
+                            4000
+                        );
+                    });
+                }
+            );
+
+            $("dealRejectButton")?.addEventListener(
+                "click",
+                () => {
+                    answerDealOffer(false).catch(error => {
+                        setStatus(
+                            error.message || "Could not reject deal",
+                            4000
+                        );
+                    });
+                }
+            );
+
+            $("dealBetInput")?.addEventListener(
+                "input",
+                renderDealGame
+            );
+
+            const resetPlayerButton =
+                $("resetPlayerButton");
+
+            if (resetPlayerButton) {
+                resetPlayerButton.addEventListener(
+                    "click",
+                    () => {
+                        resetIndividualCasinoPlayer().catch(error => {
+                            setStatus(
+                                error.message || "Player reset failed",
+                                4000
+                            );
+                        });
+                    }
+                );
+            }
+
+            const resetAllChipsButton =
+                $("resetAllChipsButton");
+
+            if (resetAllChipsButton) {
+                resetAllChipsButton.addEventListener(
+                    "click",
+                    () => {
+                        resetAllCasinoChips().catch(error => {
+                            setStatus(
+                                error.message || "Reset failed",
+                                4000
+                            );
+                        });
+                    }
+                );
+            }
+
+            enableMoneyInputs();
+            buildWheelFace();
             updateDetectedPlayerDisplay();
             $('settings-icon').addEventListener('click', e => {
                 toggleSettingsPanel();
@@ -11209,7 +11149,7 @@ if (withdrawalBox) {
                                 'selected',
                                 enteredAmount > 0 &&
                                 Number(button.dataset.amount) ===
-                                    enteredAmount
+                                enteredAmount
                             );
                         });
                 });
@@ -11282,7 +11222,7 @@ if (withdrawalBox) {
                     const freeSpins =
                         Number(
                             state.slots?.freeSpins?.[
-                                playerId
+                            playerId
                             ] || 0
                         );
 
@@ -11348,7 +11288,7 @@ if (withdrawalBox) {
             );
 
             window.addEventListener("resize", updateArrows);
-///Fuck AI and Fuck anyone looking for AI Content! 
+            ///Fuck AI and Fuck anyone looking for AI Content! 
 
             pinApp();
             requestGameData();
@@ -11407,21 +11347,21 @@ if (withdrawalBox) {
                 document.body.classList.add("userappHidden");
             }
 
-           function showCasinoUserapp() {
-    document.body.classList.remove("userappHidden");
+            function showCasinoUserapp() {
+                document.body.classList.remove("userappHidden");
 
-    if (typeof pokeCasinoPolling === "function") {
-        pokeCasinoPolling();
-    }
+                if (typeof pokeCasinoPolling === "function") {
+                    pokeCasinoPolling();
+                }
 
-    if (typeof render === "function") {
-        try {
-            render();
-        } catch (error) {
-            console.warn("Could not refresh casino after unhide:", error);
-        }
-    }
-}
+                if (typeof render === "function") {
+                    try {
+                        render();
+                    } catch (error) {
+                        console.warn("Could not refresh casino after unhide:", error);
+                    }
+                }
+            }
 
             function addHelpButtonsToPages() {
                 document.querySelectorAll(".tabPage").forEach(page => {
