@@ -13,6 +13,8 @@
             height: 100%;
             background: transparent !important;
             overflow: hidden;
+            position: relative;
+            color: white;
             font-family:
                 Segoe UI,
                 Arial,
@@ -61,6 +63,7 @@
         }
 
         #overlay {
+            z-index: 200005;
             max-height: 84vh;
             position: fixed;
             left: 40px;
@@ -3049,6 +3052,28 @@
 </head>
 
 <body>
+    <script>
+        try {
+            document.body.classList.remove('userappHidden');
+            const overlay = document.getElementById('overlay');
+            if (overlay) {
+                overlay.style.display = 'block';
+                overlay.style.opacity = '1';
+                overlay.style.visibility = 'visible';
+                overlay.style.pointerEvents = 'auto';
+                overlay.style.zIndex = '200005';
+            }
+            const splash = document.getElementById('welcomeSplash');
+            if (splash) {
+                splash.style.display = 'flex';
+                splash.style.opacity = '1';
+                splash.style.visibility = 'visible';
+                splash.classList.remove('hidden');
+            }
+        } catch (error) {
+            console.warn('Could not initialize casino visibility:', error);
+        }
+    </script>
 
     <button id="showUserappButton" type="button" title="Show Pearadise Casino"
         aria-label="Show Pearadise Casino">🍐<span id="showUserappBadge" class="showUserappBadge"
@@ -3871,7 +3896,6 @@
             <div class="panelHint" id="scratchStatusText">Buy tickets and scratch to reveal</div>
         </div>
 <div id="scratchCardsGrid" class="scratchCardsGrid">
-    ...
 </div>
 
 <button id="scratchRevealAllButton" class="gold" style="display:none;">
@@ -3879,6 +3903,7 @@
 </button>
 
 <div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
+</div>
     <div class="scratchBatchSummaryLine">
         <span>Total Spent</span>
         <b id="scratchBatchSpent">0</b>
@@ -3892,6 +3917,7 @@
         <b id="scratchBatchNet">0</b>
     </div>
 </div> 
+
 
     <div class="panel">
         <div class="panelHeader">
@@ -3932,8 +3958,8 @@
     </div>
 </div>
 
-
                 <div id="chipsPage" class="tabPage">
+                   
                     <div class="chipWallet">
                         <div class="chipWalletTop">
                             <div>
@@ -4851,42 +4877,21 @@
 
             applyCompactMode();
 
-            const welcomeSplash =
-                document.getElementById(
-                    "welcomeSplash"
-                );
-
-            if (welcomeSplash && !userSettings.media) {
-                welcomeSplash.remove();
-            } else if (welcomeSplash) {
-                setTimeout(() => {
-                    welcomeSplash.classList.add(
-                        "hidden"
-                    );
-
-                    setTimeout(() => {
-                        welcomeSplash.remove();
-                    }, 750);
-                }, 5000);
+            const welcomeSplash = document.getElementById("welcomeSplash");
+            if (welcomeSplash) {
+                welcomeSplash.classList.add("hidden");
+                setTimeout(() => welcomeSplash.remove(), 250);
             }
 
-            const welcomeImage =
-                welcomeSplash?.querySelector("img");
-
+            const welcomeImage = welcomeSplash?.querySelector("img");
             if (welcomeImage) {
-                welcomeImage.addEventListener(
-                    "error",
-                    () => {
-                        console.error(
-                            "Could not load ./peardise-welcome.png. " +
-                            "Make sure it is in the same folder as the userapp."
-                        );
-
-                        welcomeSplash.classList.add(
-                            "hidden"
-                        );
+                welcomeImage.addEventListener("error", () => {
+                    console.error("Could not load ./peardise-welcome.png. Make sure it is in the same folder as the userapp.");
+                    if (welcomeSplash) {
+                        welcomeSplash.classList.add("hidden");
+                        setTimeout(() => welcomeSplash.remove(), 250);
                     }
-                );
+                });
             }
 
             const bonusSound = document.getElementById(
@@ -10651,6 +10656,43 @@ function showScratchBatchSummary(batch) {
 
             applyOpacity(saved);
         }
+
+        function ensureCasinoOverlayVisible() {
+            const overlay = $('overlay');
+            const body = document.body;
+
+            body.classList.remove('userappHidden');
+
+            if (overlay) {
+                overlay.style.opacity = '';
+                overlay.style.pointerEvents = '';
+                overlay.style.display = '';
+                overlay.style.visibility = '';
+            }
+        }
+
+        function resetOverlayToSafePosition() {
+            const overlay = $('overlay');
+            if (!overlay) return;
+
+            const rect = overlay.getBoundingClientRect();
+            const viewportWidth = window.innerWidth || 1280;
+            const viewportHeight = window.innerHeight || 900;
+
+            const offScreen =
+                !Number.isFinite(rect.width) || rect.width < 120 ||
+                !Number.isFinite(rect.height) || rect.height < 140 ||
+                rect.left < -800 || rect.left > viewportWidth + 800 ||
+                rect.top < -800 || rect.top > viewportHeight + 800;
+
+            if (offScreen) {
+                overlay.style.left = '40px';
+                overlay.style.top = '40px';
+                overlay.style.width = '390px';
+                overlay.style.height = '';
+            }
+        }
+
         function positionSettingsPanel() {
             const panel = $('settings');
             const overlay = $('overlay');
@@ -11444,7 +11486,9 @@ function showScratchBatchSummary(batch) {
             document.documentElement.style.background = 'transparent';
             document.body.style.background = 'transparent';
             document.body.style.backgroundColor = 'transparent';
+            ensureCasinoOverlayVisible();
             loadOverlayPosition();
+            resetOverlayToSafePosition();
             requestAnimationFrame(syncOverlayContentHeight);
             setupDragResize();
             loadOpacity();
@@ -11834,6 +11878,9 @@ function showScratchBatchSummary(batch) {
             window.showCasinoUserapp = showCasinoUserapp;
 
             window.addEventListener("DOMContentLoaded", () => {
+                ensureCasinoOverlayVisible();
+                resetOverlayToSafePosition();
+
                 document
                     .getElementById("firstLoginGuideClose")
                     ?.addEventListener("click", closeFirstLoginGuide);
