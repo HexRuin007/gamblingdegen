@@ -8066,7 +8066,7 @@ const SCRATCH_SYMBOL_LABELS = {
     function renderScratchPaytable() {
     const box = $("scratchPaytable");
     if (!box) return;
-    const multipliers = { pear: 2, cherry: 4, bell: 8, gem: 20, seven: 60, crown: 200 };
+    const multipliers = { pear: 1.5, cherry: 2.5, bell: 4.5, gem: 6, seven: 7, crown: 8 };
     box.innerHTML = Object.entries(SCRATCH_SYMBOL_LABELS)
         .filter(([id]) => id !== "blank")
         .map(([id, label]) =>
