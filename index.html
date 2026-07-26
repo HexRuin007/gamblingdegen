@@ -3870,6 +3870,14 @@
             <div class="panelTitle">🎫 Scratch Cards</div>
             <div class="panelHint" id="scratchStatusText">Buy tickets and scratch to reveal</div>
         </div>
+<div id="scratchCardsGrid" class="scratchCardsGrid">
+    ...
+</div>
+
+<button id="scratchRevealAllButton" class="gold" style="display:none;">
+    Reveal All
+</button>
+
 <div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
     <div class="scratchBatchSummaryLine">
         <span>Total Spent</span>
@@ -3883,13 +3891,7 @@
         <span>Net Result</span>
         <b id="scratchBatchNet">0</b>
     </div>
-</div>
-        <div id="scratchCardsGrid" class="scratchCardsGrid">
-            <div class="emptyState">Buy tickets to see them here.</div>
-        </div>
-
-        <button id="scratchRevealAllButton" class="gold" style="display:none;">Reveal All</button>
-    </div>
+</div> 
 
     <div class="panel">
         <div class="panelHeader">
@@ -8140,78 +8142,115 @@ function showScratchTicketResult(ticketIndex) {
     }
 }
 
-function scratchCell(ticketIndex, cellIndex) {
+async function scratchCell(ticketIndex, cellIndex) {
+
     const cover = document.querySelector(
         `.scratchCellCover[data-ticket="${ticketIndex}"][data-cell="${cellIndex}"]`
     );
-    if (!cover || cover.classList.contains('scratched')) return;
 
-    cover.classList.add('scratched');
+    if (!cover || cover.classList.contains("scratched")) return;
 
-    const covers = document.querySelectorAll(`.scratchCellCover[data-ticket="${ticketIndex}"]`);
-    const allScratched = Array.from(covers).every(el => el.classList.contains('scratched'));
+    cover.classList.add("scratched");
 
-if (allScratched) {
     const allTicketsFinished = scratchTickets.every((_, t) => {
-        return [...document.querySelectorAll(
-            `.scratchCellCover[data-ticket="${t}"]`
-        )].every(c => c.classList.contains("scratched"));
+
+        return Array.from(
+            document.querySelectorAll(
+                `.scratchCellCover[data-ticket="${t}"]`
+            )
+        ).every(c => c.classList.contains("scratched"));
+
     });
 
-    if (allTicketsFinished) {
-        scratchTickets.forEach((_, i) => showScratchTicketResult(i));
+    if (!allTicketsFinished) return;
 
-        if (scratchTickets.some(t => t.isWin)) {
-            playSlotPayoutSound();
-        }
-
-        revealScratchBatchSummary();
-    }
-}
-}
-
-async function revealAllScratchTickets() {
-    if (scratchRevealing) return;
-    scratchRevealing = true;
-
-    const covers = document.querySelectorAll('.scratchCellCover:not(.scratched)');
-
-    for (const cover of covers) {
-    
-        cover.getBoundingClientRect();
-
-        await new Promise(resolve => requestAnimationFrame(resolve));
-
-        cover.classList.add('scratched');
-
-    
-        cover.getBoundingClientRect();
-
-        await wait(45);
-    }
-
-    
-    scratchTickets.forEach((_, index) => showScratchTicketResult(index));
-
-    if (scratchTickets.some(t => t.isWin)) {
-        playSlotPayoutSound();
-    }
-
-   try {
-    scratchTickets.forEach((_, index) => showScratchTicketResult(index));
+    scratchTickets.forEach((_, i) =>
+        showScratchTicketResult(i)
+    );
 
     if (scratchTickets.some(t => t.isWin)) {
         playSlotPayoutSound();
     }
 
     showScratchBatchSummary(currentScratchBatch);
-} finally {
-    scratchRevealing = false;
+    await wait(6000);
+
+    await claimScratchTickets();
 }
 
-    scratchRevealing = false;
-}
+async function revealAllScratchTickets() {
 
+    if (scratchRevealing) return;
+
+    scratchRevealing = true;
+
+    try {
+
+        const covers = document.querySelectorAll(
+            ".scratchCellCover:not(.scratched)"
+        );
+
+        for (const cover of covers) {
+
+            cover.classList.add("scratched");
+
+            await wait(45);
+        }
+
+        scratchTickets.forEach((_, i) =>
+            showScratchTicketResult(i)
+        );
+
+        if (scratchTickets.some(t => t.isWin)) {
+            playSlotPayoutSound();
+        }
+
+        showScratchBatchSummary(currentScratchBatch);
+        await wait(3000);
+        await claimScratchTickets();
+
+    } finally {
+
+        scratchRevealing = false;
+
+    }
+
+}
+async function claimScratchTickets() {
+    if (!scratchTickets.length) return;
+
+    try {
+        const json = await apiRequest("/scratch/claim", {
+            method: "POST",
+            body: {
+                playerId: autoUserId
+            }
+        });
+
+       state = json.state || state;
+
+renderScratchHistory();
+
+scratchTickets = [];
+currentScratchBatch = null;
+
+buildScratchCardsGrid();
+
+render();
+
+        $("scratchRevealAllButton").style.display = "none";
+
+        const buyButton = $("scratchBuyButton");
+        if (buyButton) {
+            buyButton.disabled = false;
+        }
+
+        setStatus("SCRATCH COMPLETE", 1800);
+
+    } catch (error) {
+        setStatus(error.message || "Claim failed", 2500);
+    }
+}
 async function buyScratchTickets() {
     const playerId = String(autoUserId || '').trim();
     const playerName = String(autoName || '').trim();
@@ -8222,6 +8261,8 @@ async function buyScratchTickets() {
     if (!ticketPrice || ticketPrice < 1) return setStatus('NO TICKET PRICE', 1800);
     if (!quantity || quantity < 1 || quantity > 20) return setStatus('CHOOSE 1-20 TICKETS', 2000);
     if (ticketPrice * quantity > getMyChipBalance()) return setStatus('NOT ENOUGH CHIPS', 2200);
+    if (scratchTickets.length) { return setStatus("Reveal your current scratch cards first.", 2500 );
+}
 
     try {
         const json = await apiRequest('/scratch/buy', {
@@ -8233,6 +8274,10 @@ async function buyScratchTickets() {
         scratchTickets = json.tickets || [];
         currentScratchBatch = json.batch || null;
         scratchSummaryShown = false;
+        const buyButton = $("scratchBuyButton");
+if (buyButton) {
+    buyButton.disabled = true;
+}
 
        
         const summaryBox = $("scratchBatchSummary");
