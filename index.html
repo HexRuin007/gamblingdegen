@@ -3020,6 +3020,31 @@
     font-size: 11px;
     font-weight: 900;
 }
+.scratchBatchSummary {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.scratchBatchSummaryLine {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 4px 0;
+}
+
+.scratchBatchSummaryLine b {
+    font-weight: 900;
+}
+
+.scratchBatchSummaryNet {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 14px;
+}
     </style>
 </head>
 
@@ -3845,7 +3870,20 @@
             <div class="panelTitle">🎫 Scratch Cards</div>
             <div class="panelHint" id="scratchStatusText">Buy tickets and scratch to reveal</div>
         </div>
-
+<div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
+    <div class="scratchBatchSummaryLine">
+        <span>Total Spent</span>
+        <b id="scratchBatchSpent">0</b>
+    </div>
+    <div class="scratchBatchSummaryLine">
+        <span>Total Won</span>
+        <b id="scratchBatchWon">0</b>
+    </div>
+    <div class="scratchBatchSummaryLine scratchBatchSummaryNet">
+        <span>Net Result</span>
+        <b id="scratchBatchNet">0</b>
+    </div>
+</div>
         <div id="scratchCardsGrid" class="scratchCardsGrid">
             <div class="emptyState">Buy tickets to see them here.</div>
         </div>
@@ -4340,6 +4378,12 @@
         };
 
         let userSettings = loadUserSettings();
+        if (typeof scratchTickets === 'undefined') {
+            scratchTickets = [];
+        }
+        let scratchRevealing = false;
+        let currentScratchBatch = null;
+        let scratchSummaryShown = false;
 
         function loadUserSettings() {
             try {
@@ -8009,10 +8053,8 @@ const SCRATCH_SYMBOL_LABELS = {
             }
 
         }
-        let scratchTickets = [];
-let scratchRevealing = false;
 
-function renderScratchPaytable() {
+    function renderScratchPaytable() {
     const box = $("scratchPaytable");
     if (!box) return;
     const multipliers = { pear: 2, cherry: 4, bell: 8, gem: 20, seven: 60, crown: 200 };
@@ -8109,10 +8151,23 @@ function scratchCell(ticketIndex, cellIndex) {
     const covers = document.querySelectorAll(`.scratchCellCover[data-ticket="${ticketIndex}"]`);
     const allScratched = Array.from(covers).every(el => el.classList.contains('scratched'));
 
-    if (allScratched) {
-        showScratchTicketResult(ticketIndex);
-        if (scratchTickets[ticketIndex]?.payout > 0) playSlotPayoutSound();
+if (allScratched) {
+    const allTicketsFinished = scratchTickets.every((_, t) => {
+        return [...document.querySelectorAll(
+            `.scratchCellCover[data-ticket="${t}"]`
+        )].every(c => c.classList.contains("scratched"));
+    });
+
+    if (allTicketsFinished) {
+        scratchTickets.forEach((_, i) => showScratchTicketResult(i));
+
+        if (scratchTickets.some(t => t.isWin)) {
+            playSlotPayoutSound();
+        }
+
+        revealScratchBatchSummary();
     }
+}
 }
 
 async function revealAllScratchTickets() {
@@ -8120,17 +8175,39 @@ async function revealAllScratchTickets() {
     scratchRevealing = true;
 
     const covers = document.querySelectorAll('.scratchCellCover:not(.scratched)');
+
     for (const cover of covers) {
+    
+        cover.getBoundingClientRect();
+
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
         cover.classList.add('scratched');
+
+    
+        cover.getBoundingClientRect();
+
         await wait(45);
     }
 
+    
     scratchTickets.forEach((_, index) => showScratchTicketResult(index));
 
-    if (scratchTickets.some(t => t.payout > 0)) {
+    if (scratchTickets.some(t => t.isWin)) {
         playSlotPayoutSound();
-        showWinEffect();
     }
+
+   try {
+    scratchTickets.forEach((_, index) => showScratchTicketResult(index));
+
+    if (scratchTickets.some(t => t.isWin)) {
+        playSlotPayoutSound();
+    }
+
+    showScratchBatchSummary(currentScratchBatch);
+} finally {
+    scratchRevealing = false;
+}
 
     scratchRevealing = false;
 }
@@ -8138,7 +8215,7 @@ async function revealAllScratchTickets() {
 async function buyScratchTickets() {
     const playerId = String(autoUserId || '').trim();
     const playerName = String(autoName || '').trim();
-    const ticketPrice = parseMoneyInput($("scratchPriceInput").value); 
+    const ticketPrice = parseMoneyInput($("scratchPriceInput").value);
     const quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
 
     if (!playerId || !playerName) return setStatus('NO GAME DATA', 1800);
@@ -8149,24 +8226,45 @@ async function buyScratchTickets() {
     try {
         const json = await apiRequest('/scratch/buy', {
             method: 'POST',
-            body: {
-                playerId,
-                playerName,
-                ticketPrice,   
-                quantity       
-            }
+            body: { playerId, playerName, ticketPrice, quantity }
         });
 
         state = json.state || state;
         scratchTickets = json.tickets || [];
+        currentScratchBatch = json.batch || null;
+        scratchSummaryShown = false;
+
+       
+        const summaryBox = $("scratchBatchSummary");
+        if (summaryBox) {
+            summaryBox.style.display = "none";
+        }
 
         buildScratchCardsGrid();
         renderScratchHistory();
+        $("scratchStatusText").textContent = `Bought ${quantity} ticket(s) — scratch to reveal`;
         setStatus('TICKETS PURCHASED', 1500);
-        render();
+        revealScratchBatchSummary()
+    
     } catch (error) {
         setStatus(String(error.message || error), 2500);
     }
+}
+
+function showScratchBatchSummary(batch) {
+    const box = $("scratchBatchSummary");
+    if (!box || !batch) return;
+
+    const net = batch.profit; 
+
+    $("scratchBatchSpent").textContent = shortMoney(batch.totalCost);
+    $("scratchBatchWon").textContent = shortMoney(batch.totalPayout);
+
+    const netLabel = $("scratchBatchNet");
+    netLabel.textContent = (net >= 0 ? "+" : "") + shortMoney(net);
+    netLabel.className = net > 0 ? "win" : net < 0 ? "loss" : "neutral";
+
+    box.style.display = "block";
 }
         let selectedChickenRisk = "medium";
         let chickenHandlersInstalled = false;
@@ -11719,4 +11817,4 @@ async function buyScratchTickets() {
 
 </body>
 
-</html
+</html>         
