@@ -434,6 +434,7 @@
         }
 
 
+
         .wheelLabel {
             position: absolute;
             left: 50%;
@@ -2953,6 +2954,72 @@
             min-width: 25px;
             font-size: 13px;
         }
+        .scratchCardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+    margin: 8px 0;
+}
+
+.scratchCard {
+    position: relative;
+    padding: 8px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.12);
+}
+
+.scratchCard.winner {
+    outline: 2px solid #6ee77c;
+    box-shadow: 0 0 14px rgba(110,231,124,.4);
+}
+
+.scratchCardLabel {
+    font-size: 10px;
+    text-align: center;
+    color: var(--text-soft);
+    margin-bottom: 5px;
+}
+
+.scratchGrid3x3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.scratchCell {
+    position: relative;
+    height: 34px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    background: rgba(0,0,0,.25);
+    overflow: hidden;
+}
+
+.scratchCellCover {
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+    background: repeating-linear-gradient(135deg, #9a9fae 0 6px, #7d818f 6px 12px);
+    border-radius: 6px;
+    transition: opacity .35s ease, transform .35s ease;
+}
+
+.scratchCellCover.scratched {
+    opacity: 0;
+    transform: scale(1.3);
+    pointer-events: none;
+}
+
+.scratchCardResult {
+    margin-top: 6px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 900;
+}
     </style>
 </head>
 
@@ -3069,6 +3136,7 @@
                         <button id="dealTabButton" class="tabButton">💼 Deal OR No Deal</button>
                         <button id="rouletteTabButton" class="tabButton">🎯 Roulette</button>
                         <button id="chickenTabButton" class="tabButton">🐔 Chicken</button>
+                        <button id="scratchTabButton" class="tabButton">🎫 Scratch</button>
                         <button id="dailySpinTabButton" class="tabButton">🎁 Daily Spin</button>
                         <button id="chipsTabButton" class="tabButton">🪙 Chips</button>
                         <button id="userSettingsTabButton" class="tabButton">⚙️ Settings</button>
@@ -3769,6 +3837,60 @@
                         </div>
                     </div>
                 </div>
+                <div id="scratchPage" class="tabPage">
+    <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
+
+    <div class="heroCard">
+        <div class="panelHeader">
+            <div class="panelTitle">🎫 Scratch Cards</div>
+            <div class="panelHint" id="scratchStatusText">Buy tickets and scratch to reveal</div>
+        </div>
+
+        <div id="scratchCardsGrid" class="scratchCardsGrid">
+            <div class="emptyState">Buy tickets to see them here.</div>
+        </div>
+
+        <button id="scratchRevealAllButton" class="gold" style="display:none;">Reveal All</button>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">💰 Buy Tickets</div>
+            <div class="panelHint">Up to 20 at once</div>
+        </div>
+
+        <div class="playerIdentityBox">
+            <div class="playerIdentityLabel">Detected Player</div>
+            <div class="playerIdentityName" id="scratchDetectedPlayerName">Waiting for game data...</div>
+            <div class="playerIdentityId" id="scratchDetectedPlayerId">Open in-game so the app can read your name and ID.</div>
+        </div>
+
+        <div class="row">
+            <input id="scratchPriceInput" type="text" placeholder="Ticket price, e.g. 5m" />
+            <input id="scratchQuantityInput" type="number" min="1" max="20" step="1" value="1" placeholder="Qty" />
+            <button id="scratchBuyButton" class="green">Buy Tickets</button>
+        </div>
+
+        <div class="quickBetGrid">
+            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="1000000">1M</button>
+            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="10000000">10M</button>
+            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="100000000">100M</button>
+            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="1000000000">1B</button>
+        </div>
+
+        <div id="scratchPaytable" class="slotPaytable"></div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">📜 Scratch History</div>
+            <div class="panelHint">Recent purchases</div>
+        </div>
+        <div id="scratchHistoryBox">
+            <div class="emptyState">No scratch tickets bought yet.</div>
+        </div>
+    </div>
+</div>
 
 
                 <div id="chipsPage" class="tabPage">
@@ -6485,7 +6607,15 @@
             }
         }
 
-
+const SCRATCH_SYMBOL_LABELS = {
+    blank: "⬜",
+    pear: "🍐",
+    cherry: "🍒",
+    bell: "🔔",
+    gem: "💎",
+    seven: "7️⃣",
+    crown: "👑"
+};
         const SLOT_SYMBOLS = {
             pear: "🍐", seven: "7️⃣", bell: "🔔", gem: "💎",
             crown: "👑", cherry: "🍒", wild: "🃏", scatter: "🐉"
@@ -7879,7 +8009,165 @@
             }
 
         }
+        let scratchTickets = [];
+let scratchRevealing = false;
 
+function renderScratchPaytable() {
+    const box = $("scratchPaytable");
+    if (!box) return;
+    const multipliers = { pear: 2, cherry: 4, bell: 8, gem: 20, seven: 60, crown: 200 };
+    box.innerHTML = Object.entries(SCRATCH_SYMBOL_LABELS)
+        .filter(([id]) => id !== "blank")
+        .map(([id, label]) =>
+            `<div class="slotPayItem">${label} 3+ matching<b>x${multipliers[id]}</b></div>`
+        ).join('');
+}
+function renderScratchHistory() {
+    const box = $("scratchHistoryBox");
+    if (!box) return;
+    const history = (state.scratch?.history || [])
+        .filter(entry => String(entry.playerId) === String(autoUserId))
+        .slice(0, 10);
+
+    box.innerHTML = !history.length
+        ? '<div class="emptyState">No scratch tickets bought yet.</div>'
+        : history.map(entry => `
+            <div class="historyRow">
+                <div>${entry.quantity} ticket(s) at ${shortMoney(entry.ticketPrice)} • ${entry.winningTickets} winner(s)</div>
+                <div class="betRight ${entry.profit >= 0 ? 'win' : 'loss'}">
+                    ${entry.profit >= 0 ? '+' : ''}${shortMoney(entry.profit)}
+                </div>
+            </div>
+        `).join('');
+}
+
+function buildScratchCardsGrid() {
+    const grid = $("scratchCardsGrid");
+    if (!grid) return;
+
+    if (!scratchTickets.length) {
+        grid.innerHTML = '<div class="emptyState">Buy tickets to see them here.</div>';
+        $("scratchRevealAllButton").style.display = "none";
+        return;
+    }
+
+    grid.innerHTML = scratchTickets.map((ticket, ticketIndex) => `
+        <div class="scratchCard" data-ticket="${ticketIndex}">
+            <div class="scratchCardLabel">Ticket ${ticketIndex + 1}</div>
+            <div class="scratchGrid3x3">
+                ${ticket.cells.map((symbolId, cellIndex) => {
+                    const label = SCRATCH_SYMBOL_LABELS[symbolId] || symbolId;
+                    return `
+                        <div class="scratchCell">
+                            ${label}
+                            <div class="scratchCellCover" data-ticket="${ticketIndex}" data-cell="${cellIndex}"></div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            <div class="scratchCardResult" data-ticket-result="${ticketIndex}"></div>
+        </div>
+    `).join('');
+
+    grid.querySelectorAll('.scratchCellCover').forEach(cover => {
+        cover.addEventListener('click', () =>
+            scratchCell(Number(cover.dataset.ticket), Number(cover.dataset.cell))
+        );
+    });
+
+    $("scratchRevealAllButton").style.display = "block";
+}
+
+function showScratchTicketResult(ticketIndex) {
+    const ticket = scratchTickets[ticketIndex];
+    const resultBox = document.querySelector(`[data-ticket-result="${ticketIndex}"]`);
+    const card = document.querySelector(`.scratchCard[data-ticket="${ticketIndex}"]`);
+    if (!ticket || !resultBox) return;
+
+    card?.classList.remove('winner', 'loser');
+
+    if (ticket.isWin) {
+        resultBox.textContent = `Won ${shortMoney(ticket.payout)}!`;
+        resultBox.className = 'scratchCardResult win';
+        card?.classList.add('winner');
+    } else {
+        const lossAmount = ticket.ticketPrice - ticket.payout;
+        resultBox.textContent = `Loss: ${shortMoney(lossAmount)}`;
+        resultBox.className = 'scratchCardResult loss';
+        card?.classList.add('loser');
+    }
+}
+
+function scratchCell(ticketIndex, cellIndex) {
+    const cover = document.querySelector(
+        `.scratchCellCover[data-ticket="${ticketIndex}"][data-cell="${cellIndex}"]`
+    );
+    if (!cover || cover.classList.contains('scratched')) return;
+
+    cover.classList.add('scratched');
+
+    const covers = document.querySelectorAll(`.scratchCellCover[data-ticket="${ticketIndex}"]`);
+    const allScratched = Array.from(covers).every(el => el.classList.contains('scratched'));
+
+    if (allScratched) {
+        showScratchTicketResult(ticketIndex);
+        if (scratchTickets[ticketIndex]?.payout > 0) playSlotPayoutSound();
+    }
+}
+
+async function revealAllScratchTickets() {
+    if (scratchRevealing) return;
+    scratchRevealing = true;
+
+    const covers = document.querySelectorAll('.scratchCellCover:not(.scratched)');
+    for (const cover of covers) {
+        cover.classList.add('scratched');
+        await wait(45);
+    }
+
+    scratchTickets.forEach((_, index) => showScratchTicketResult(index));
+
+    if (scratchTickets.some(t => t.payout > 0)) {
+        playSlotPayoutSound();
+        showWinEffect();
+    }
+
+    scratchRevealing = false;
+}
+
+async function buyScratchTickets() {
+    const playerId = String(autoUserId || '').trim();
+    const playerName = String(autoName || '').trim();
+    const ticketPrice = parseMoneyInput($("scratchPriceInput").value); 
+    const quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
+
+    if (!playerId || !playerName) return setStatus('NO GAME DATA', 1800);
+    if (!ticketPrice || ticketPrice < 1) return setStatus('NO TICKET PRICE', 1800);
+    if (!quantity || quantity < 1 || quantity > 20) return setStatus('CHOOSE 1-20 TICKETS', 2000);
+    if (ticketPrice * quantity > getMyChipBalance()) return setStatus('NOT ENOUGH CHIPS', 2200);
+
+    try {
+        const json = await apiRequest('/scratch/buy', {
+            method: 'POST',
+            body: {
+                playerId,
+                playerName,
+                ticketPrice,   
+                quantity       
+            }
+        });
+
+        state = json.state || state;
+        scratchTickets = json.tickets || [];
+
+        buildScratchCardsGrid();
+        renderScratchHistory();
+        setStatus('TICKETS PURCHASED', 1500);
+        render();
+    } catch (error) {
+        setStatus(String(error.message || error), 2500);
+    }
+}
         let selectedChickenRisk = "medium";
         let chickenHandlersInstalled = false;
         let chickenCrossQueue = 0;
@@ -9861,6 +10149,7 @@
             renderSlots();
             renderMines();
             renderDealGame();
+            renderScratchHistory();
 
             try {
                 renderRoulette();
@@ -10381,9 +10670,9 @@
             )
         }
         function updateDetectedPlayerDisplay() {
-            ['', 'bj', 'race', 'slot', 'mines', 'deal', 'roulette'].forEach(prefix => {
-                const nameBox = $(prefix === 'bj' ? 'bjDetectedPlayerName' : prefix === 'race' ? 'raceDetectedPlayerName' : prefix === 'slot' ? 'slotDetectedPlayerName' : prefix === 'mines' ? 'minesDetectedPlayerName' : prefix === 'deal' ? 'dealDetectedPlayerName' : prefix === 'roulette' ? 'rouletteDetectedPlayerName' : 'detectedPlayerName')
-                    , idBox = $(prefix === 'bj' ? 'bjDetectedPlayerId' : prefix === 'race' ? 'raceDetectedPlayerId' : prefix === 'slot' ? 'slotDetectedPlayerId' : prefix === 'mines' ? 'minesDetectedPlayerId' : prefix === 'deal' ? 'dealDetectedPlayerId' : prefix === 'roulette' ? 'rouletteDetectedPlayerId' : 'detectedPlayerId');
+            ['', 'bj', 'race', 'slot', 'mines', 'deal', 'scratch', 'roulette'].forEach(prefix => {
+                const nameBox = $(prefix === 'bj' ? 'bjDetectedPlayerName' : prefix === 'race' ? 'raceDetectedPlayerName' : prefix === 'slot' ? 'slotDetectedPlayerName' : prefix === 'mines' ? 'minesDetectedPlayerName' : prefix === 'deal' ? 'dealDetectedPlayerName' : prefix === 'scratch' ? 'scratchDetectedPlayerName' : prefix === 'roulette' ? 'rouletteDetectedPlayerName' : 'detectedPlayerName')
+                    , idBox = $(prefix === 'bj' ? 'bjDetectedPlayerId' : prefix === 'race' ? 'raceDetectedPlayerId' : prefix === 'slot' ? 'slotDetectedPlayerId' : prefix === 'mines' ? 'minesDetectedPlayerId' : prefix === 'deal' ? 'dealDetectedPlayerId' : prefix === 'scratch' ? 'scratchDetectedPlayerId' : prefix === 'roulette' ? 'rouletteDetectedPlayerId' : 'detectedPlayerId');
                 if (nameBox)
                     nameBox.textContent = autoName || 'Waiting for game data...';
                 if (idBox)
@@ -10402,6 +10691,7 @@
                 deal: "dealPage",
                 roulette: "roulettePage",
                 chicken: "chickenPage",
+                scratch: "scratchPage",
                 dailySpin: "dailySpinPage",
                 chips: "chipsPage",
                 userSettings: "userSettingsPage"
@@ -10416,6 +10706,7 @@
                 deal: "dealTabButton",
                 roulette: "rouletteTabButton",
                 chicken: "chickenTabButton",
+                scratch: "scratchTabButton",
                 dailySpin: "dailySpinTabButton",
                 chips: "chipsTabButton",
                 userSettings: "userSettingsTabButton"
@@ -10473,6 +10764,11 @@
                 else if (button.innerHTML.toLowerCase().includes("chicken")) {
                     setTab("chicken")
                 }
+                else if (button.innerHTML.toLowerCase().includes("scratch")) {
+    setTab("scratch");
+    renderScratchPaytable();
+    renderScratchHistory();
+}
                 else if (button.innerHTML.toLowerCase().includes("daily spin")) {
                     setTab("dailySpin");
                     loadDailySpinStatus();
@@ -11272,6 +11568,8 @@
             });
             $("roundResultClose").addEventListener("click", hideRoundResultPopup);
             $("cashoutChipsButton").addEventListener("click", cashoutPlayerChips);
+            $("scratchBuyButton")?.addEventListener("click", buyScratchTickets);
+            $("scratchRevealAllButton")?.addEventListener("click", revealAllScratchTickets);
 
             const requestWithdrawalButton =
                 $("requestWithdrawalButton");
