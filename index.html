@@ -8403,6 +8403,7 @@ function showScratchBatchSummary(batch) {
                         parseMoneyInput(
                             amountInput?.value || ""
                         );
+                       
 
                     if (!playerId || !playerName) {
                         setStatus(
@@ -8419,7 +8420,7 @@ function showScratchBatchSummary(batch) {
                         );
                         return;
                     }
-
+                    lastChickenBetAmount = amount;
                     try {
                         const json =
                             await apiRequest(
@@ -8453,10 +8454,9 @@ function showScratchBatchSummary(batch) {
                         $("chickenCharacter")
                             ?.classList.remove("hit");
 
-                        if (amountInput) {
-                            amountInput.value = "";
-                        }
-
+                       if (amountInput) {
+                        amountInput.value = lastChickenBetAmount;
+                         }
                         setStatus(
                             "CHICKEN GAME STARTED",
                             1800
@@ -9824,6 +9824,7 @@ function showScratchBatchSummary(batch) {
             });
         }
         let chickenLastRenderedStep = 0;
+        let lastChickenBetAmount = null;
 
         function buildChickenRoad(maxSteps = 12) {
             const road = $("chickenRoad");
