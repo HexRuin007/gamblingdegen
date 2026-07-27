@@ -1936,6 +1936,25 @@
             font-size: 10px;
             color: var(--text-soft);
         }
+        .rewardBanner {
+    display: none;
+    margin: 0 0 10px;
+    padding: 12px;
+    border-radius: 14px;
+    text-align: center;
+    background:
+        radial-gradient(circle at center,
+            rgba(110, 231, 124, 0.30),
+            rgba(124, 77, 255, 0.14));
+    border: 2px solid #6ee77c;
+    box-shadow:
+        0 0 18px rgba(110, 231, 124, 0.50),
+        inset 0 0 16px rgba(110, 231, 124, 0.12);
+}
+
+.rewardBanner.active {
+    display: block;
+}
 
         .slotStat b {
             display: block;
@@ -3279,6 +3298,7 @@
                 </div>
                 <div id="blackjackPage" class="tabPage">
                     <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
+                    <div id="bjRewardBanner" class="rewardBanner"></div>
                     <div class="autoGameCountdown" id="blackjackAutoCountdown">Waiting for first bet</div>
                     <div class="heroCard">
                         <div class="bigResult">Blackjack Table</div>
@@ -3379,6 +3399,7 @@
                 </div>
                 <div id="racingPage" class="tabPage">
                     <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
+                    <div id="raceRewardBanner" class="rewardBanner"></div>
                     <div class="autoGameCountdown" id="racingAutoCountdown">Waiting for first bet</div>
                     <div class="heroCard">
                         <div class="bigResult">Horse Racing</div>
@@ -3891,7 +3912,7 @@
                 </div>
                 <div id="scratchPage" class="tabPage">
     <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
-
+    <div id="scratchRewardBanner" class="rewardBanner"></div>
     <div class="heroCard">
         <div class="panelHeader">
             <div class="panelTitle">🎫 Scratch Cards</div>
@@ -8972,20 +8993,26 @@ function showScratchBatchSummary(batch) {
             const status = dailySpinStatus;
             const prizes = status?.prizes || state.dailySpin?.prizes || [];
 
-            if (prizeList) {
-                prizeList.innerHTML = prizes.length
-                    ? prizes.map(prize => `
-                        <div class="dailySpinPrizeItem">
-                            <b>${escapeHtml(prize.label || "Prize")}</b><br>
-                            ${prize.type === "chips"
-                            ? `${shortMoney(prize.amount || 0)} chips`
-                            : prize.type === "item"
-                                ? `${Number(prize.quantity || 1)}x in-game item`
+         if (prizeList) {
+    prizeList.innerHTML = prizes.length
+        ? prizes.map(prize => `
+            <div class="dailySpinPrizeItem">
+                <b>${escapeHtml(prize.label || "Prize")}</b><br>
+                ${prize.type === "chips"
+                ? `${shortMoney(prize.amount || 0)} chips`
+                : prize.type === "item"
+                    ? `${Number(prize.quantity || 1)}x in-game item`
+                    : prize.type === "scratch_ticket"
+                        ? `${Number(prize.amount || 1)}x scratch ticket${Number(prize.amount || 1) === 1 ? "" : "s"}`
+                        : prize.type === "horse_free_bet"
+                            ? `${Number(prize.amount || 1)}x free horse race bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
+                            : prize.type === "blackjack_free_bet"
+                                ? `${Number(prize.amount || 1)}x free blackjack bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
                                 : "No prize"}
-                        </div>
-                    `).join("")
-                    : '<div class="emptyState">Prize list unavailable.</div>';
-            }
+            </div>
+        `).join("")
+        : '<div class="emptyState">Prize list unavailable.</div>';
+}
 
             if (!autoUserId) {
                 resultBox.textContent = "Waiting for your in-game user ID...";
@@ -9004,16 +9031,30 @@ function showScratchBatchSummary(batch) {
             const remainingSpins = Math.max(0, Number(status.remainingSpins || 0));
 
             if (status.claimedToday && last) {
-                resultBox.innerHTML = `
-                    <div class="panelTitle">${escapeHtml(last.prizeLabel || "Daily prize")}</div>
-                    <div class="small">
-                        ${last.prizeType === "chips"
-                        ? `${shortMoney(last.amount || 0)} chips were added instantly.`
-                        : last.prizeType === "item"
-                            ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
-                            : "Better luck next time!"}
-                    </div>
-                `;
+resultBox.innerHTML = `
+    <div class="panelTitle">${escapeHtml(last.prizeLabel || "Daily Prize")}</div>
+    <div class="small">
+        ${
+            last.prizeType === "chips"
+                ? `${shortMoney(last.amount || 0)} chips were added instantly.`
+
+            : last.prizeType === "item"
+                ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
+
+            : last.prizeType === "scratch_ticket" ||
+              last.prizeType === "horse_free_bet" ||
+              last.prizeType === "blackjack_free_bet" ||
+              last.prizeType === "slot_free_spin" ||
+              last.prizeType === "mines_free_game" ||
+              last.prizeType === "roulette_free_bet" ||
+              last.prizeType === "chicken_free_run"
+
+                ? `${escapeHtml(last.prizeLabel)} has been added to your rewards.<br><br><span style="color:#ffd84d;font-weight:900;">Maximum free bet: 10M chips.</span><br><span style="color:#aeb8c6;">If you place a bet over 10M, your free bet will not be used.</span>`
+
+            : "Better luck next time!"
+        }
+    </div>
+`;
             } else {
                 resultBox.textContent = "Your free daily spin is ready.";
             }
@@ -10301,6 +10342,7 @@ function showScratchBatchSummary(batch) {
             renderMines();
             renderDealGame();
             renderScratchHistory();
+            renderRewardBanners();
 
             try {
                 renderRoulette();
@@ -10956,6 +10998,7 @@ function showScratchBatchSummary(batch) {
     setTab("scratch");
     renderScratchPaytable();
     renderScratchHistory();
+    renderRewardBanners();
 }
                 else if (button.innerHTML.toLowerCase().includes("daily spin")) {
                     setTab("dailySpin");
@@ -11079,6 +11122,32 @@ function showScratchBatchSummary(batch) {
                     });
             }
         }
+
+        function getMyRewards() {
+    return state.rewards?.[String(autoUserId)] || {
+        scratchTickets: 0,
+        horseFreeBets: 0,
+        blackjackFreeBets: 0
+    };
+}
+
+function renderRewardBanner(elementId, count, label) {
+    const el = $(elementId);
+    if (!el) return;
+    if (count > 0) {
+        el.classList.add("active");
+        el.innerHTML = `<div class="freeSpinBannerTitle">🎁 FREE ${label.toUpperCase()}${count === 1 ? "" : "S"} READY</div><div class="freeSpinBannerAmount">${count} AVAILABLE</div>`;
+    } else {
+        el.classList.remove("active");
+    }
+}
+
+function renderRewardBanners() {
+    const rewards = getMyRewards();
+    renderRewardBanner("scratchRewardBanner", rewards.scratchTickets, "scratch ticket");
+    renderRewardBanner("raceRewardBanner", rewards.horseFreeBets, "horse bet");
+    renderRewardBanner("bjRewardBanner", rewards.blackjackFreeBets, "blackjack bet");
+}
 
         function playSlotPayoutSound() {
             if (!userSettings.sounds) return;
