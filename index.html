@@ -8367,7 +8367,7 @@ async function buyScratchTickets() {
         scratchTickets = json.tickets || [];
         currentScratchBatch = json.batch || null;
         scratchSummaryShown = false;
-
+buildScratchCardsGrid();
         const buyButton = $("scratchBuyButton");
         if (buyButton) {
             buyButton.disabled = true;
