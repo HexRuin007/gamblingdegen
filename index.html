@@ -6368,85 +6368,110 @@
             }, 4200);
         }
 
-        async function bjSubmitBet() {
-            const playerName = String(autoName || '').trim()
-                , playerId = String(autoUserId || '').trim()
-                , amount = parseMoneyInput($('bjAmountInput').value);
-            if (!playerName || !playerId) {
-                window.parent.postMessage({
-                    type: 'getData'
-                }, '*');
-                return setStatus('NO GAME DATA', 2200)
+     async function bjSubmitBet() {
+    const playerName = String(autoName || "").trim();
+    const playerId = String(autoUserId || "").trim();
+    let amount = parseMoneyInput($("bjAmountInput").value);
+
+    if (!playerName || !playerId) {
+        window.parent.postMessage(
+            {
+                type: "getData"
+            },
+            "*"
+        );
+        return setStatus("NO GAME DATA", 2200);
+    }
+
+    const rewards = state.rewards || {};
+    const myRewards = rewards[String(playerId)] || {};
+    const hasFreeBet = Number(myRewards.blackjackFreeBets || 0) > 0;
+
+    if (!hasFreeBet) {
+        if (!amount || amount < 1)
+            return setStatus("NO AMOUNT", 1500);
+
+        if (amount > getMyChipBalance())
+            return setStatus("NOT ENOUGH CHIPS", 2200);
+    } else {
+        
+        amount = 10000000;
+    }
+
+    try {
+        const json = await apiRequest("/blackjack/place-bet", {
+            method: "POST",
+            body: {
+                playerId,
+                playerName,
+                amount
             }
-            if (!amount || amount < 1)
-                return setStatus('NO AMOUNT', 1500);
-            if (amount > getMyChipBalance())
-                return setStatus('NOT ENOUGH CHIPS', 2200);
-            try {
-                const json = await apiRequest('/blackjack/place-bet', {
-                    method: 'POST',
-                    body: {
-                        playerId,
-                        playerName,
-                        amount
-                    }
-                });
-                state = json.state || state;
-                setStatus('BJ BET SENT', 1300);
-                render()
-            } catch (e) {
-                setStatus(String(e.message || e), 2500)
-            }
-        }
-        async function bjPlayerAction(action) {
-            try {
-                const json = await apiRequest('/blackjack/' + action, {
-                    method: 'POST',
-                    body: {
-                        playerId: autoUserId
-                    }
-                });
-                state = json.state || state;
-                render()
-            } catch (e) {
-                setStatus(String(e.message || e), 2200)
-            }
+        });
+
+        state = json.state || state;
+        setStatus("BJ BET SENT", 1300);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
+
+  async function raceSubmitBet() {
+    const playerName = String(autoName || "").trim();
+    const playerId = String(autoUserId || "").trim();
+    let amount = parseMoneyInput($("raceAmountInput").value);
+    const horseId = String($("raceHorseSelect").value || "");
+
+    if (!playerName || !playerId) {
+        window.parent.postMessage(
+            {
+                type: "getData"
+            },
+            "*"
+        );
+
+        return setStatus("NO GAME DATA", 2200);
+    }
+
+    if (!horseId) {
+        return setStatus("NO HORSE", 1500);
+    }
+
+    const rewards = state.rewards || {};
+    const myRewards = rewards[String(playerId)] || {};
+    const hasFreeBet = Number(myRewards.horseFreeBets || 0) > 0;
+
+    if (!hasFreeBet) {
+        if (!amount || amount < 1) {
+            return setStatus("NO AMOUNT", 1500);
         }
 
-        async function raceSubmitBet() {
-            const playerName = String(autoName || '').trim()
-                , playerId = String(autoUserId || '').trim()
-                , amount = parseMoneyInput($('raceAmountInput').value)
-                , horseId = String($('raceHorseSelect').value || '');
-            if (!playerName || !playerId) {
-                window.parent.postMessage({
-                    type: 'getData'
-                }, '*');
-                return setStatus('NO GAME DATA', 2200)
-            }
-            if (!horseId)
-                return setStatus('NO HORSE', 1500);
-            if (!amount || amount < 1)
-                return setStatus('NO AMOUNT', 1500);
-            if (amount > getMyChipBalance())
-                return setStatus('NOT ENOUGH CHIPS', 2200);
-            try {
-                const json = await apiRequest('/racing/place-bet', {
-                    method: 'POST',
-                    body: {
-                        playerId,
-                        playerName,
-                        amount,
-                        horseId
-                    }
-                });
-                state = json.state || state;
-                setStatus('RACE BET SENT', 1300);
-                render()
-            } catch (e) {
-                setStatus(String(e.message || e), 2500)
-            }
+        if (amount > getMyChipBalance()) {
+            return setStatus("NOT ENOUGH CHIPS", 2200);
         }
+    } else {
+      
+        amount = 10000000;
+    }
+
+    try {
+        const json = await apiRequest("/racing/place-bet", {
+            method: "POST",
+            body: {
+                playerId,
+                playerName,
+                amount,
+                horseId
+            }
+        });
+
+        state = json.state || state;
+        setStatus("RACE BET SENT", 1300);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
         function getHorseDecimalOdds(horse) {
             const value = Number(
                 horse?.decimalOdds ??
@@ -8282,49 +8307,65 @@ render();
     }
 }
 async function buyScratchTickets() {
-    const playerId = String(autoUserId || '').trim();
-    const playerName = String(autoName || '').trim();
-    const ticketPrice = parseMoneyInput($("scratchPriceInput").value);
-    const quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
+    const playerId = String(autoUserId || "").trim();
+    const playerName = String(autoName || "").trim();
+    let ticketPrice = parseMoneyInput($("scratchPriceInput").value);
+    let quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
 
-    if (!playerId || !playerName) return setStatus('NO GAME DATA', 1800);
-    if (!ticketPrice || ticketPrice < 1) return setStatus('NO TICKET PRICE', 1800);
-    if (!quantity || quantity < 1 || quantity > 20) return setStatus('CHOOSE 1-20 TICKETS', 2000);
-    if (ticketPrice * quantity > getMyChipBalance()) return setStatus('NOT ENOUGH CHIPS', 2200);
-    if (scratchTickets.length) { return setStatus("Reveal your current scratch cards first.", 2500 );
-}
+    if (!playerId || !playerName)
+        return setStatus("NO GAME DATA", 1800);
+
+    const rewards = state.rewards || {};
+    const myRewards = rewards[String(playerId)] || {};
+    const hasFreeBet = Number(myRewards.scratchFreeBets || 0) > 0;
+
+    if (!hasFreeBet) {
+        if (!ticketPrice || ticketPrice < 1)
+            return setStatus("NO TICKET PRICE", 1800);
+
+        if (!quantity || quantity < 1 || quantity > 20)
+            return setStatus("CHOOSE 1-20 TICKETS", 2000);
+
+        if (ticketPrice * quantity > getMyChipBalance())
+            return setStatus("NOT ENOUGH CHIPS", 2200);
+    } else {
+        
+        ticketPrice = 10000000;
+        quantity = 1;
+    }
+
+    if (scratchTickets.length) {
+        return setStatus("Reveal your current scratch cards first.", 2500);
+    }
 
     try {
-        const json = await apiRequest('/scratch/buy', {
-            method: 'POST',
-            body: { playerId, playerName, ticketPrice, quantity }
+        const json = await apiRequest("/scratch/buy", {
+            method: "POST",
+            body: {
+                playerId,
+                playerName,
+                ticketPrice,
+                quantity
+            }
         });
 
         state = json.state || state;
         scratchTickets = json.tickets || [];
         currentScratchBatch = json.batch || null;
         scratchSummaryShown = false;
-        const buyButton = $("scratchBuyButton");
-if (buyButton) {
-    buyButton.disabled = true;
-}
 
-       
-        const summaryBox = $("scratchBatchSummary");
-        if (summaryBox) {
-            summaryBox.style.display = "none";
+        const buyButton = $("scratchBuyButton");
+        if (buyButton) {
+            buyButton.disabled = true;
         }
 
-        buildScratchCardsGrid();
-        renderScratchHistory();
-        $("scratchStatusText").textContent = `Bought ${quantity} ticket(s) — scratch to reveal`;
-        setStatus('TICKETS PURCHASED', 1500);
-        revealScratchBatchSummary()
-    
-    } catch (error) {
-        setStatus(String(error.message || error), 2500);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
     }
 }
+
+    
 
 function showScratchBatchSummary(batch) {
     const box = $("scratchBatchSummary");
