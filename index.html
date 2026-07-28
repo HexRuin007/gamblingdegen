@@ -3210,6 +3210,7 @@
                         <button id="rouletteTabButton" class="tabButton">🎯 Roulette</button>
                         <button id="chickenTabButton" class="tabButton">🐔 Chicken</button>
                         <button id="scratchTabButton" class="tabButton">🎫 Scratch</button>
+                        <button id="lotteryTabButton" class="tabButton">🎟️ Lottery</button>
                         <button id="dailySpinTabButton" class="tabButton">🎁 Daily Spin</button>
                         <button id="chipsTabButton" class="tabButton">🪙 Chips</button>
                         <button id="userSettingsTabButton" class="tabButton">⚙️ Settings</button>
@@ -3912,37 +3913,44 @@
                         </div>
                     </div>
                 </div>
-                <div id="scratchPage" class="tabPage">
-    <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
+               <div id="scratchPage" class="tabPage">
+    <div class="gameBalanceLine">
+        Balance: <span class="gameChipBalance">0 chips</span>
+    </div>
+
     <div id="scratchRewardBanner" class="rewardBanner"></div>
+
     <div class="heroCard">
         <div class="panelHeader">
             <div class="panelTitle">🎫 Scratch Cards</div>
-            <div class="panelHint" id="scratchStatusText">Buy tickets and scratch to reveal</div>
+            <div class="panelHint" id="scratchStatusText">
+                Buy tickets and scratch to reveal
+            </div>
         </div>
-<div id="scratchCardsGrid" class="scratchCardsGrid">
-</div>
 
-<button id="scratchRevealAllButton" class="gold" style="display:none;">
-    Reveal All
-</button>
+        <div id="scratchCardsGrid" class="scratchCardsGrid"></div>
 
-<div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
-</div>
-    <div class="scratchBatchSummaryLine">
-        <span>Total Spent</span>
-        <b id="scratchBatchSpent">0</b>
-    </div>
-    <div class="scratchBatchSummaryLine">
-        <span>Total Won</span>
-        <b id="scratchBatchWon">0</b>
-    </div>
-    <div class="scratchBatchSummaryLine scratchBatchSummaryNet">
-        <span>Net Result</span>
-        <b id="scratchBatchNet">0</b>
-    </div>
-</div> 
+        <button id="scratchRevealAllButton" class="gold" style="display:none;">
+            Reveal All
+        </button>
 
+        <div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
+            <div class="scratchBatchSummaryLine">
+                <span>Total Spent</span>
+                <b id="scratchBatchSpent">0</b>
+            </div>
+
+            <div class="scratchBatchSummaryLine">
+                <span>Total Won</span>
+                <b id="scratchBatchWon">0</b>
+            </div>
+
+            <div class="scratchBatchSummaryLine scratchBatchSummaryNet">
+                <span>Net Result</span>
+                <b id="scratchBatchNet">0</b>
+            </div>
+        </div>
+    </div>
 
     <div class="panel">
         <div class="panelHeader">
@@ -3952,8 +3960,12 @@
 
         <div class="playerIdentityBox">
             <div class="playerIdentityLabel">Detected Player</div>
-            <div class="playerIdentityName" id="scratchDetectedPlayerName">Waiting for game data...</div>
-            <div class="playerIdentityId" id="scratchDetectedPlayerId">Open in-game so the app can read your name and ID.</div>
+            <div class="playerIdentityName" id="scratchDetectedPlayerName">
+                Waiting for game data...
+            </div>
+            <div class="playerIdentityId" id="scratchDetectedPlayerId">
+                Open in-game so the app can read your name and ID.
+            </div>
         </div>
 
         <div class="row">
@@ -3977,8 +3989,104 @@
             <div class="panelTitle">📜 Scratch History</div>
             <div class="panelHint">Recent purchases</div>
         </div>
+
         <div id="scratchHistoryBox">
-            <div class="emptyState">No scratch tickets bought yet.</div>
+            <div class="emptyState">
+                No scratch tickets bought yet.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="lotteryPage" class="tabPage">
+    <div class="gameBalanceLine">
+        Balance: <span class="gameChipBalance">0 chips</span>
+    </div>
+
+    <div class="heroCard">
+        <div class="panelHeader">
+            <div class="panelTitle">🎟️ Weekly Lottery</div>
+            <div class="panelHint" id="lotteryCountdownText">
+                Loading...
+            </div>
+        </div>
+
+        <div class="dailyProfitTotal">
+            <span>Current Jackpot</span>
+            <strong id="lotteryPotValue">0 chips</strong>
+        </div>
+
+        <div class="dailyProfitSplit">
+            <div class="dailyProfitSplitCard">
+                <span>Total Tickets Sold</span>
+                <strong id="lotteryTotalTickets">0</strong>
+            </div>
+
+            <div class="dailyProfitSplitCard">
+                <span>Your Chance</span>
+                <strong id="lotteryMyChance">0%</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">🎫 Buy Tickets</div>
+            <div class="panelHint">100M chips per ticket</div>
+        </div>
+
+        <div class="playerIdentityBox">
+            <div class="playerIdentityLabel">Detected Player</div>
+            <div class="playerIdentityName" id="lotteryDetectedPlayerName">
+                Waiting for game data...
+            </div>
+            <div class="playerIdentityId" id="lotteryDetectedPlayerId">
+                Open in-game so the app can read your name and ID.
+            </div>
+        </div>
+
+        <div class="row">
+            <input id="lotteryQuantityInput" type="number" min="1" max="1000" step="1" value="1" placeholder="Number of tickets" />
+            <button id="lotteryBuyButton" class="green">
+                Buy Tickets
+            </button>
+        </div>
+
+        <div class="quickBetGrid">
+            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="1">1</button>
+            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="5">5</button>
+            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="10">10</button>
+            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="50">50</button>
+        </div>
+
+        <div class="small">
+            Each ticket costs 100,000,000 chips. The more tickets you hold, the higher your chance of winning the entire jackpot. One winner is drawn every week.
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">🧾 Ticket Holders</div>
+            <div class="panelHint">This round</div>
+        </div>
+
+        <div id="lotteryEntriesBox">
+            <div class="emptyState">
+                No tickets sold yet this round.
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">📜 Past Draws</div>
+            <div class="panelHint">Recent winners</div>
+        </div>
+
+        <div id="lotteryHistoryBox">
+            <div class="emptyState">
+                No draws yet.
+            </div>
         </div>
     </div>
 </div>
@@ -4258,8 +4366,7 @@
                     <div class="panelHint">Local app</div>
                 </div>
                 <div class="small">
-                    Server is set inside the file with SERVER_URL. Use your proxy URL
-                    ending in /proxy.
+              
                 </div>
                 <button id="reloadButton">Reload App</button>
             </div>
@@ -10386,6 +10493,108 @@ resultBox.innerHTML = `
                         }).join("");
             }
         }
+        function renderLottery() {
+    const lottery = state.lottery || {
+        ticketPrice: 100000000,
+        totalTickets: 0,
+        pot: 0,
+        drawsAt: null,
+        entries: [],
+        history: []
+    };
+
+    $("lotteryPotValue") && ($("lotteryPotValue").textContent = shortMoney(lottery.pot) + " chips");
+    $("lotteryTotalTickets") && ($("lotteryTotalTickets").textContent = String(lottery.totalTickets || 0));
+
+    const myEntry = (lottery.entries || []).find(
+        entry => String(entry.playerId) === String(autoUserId)
+    );
+    const myTickets = myEntry ? myEntry.count : 0;
+    const myChance = lottery.totalTickets > 0 ? (myTickets / lottery.totalTickets) * 100 : 0;
+
+    if ($("lotteryMyChance")) {
+        $("lotteryMyChance").textContent = myTickets
+            ? `${myChance.toFixed(2)}% (${myTickets} tickets)`
+            : "0%";
+    }
+
+    if ($("lotteryCountdownText")) {
+        if (lottery.drawsAt) {
+            const remaining = Math.max(0, Number(lottery.drawsAt) - Date.now());
+            const days = Math.floor(remaining / 86400000);
+            const hours = Math.floor((remaining % 86400000) / 3600000);
+            const minutes = Math.floor((remaining % 3600000) / 60000);
+            $("lotteryCountdownText").textContent = `Next draw in ${days}d ${hours}h ${minutes}m`;
+        } else {
+            $("lotteryCountdownText").textContent = "Waiting for next round";
+        }
+    }
+
+    const entriesBox = $("lotteryEntriesBox");
+    if (entriesBox) {
+        const entries = lottery.entries || [];
+        entriesBox.innerHTML = !entries.length
+            ? '<div class="emptyState">No tickets sold yet this round.</div>'
+            : entries.map(entry => `
+                <div class="betRow">
+                    <div class="betLeft">
+                        ${escapeHtml(entry.playerName)}
+                        ${String(entry.playerId) === String(autoUserId) ? " 👈" : ""}
+                    </div>
+                    <div class="betRight">${entry.count} ticket${entry.count === 1 ? "" : "s"}</div>
+                </div>
+            `).join("");
+    }
+
+    const historyBox = $("lotteryHistoryBox");
+    if (historyBox) {
+        const history = lottery.history || [];
+        historyBox.innerHTML = !history.length
+            ? '<div class="emptyState">No draws yet.</div>'
+            : history.slice(0, 10).map(entry => `
+                <div class="historyRow">
+                    <div>
+                        ${entry.winnerName ? escapeHtml(entry.winnerName) + " won" : "No winner (no tickets sold)"}
+                        <br><span class="small">${entry.totalTickets} tickets sold</span>
+                    </div>
+                    <div class="betRight win">${shortMoney(entry.pot)}</div>
+                </div>
+            `).join("");
+    }
+
+    if ($("lotteryBuyButton")) $("lotteryBuyButton").disabled = !autoUserId;
+    if ($("lotteryDetectedPlayerName")) $("lotteryDetectedPlayerName").textContent = autoName || "Waiting for game data...";
+    if ($("lotteryDetectedPlayerId")) {
+        $("lotteryDetectedPlayerId").textContent = autoUserId
+            ? "User ID: " + autoUserId + " • locked from game data"
+            : "Open in-game so the app can read your name and ID.";
+    }
+}
+
+async function buyLotteryTickets() {
+    const playerId = String(autoUserId || "").trim();
+    const playerName = String(autoName || "").trim();
+    const quantity = Math.floor(Number($("lotteryQuantityInput").value || 1));
+
+    if (!playerId || !playerName) return setStatus("NO GAME DATA", 1800);
+    if (!quantity || quantity < 1 || quantity > 1000) return setStatus("CHOOSE 1-1000 TICKETS", 2000);
+
+    const totalCost = quantity * 100000000;
+    if (totalCost > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
+
+    try {
+        const json = await apiRequest("/lottery/buy-tickets", {
+            method: "POST",
+            body: { playerId, playerName, quantity }
+        });
+
+        state = json.state || state;
+        setStatus(`BOUGHT ${quantity} LOTTERY TICKET(S)`, 2200);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
 
         function render() {
             registerCasinoPlayer().catch(error => {
@@ -10398,6 +10607,7 @@ resultBox.innerHTML = `
             renderSlots();
             renderMines();
             renderDealGame();
+            renderLottery()
             renderScratchHistory();
             renderRewardBanners();
 
@@ -10559,7 +10769,7 @@ resultBox.innerHTML = `
             $('spinButton').disabled = !unlocked || !bets.length || wheelState.spinning || confirmed !== bets.length;
             $('clearRoundButton').disabled = !unlocked || wheelState.spinning;
             const bj = state.blackjack || {};
-
+            $("lotteryBuyButton")?.addEventListener("click", buyLotteryTickets);
             $('bjTableStatus').textContent = bj.status === 'playing'
                 ? `Current turn: ${bj.currentTurnName || 'Player'}`
                 : bj.status === 'finished'
@@ -10979,6 +11189,7 @@ resultBox.innerHTML = `
                 roulette: "roulettePage",
                 chicken: "chickenPage",
                 scratch: "scratchPage",
+                lottery: "lotteryPage",
                 dailySpin: "dailySpinPage",
                 chips: "chipsPage",
                 userSettings: "userSettingsPage"
@@ -10994,6 +11205,7 @@ resultBox.innerHTML = `
                 roulette: "rouletteTabButton",
                 chicken: "chickenTabButton",
                 scratch: "scratchTabButton",
+                lottery: "lotteryTabButton",
                 dailySpin: "dailySpinTabButton",
                 chips: "chipsTabButton",
                 userSettings: "userSettingsTabButton"
@@ -11056,6 +11268,9 @@ resultBox.innerHTML = `
     renderScratchPaytable();
     renderScratchHistory();
     renderRewardBanners();
+}
+else if (button.innerHTML.toLowerCase().includes("lottery")) {
+    setTab("lottery");
 }
                 else if (button.innerHTML.toLowerCase().includes("daily spin")) {
                     setTab("dailySpin");
@@ -11916,6 +12131,7 @@ function renderRewardBanners() {
             setTimeout(() => clearInterval(gameDataRetry), 15000);
             startPolling();
             setInterval(updateAutomaticGameCountdowns, 250);
+            setInterval(renderLottery, 1000);
             render()
         });
     </script>
