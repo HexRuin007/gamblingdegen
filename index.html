@@ -8192,9 +8192,26 @@ const SCRATCH_SYMBOL_LABELS = {
                         roulette.activeSpin.durationMs ||
                         4300
                     );
+const POCKETS = 37;
+const DEGREES_PER_SLOT = 360 / POCKETS;
 
-                rouletteWheelRotation +=
-                    1440 + number * 9.73;
+
+const WHEEL_OFFSET = -90;
+
+const targetAngle =
+    (number * DEGREES_PER_SLOT) + WHEEL_OFFSET;
+
+const current =
+    rouletteWheelRotation % 360;
+
+const delta =
+    ((360 - current) + targetAngle) % 360;
+
+rouletteWheelRotation +=
+    (360 * 6) + delta;
+
+$("rouletteWheel").style.transform =
+    `rotate(${rouletteWheelRotation}deg)`;
 
                 $("rouletteWheel").style.transform =
                     `rotate(${rouletteWheelRotation}deg)`;
