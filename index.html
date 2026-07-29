@@ -1936,25 +1936,26 @@
             font-size: 10px;
             color: var(--text-soft);
         }
-        .rewardBanner {
-    display: none;
-    margin: 0 0 10px;
-    padding: 12px;
-    border-radius: 14px;
-    text-align: center;
-    background:
-        radial-gradient(circle at center,
-            rgba(110, 231, 124, 0.30),
-            rgba(124, 77, 255, 0.14));
-    border: 2px solid #6ee77c;
-    box-shadow:
-        0 0 18px rgba(110, 231, 124, 0.50),
-        inset 0 0 16px rgba(110, 231, 124, 0.12);
-}
 
-.rewardBanner.active {
-    display: block;
-}
+        .rewardBanner {
+            display: none;
+            margin: 0 0 10px;
+            padding: 12px;
+            border-radius: 14px;
+            text-align: center;
+            background:
+                radial-gradient(circle at center,
+                    rgba(110, 231, 124, 0.30),
+                    rgba(124, 77, 255, 0.14));
+            border: 2px solid #6ee77c;
+            box-shadow:
+                0 0 18px rgba(110, 231, 124, 0.50),
+                inset 0 0 16px rgba(110, 231, 124, 0.12);
+        }
+
+        .rewardBanner.active {
+            display: block;
+        }
 
         .slotStat b {
             display: block;
@@ -1982,57 +1983,67 @@
             color: #ffd84d;
         }
 
+.rouletteWheel {
+    position: relative;
+    width: 280px;     
+    height: 280px;
+    margin: 8px auto 12px;
+    border-radius: 50%;
+    border: 10px solid #b57b12;  
+    box-shadow:
+        inset 0 0 0 6px rgba(255,255,255,.12),
+        0 12px 30px rgba(0,0,0,.45);
+    transition: transform 4.3s cubic-bezier(.08,.82,.17,1.05);
+    overflow: hidden;
+    background: #111;
+}
+.rouletteNumberLabel {
+    position: absolute;
+    width: 22px;
+    height: 15px;
+    line-height: 15px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,.9);
+    pointer-events: none;
+    box-sizing: border-box;
+}
 
-        .rouletteWheel {
-            position: relative;
-            width: 220px;
-            height: 220px;
-            margin: 8px auto 12px;
-            border-radius: 50%;
-            background:
-                conic-gradient(#138a3d 0deg 9.73deg,
-                    #b72d2d 9.73deg 19.46deg,
-                    #171717 19.46deg 29.19deg,
-                    #b72d2d 29.19deg 38.92deg,
-                    #171717 38.92deg 48.65deg,
-                    #b72d2d 48.65deg 58.38deg,
-                    #171717 58.38deg 68.11deg,
-                    #b72d2d 68.11deg 77.84deg,
-                    #171717 77.84deg 87.57deg,
-                    #b72d2d 87.57deg 97.30deg,
-                    #171717 97.30deg 107.03deg,
-                    #b72d2d 107.03deg 116.76deg,
-                    #171717 116.76deg 126.49deg,
-                    #b72d2d 126.49deg 136.22deg,
-                    #171717 136.22deg 145.95deg,
-                    #b72d2d 145.95deg 155.68deg,
-                    #171717 155.68deg 165.41deg,
-                    #b72d2d 165.41deg 175.14deg,
-                    #171717 175.14deg 184.87deg,
-                    #b72d2d 184.87deg 194.60deg,
-                    #171717 194.60deg 204.33deg,
-                    #b72d2d 204.33deg 214.06deg,
-                    #171717 214.06deg 223.79deg,
-                    #b72d2d 223.79deg 233.52deg,
-                    #171717 233.52deg 243.25deg,
-                    #b72d2d 243.25deg 252.98deg,
-                    #171717 252.98deg 262.71deg,
-                    #b72d2d 262.71deg 272.44deg,
-                    #171717 272.44deg 282.17deg,
-                    #b72d2d 282.17deg 291.90deg,
-                    #171717 291.90deg 301.63deg,
-                    #b72d2d 301.63deg 311.36deg,
-                    #171717 311.36deg 321.09deg,
-                    #b72d2d 321.09deg 330.82deg,
-                    #171717 330.82deg 340.55deg,
-                    #b72d2d 340.55deg 350.28deg,
-                    #171717 350.28deg 360deg);
-            border: 8px solid #b57b12;
-            box-shadow:
-                inset 0 0 0 6px rgba(255, 255, 255, .12),
-                0 12px 30px rgba(0, 0, 0, .45);
-            transition:
-                transform 4.3s cubic-bezier(.08, .82, .17, 1.05);
+        .roulettePocket::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 0;
+            width: 20px;
+            height: 78px;
+            border-radius: 3px;
+        }
+
+        .roulettePocket.red::before {
+            background: #b72d2d;
+        }
+
+        .roulettePocket.black::before {
+            background: #171717;
+        }
+
+        .roulettePocket.green::before {
+            background: #138a3d;
+        }
+
+        .roulettePocket span {
+            position: absolute;
+            top: 10px;
+            left: -10px;
+            width: 20px;
+            text-align: center;
+            color: white;
+            font-size: 9px;
+            font-weight: 900;
+            transform: rotate(180deg);
+            user-select: none;
         }
 
         .rouletteWheel::after {
@@ -2825,7 +2836,7 @@
         }
 
 
-       
+
         #hideUserappButton {
             position: absolute;
             right: 101px;
@@ -2976,97 +2987,99 @@
             min-width: 25px;
             font-size: 13px;
         }
+
         .scratchCardsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-    gap: 10px;
-    margin: 8px 0;
-}
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 10px;
+            margin: 8px 0;
+        }
 
-.scratchCard {
-    position: relative;
-    padding: 8px;
-    border-radius: 12px;
-    background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
-    border: 1px solid rgba(255,255,255,.12);
-}
+        .scratchCard {
+            position: relative;
+            padding: 8px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .03));
+            border: 1px solid rgba(255, 255, 255, .12);
+        }
 
-.scratchCard.winner {
-    outline: 2px solid #6ee77c;
-    box-shadow: 0 0 14px rgba(110,231,124,.4);
-}
+        .scratchCard.winner {
+            outline: 2px solid #6ee77c;
+            box-shadow: 0 0 14px rgba(110, 231, 124, .4);
+        }
 
-.scratchCardLabel {
-    font-size: 10px;
-    text-align: center;
-    color: var(--text-soft);
-    margin-bottom: 5px;
-}
+        .scratchCardLabel {
+            font-size: 10px;
+            text-align: center;
+            color: var(--text-soft);
+            margin-bottom: 5px;
+        }
 
-.scratchGrid3x3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4px;
-}
+        .scratchGrid3x3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+        }
 
-.scratchCell {
-    position: relative;
-    height: 34px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 17px;
-    background: rgba(0,0,0,.25);
-    overflow: hidden;
-}
+        .scratchCell {
+            position: relative;
+            height: 34px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            background: rgba(0, 0, 0, .25);
+            overflow: hidden;
+        }
 
-.scratchCellCover {
-    position: absolute;
-    inset: 0;
-    cursor: pointer;
-    background: repeating-linear-gradient(135deg, #9a9fae 0 6px, #7d818f 6px 12px);
-    border-radius: 6px;
-    transition: opacity .35s ease, transform .35s ease;
-}
+        .scratchCellCover {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: repeating-linear-gradient(135deg, #9a9fae 0 6px, #7d818f 6px 12px);
+            border-radius: 6px;
+            transition: opacity .35s ease, transform .35s ease;
+        }
 
-.scratchCellCover.scratched {
-    opacity: 0;
-    transform: scale(1.3);
-    pointer-events: none;
-}
+        .scratchCellCover.scratched {
+            opacity: 0;
+            transform: scale(1.3);
+            pointer-events: none;
+        }
 
-.scratchCardResult {
-    margin-top: 6px;
-    text-align: center;
-    font-size: 11px;
-    font-weight: 900;
-}
-.scratchBatchSummary {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-}
+        .scratchCardResult {
+            margin-top: 6px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 900;
+        }
 
-.scratchBatchSummaryLine {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    padding: 4px 0;
-}
+        .scratchBatchSummary {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+        }
 
-.scratchBatchSummaryLine b {
-    font-weight: 900;
-}
+        .scratchBatchSummaryLine {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+        }
 
-.scratchBatchSummaryNet {
-    margin-top: 4px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 14px;
-}
+        .scratchBatchSummaryLine b {
+            font-weight: 900;
+        }
+
+        .scratchBatchSummaryNet {
+            margin-top: 4px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 14px;
+        }
     </style>
 </head>
 
@@ -3145,7 +3158,9 @@
                             winning symbols.</span></div>
                     <div class="firstLoginGameCard"><b>🎁 Daily Spin</b><span>Use your available daily spins for a
                             chance to win free bets,items, or nothing.</span></div>
-                            <div class="firstLoginGameCard"><b>🎁 Daily Spin Free Bets</b><span>Free bets won from Daily Spins are capped at 10m and Auto Used whenever you place a bet on that game.No Matter if you input 100m, it will still only be a 10m Bet</span></div>
+                    <div class="firstLoginGameCard"><b>🎁 Daily Spin Free Bets</b><span>Free bets won from Daily Spins
+                            are capped at 10m and Auto Used whenever you place a bet on that game.No Matter if you input
+                            100m, it will still only be a 10m Bet</span></div>
 
                     <div class="firstLoginGameCard"><b>🪙 Chips</b><span>View your balance, buy or request chips,
                             request a cashout, and check the status of requests.</span></div>
@@ -3156,7 +3171,7 @@
                             requests or winnings.</span></div>
                     <div class="firstLoginGameCard"><b>💬 Free Chips Requests</b><span>Any free chip request that keeps
                             your balance under 100m, will be auto approved.</span></div>
-                          
+
                 </div>
             </div>
 
@@ -3744,7 +3759,7 @@
                             <div class="panelHint">Single zero</div>
                         </div>
 
-                        <div style="position:relative;width:236px;margin:auto;">
+                        <div style="position:relative;width:296px;margin:auto;">
                             <div class="roulettePointer"></div>
                             <div id="rouletteWheel" class="rouletteWheel">
                                 <div id="rouletteResult" class="rouletteResult">—</div>
@@ -3913,186 +3928,195 @@
                         </div>
                     </div>
                 </div>
-               <div id="scratchPage" class="tabPage">
-    <div class="gameBalanceLine">
-        Balance: <span class="gameChipBalance">0 chips</span>
-    </div>
+                <div id="scratchPage" class="tabPage">
+                    <div class="gameBalanceLine">
+                        Balance: <span class="gameChipBalance">0 chips</span>
+                    </div>
 
-    <div id="scratchRewardBanner" class="rewardBanner"></div>
+                    <div id="scratchRewardBanner" class="rewardBanner"></div>
 
-    <div class="heroCard">
-        <div class="panelHeader">
-            <div class="panelTitle">🎫 Scratch Cards</div>
-            <div class="panelHint" id="scratchStatusText">
-                Buy tickets and scratch to reveal
-            </div>
-        </div>
+                    <div class="heroCard">
+                        <div class="panelHeader">
+                            <div class="panelTitle">🎫 Scratch Cards</div>
+                            <div class="panelHint" id="scratchStatusText">
+                                Buy tickets and scratch to reveal
+                            </div>
+                        </div>
 
-        <div id="scratchCardsGrid" class="scratchCardsGrid"></div>
+                        <div id="scratchCardsGrid" class="scratchCardsGrid"></div>
 
-        <button id="scratchRevealAllButton" class="gold" style="display:none;">
-            Reveal All
-        </button>
+                        <button id="scratchRevealAllButton" class="gold" style="display:none;">
+                            Reveal All
+                        </button>
 
-        <div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
-            <div class="scratchBatchSummaryLine">
-                <span>Total Spent</span>
-                <b id="scratchBatchSpent">0</b>
-            </div>
+                        <div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
+                            <div class="scratchBatchSummaryLine">
+                                <span>Total Spent</span>
+                                <b id="scratchBatchSpent">0</b>
+                            </div>
 
-            <div class="scratchBatchSummaryLine">
-                <span>Total Won</span>
-                <b id="scratchBatchWon">0</b>
-            </div>
+                            <div class="scratchBatchSummaryLine">
+                                <span>Total Won</span>
+                                <b id="scratchBatchWon">0</b>
+                            </div>
 
-            <div class="scratchBatchSummaryLine scratchBatchSummaryNet">
-                <span>Net Result</span>
-                <b id="scratchBatchNet">0</b>
-            </div>
-        </div>
-    </div>
+                            <div class="scratchBatchSummaryLine scratchBatchSummaryNet">
+                                <span>Net Result</span>
+                                <b id="scratchBatchNet">0</b>
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="panel">
-        <div class="panelHeader">
-            <div class="panelTitle">💰 Buy Tickets</div>
-            <div class="panelHint">Up to 20 at once</div>
-        </div>
+                    <div class="panel">
+                        <div class="panelHeader">
+                            <div class="panelTitle">💰 Buy Tickets</div>
+                            <div class="panelHint">Up to 20 at once</div>
+                        </div>
 
-        <div class="playerIdentityBox">
-            <div class="playerIdentityLabel">Detected Player</div>
-            <div class="playerIdentityName" id="scratchDetectedPlayerName">
-                Waiting for game data...
-            </div>
-            <div class="playerIdentityId" id="scratchDetectedPlayerId">
-                Open in-game so the app can read your name and ID.
-            </div>
-        </div>
+                        <div class="playerIdentityBox">
+                            <div class="playerIdentityLabel">Detected Player</div>
+                            <div class="playerIdentityName" id="scratchDetectedPlayerName">
+                                Waiting for game data...
+                            </div>
+                            <div class="playerIdentityId" id="scratchDetectedPlayerId">
+                                Open in-game so the app can read your name and ID.
+                            </div>
+                        </div>
 
-        <div class="row">
-            <input id="scratchPriceInput" type="text" placeholder="Ticket price, e.g. 5m" />
-            <input id="scratchQuantityInput" type="number" min="1" max="20" step="1" value="1" placeholder="Qty" />
-            <button id="scratchBuyButton" class="green">Buy Tickets</button>
-        </div>
+                        <div class="row">
+                            <input id="scratchPriceInput" type="text" placeholder="Ticket price, e.g. 5m" />
+                            <input id="scratchQuantityInput" type="number" min="1" max="20" step="1" value="1"
+                                placeholder="Qty" />
+                            <button id="scratchBuyButton" class="green">Buy Tickets</button>
+                        </div>
 
-        <div class="quickBetGrid">
-            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="1000000">1M</button>
-            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="10000000">10M</button>
-            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="100000000">100M</button>
-            <button class="quickBetButton" data-target="scratchPriceInput" data-amount="1000000000">1B</button>
-        </div>
+                        <div class="quickBetGrid">
+                            <button class="quickBetButton" data-target="scratchPriceInput"
+                                data-amount="1000000">1M</button>
+                            <button class="quickBetButton" data-target="scratchPriceInput"
+                                data-amount="10000000">10M</button>
+                            <button class="quickBetButton" data-target="scratchPriceInput"
+                                data-amount="100000000">100M</button>
+                            <button class="quickBetButton" data-target="scratchPriceInput"
+                                data-amount="1000000000">1B</button>
+                        </div>
 
-        <div id="scratchPaytable" class="slotPaytable"></div>
-    </div>
+                        <div id="scratchPaytable" class="slotPaytable"></div>
+                    </div>
 
-    <div class="panel">
-        <div class="panelHeader">
-            <div class="panelTitle">📜 Scratch History</div>
-            <div class="panelHint">Recent purchases</div>
-        </div>
+                    <div class="panel">
+                        <div class="panelHeader">
+                            <div class="panelTitle">📜 Scratch History</div>
+                            <div class="panelHint">Recent purchases</div>
+                        </div>
 
-        <div id="scratchHistoryBox">
-            <div class="emptyState">
-                No scratch tickets bought yet.
-            </div>
-        </div>
-    </div>
-</div>
+                        <div id="scratchHistoryBox">
+                            <div class="emptyState">
+                                No scratch tickets bought yet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<div id="lotteryPage" class="tabPage">
-    <div class="gameBalanceLine">
-        Balance: <span class="gameChipBalance">0 chips</span>
-    </div>
+                <div id="lotteryPage" class="tabPage">
+                    <div class="gameBalanceLine">
+                        Balance: <span class="gameChipBalance">0 chips</span>
+                    </div>
 
-    <div class="heroCard">
-        <div class="panelHeader">
-            <div class="panelTitle">🎟️ Weekly Lottery</div>
-            <div class="panelHint" id="lotteryCountdownText">
-                Loading...
-            </div>
-        </div>
+                    <div class="heroCard">
+                        <div class="panelHeader">
+                            <div class="panelTitle">🎟️ Weekly Lottery</div>
+                            <div class="panelHint" id="lotteryCountdownText">
+                                Loading...
+                            </div>
+                        </div>
 
-        <div class="dailyProfitTotal">
-            <span>Current Jackpot</span>
-            <strong id="lotteryPotValue">0 chips</strong>
-        </div>
+                        <div class="dailyProfitTotal">
+                            <span>Current Jackpot</span>
+                            <strong id="lotteryPotValue">0 chips</strong>
+                        </div>
 
-        <div class="dailyProfitSplit">
-            <div class="dailyProfitSplitCard">
-                <span>Total Tickets Sold</span>
-                <strong id="lotteryTotalTickets">0</strong>
-            </div>
+                        <div class="dailyProfitSplit">
+                            <div class="dailyProfitSplitCard">
+                                <span>Total Tickets Sold</span>
+                                <strong id="lotteryTotalTickets">0</strong>
+                            </div>
 
-            <div class="dailyProfitSplitCard">
-                <span>Your Chance</span>
-                <strong id="lotteryMyChance">0%</strong>
-            </div>
-        </div>
-    </div>
+                            <div class="dailyProfitSplitCard">
+                                <span>Your Chance</span>
+                                <strong id="lotteryMyChance">0%</strong>
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="panel">
-        <div class="panelHeader">
-            <div class="panelTitle">🎫 Buy Tickets</div>
-            <div class="panelHint">100M chips per ticket</div>
-        </div>
+                    <div class="panel">
+                        <div class="panelHeader">
+                            <div class="panelTitle">🎫 Buy Tickets</div>
+                            <div class="panelHint">100M chips per ticket</div>
+                        </div>
 
-        <div class="playerIdentityBox">
-            <div class="playerIdentityLabel">Detected Player</div>
-            <div class="playerIdentityName" id="lotteryDetectedPlayerName">
-                Waiting for game data...
-            </div>
-            <div class="playerIdentityId" id="lotteryDetectedPlayerId">
-                Open in-game so the app can read your name and ID.
-            </div>
-        </div>
+                        <div class="playerIdentityBox">
+                            <div class="playerIdentityLabel">Detected Player</div>
+                            <div class="playerIdentityName" id="lotteryDetectedPlayerName">
+                                Waiting for game data...
+                            </div>
+                            <div class="playerIdentityId" id="lotteryDetectedPlayerId">
+                                Open in-game so the app can read your name and ID.
+                            </div>
+                        </div>
 
-        <div class="row">
-            <input id="lotteryQuantityInput" type="number" min="1" max="1000" step="1" value="1" placeholder="Number of tickets" />
-            <button id="lotteryBuyButton" class="green">
-                Buy Tickets
-            </button>
-        </div>
+                        <div class="row">
+                            <input id="lotteryQuantityInput" type="number" min="1" max="1000" step="1" value="1"
+                                placeholder="Number of tickets" />
+                            <button id="lotteryBuyButton" class="green">
+                                Buy Tickets
+                            </button>
+                        </div>
 
-        <div class="quickBetGrid">
-            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="1">1</button>
-            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="5">5</button>
-            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="10">10</button>
-            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="50">50</button>
-        </div>
+                        <div class="quickBetGrid">
+                            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="1">1</button>
+                            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="5">5</button>
+                            <button class="quickBetButton" data-target="lotteryQuantityInput"
+                                data-amount="10">10</button>
+                            <button class="quickBetButton" data-target="lotteryQuantityInput"
+                                data-amount="50">50</button>
+                        </div>
 
-        <div class="small">
-            Each ticket costs 100,000,000 chips. The more tickets you hold, the higher your chance of winning the entire jackpot. One winner is drawn every week.
-        </div>
-    </div>
+                        <div class="small">
+                            Each ticket costs 100,000,000 chips. The more tickets you hold, the higher your chance of
+                            winning the entire jackpot. One winner is drawn every week.
+                        </div>
+                    </div>
 
-    <div class="panel">
-        <div class="panelHeader">
-            <div class="panelTitle">🧾 Ticket Holders</div>
-            <div class="panelHint">This round</div>
-        </div>
+                    <div class="panel">
+                        <div class="panelHeader">
+                            <div class="panelTitle">🧾 Ticket Holders</div>
+                            <div class="panelHint">This round</div>
+                        </div>
 
-        <div id="lotteryEntriesBox">
-            <div class="emptyState">
-                No tickets sold yet this round.
-            </div>
-        </div>
-    </div>
+                        <div id="lotteryEntriesBox">
+                            <div class="emptyState">
+                                No tickets sold yet this round.
+                            </div>
+                        </div>
+                    </div>
 
-    <div class="panel">
-        <div class="panelHeader">
-            <div class="panelTitle">📜 Past Draws</div>
-            <div class="panelHint">Recent winners</div>
-        </div>
+                    <div class="panel">
+                        <div class="panelHeader">
+                            <div class="panelTitle">📜 Past Draws</div>
+                            <div class="panelHint">Recent winners</div>
+                        </div>
 
-        <div id="lotteryHistoryBox">
-            <div class="emptyState">
-                No draws yet.
-            </div>
-        </div>
-    </div>
-</div>
+                        <div id="lotteryHistoryBox">
+                            <div class="emptyState">
+                                No draws yet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div id="chipsPage" class="tabPage">
-                   
+
                     <div class="chipWallet">
                         <div class="chipWalletTop">
                             <div>
@@ -4366,7 +4390,7 @@
                     <div class="panelHint">Local app</div>
                 </div>
                 <div class="small">
-              
+
                 </div>
                 <button id="reloadButton">Reload App</button>
             </div>
@@ -4525,7 +4549,7 @@
     </div>
     <script>
         const SERVER_URL = "https://gambling-backend-production.up.railway.app/";
-        const BANKER_IDS = ["229051", "207252","476991"];
+        const BANKER_IDS = ["229051", "207252", "476991"];
         const STORAGE_POSITION = "tt_shared_casino_position";
         const STORAGE_OPACITY = "tt_shared_casino_opacity";
         const STORAGE_USER_SETTINGS = "tt_shared_casino_user_settings";
@@ -5431,7 +5455,7 @@
                 label.className = 'wheelLabel';
                 label.textContent = s.label;
                 const a = center - 90;
-                label.style.transform = `rotate(${a}deg) translate(68px) rotate(${-a}deg) translate(-50%, -50%)`;
+                label.style.transform = `rotate(${a}deg) translate(75px) rotate(${-a}deg) translate(-50%, -50%)`;
                 face.appendChild(label)
             }
             );
@@ -6475,54 +6499,54 @@
             }, 4200);
         }
 
-     async function bjSubmitBet() {
-    const playerName = String(autoName || "").trim();
-    const playerId = String(autoUserId || "").trim();
-    let amount = parseMoneyInput($("bjAmountInput").value);
+        async function bjSubmitBet() {
+            const playerName = String(autoName || "").trim();
+            const playerId = String(autoUserId || "").trim();
+            let amount = parseMoneyInput($("bjAmountInput").value);
 
-    if (!playerName || !playerId) {
-        window.parent.postMessage(
-            {
-                type: "getData"
-            },
-            "*"
-        );
-        return setStatus("NO GAME DATA", 2200);
-    }
-
-    const rewards = state.rewards || {};
-    const myRewards = rewards[String(playerId)] || {};
-    const hasFreeBet = Number(myRewards.blackjackFreeBets || 0) > 0;
-
-    if (!hasFreeBet) {
-        if (!amount || amount < 1)
-            return setStatus("NO AMOUNT", 1500);
-
-        if (amount > getMyChipBalance())
-            return setStatus("NOT ENOUGH CHIPS", 2200);
-    } else {
-        
-        amount = 10000000;
-    }
-
-    try {
-        const json = await apiRequest("/blackjack/place-bet", {
-            method: "POST",
-            body: {
-                playerId,
-                playerName,
-                amount
+            if (!playerName || !playerId) {
+                window.parent.postMessage(
+                    {
+                        type: "getData"
+                    },
+                    "*"
+                );
+                return setStatus("NO GAME DATA", 2200);
             }
-        });
 
-        state = json.state || state;
-        setStatus("BJ BET SENT", 1300);
-        render();
-    } catch (e) {
-        setStatus(String(e.message || e), 2500);
-    }
-}
- async function bjPlayerAction(action) {
+            const rewards = state.rewards || {};
+            const myRewards = rewards[String(playerId)] || {};
+            const hasFreeBet = Number(myRewards.blackjackFreeBets || 0) > 0;
+
+            if (!hasFreeBet) {
+                if (!amount || amount < 1)
+                    return setStatus("NO AMOUNT", 1500);
+
+                if (amount > getMyChipBalance())
+                    return setStatus("NOT ENOUGH CHIPS", 2200);
+            } else {
+
+                amount = 10000000;
+            }
+
+            try {
+                const json = await apiRequest("/blackjack/place-bet", {
+                    method: "POST",
+                    body: {
+                        playerId,
+                        playerName,
+                        amount
+                    }
+                });
+
+                state = json.state || state;
+                setStatus("BJ BET SENT", 1300);
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2500);
+            }
+        }
+        async function bjPlayerAction(action) {
             try {
                 const json = await apiRequest('/blackjack/' + action, {
                     method: 'POST',
@@ -6537,62 +6561,62 @@
             }
         }
 
-  async function raceSubmitBet() {
-    const playerName = String(autoName || "").trim();
-    const playerId = String(autoUserId || "").trim();
-    let amount = parseMoneyInput($("raceAmountInput").value);
-    const horseId = String($("raceHorseSelect").value || "");
+        async function raceSubmitBet() {
+            const playerName = String(autoName || "").trim();
+            const playerId = String(autoUserId || "").trim();
+            let amount = parseMoneyInput($("raceAmountInput").value);
+            const horseId = String($("raceHorseSelect").value || "");
 
-    if (!playerName || !playerId) {
-        window.parent.postMessage(
-            {
-                type: "getData"
-            },
-            "*"
-        );
+            if (!playerName || !playerId) {
+                window.parent.postMessage(
+                    {
+                        type: "getData"
+                    },
+                    "*"
+                );
 
-        return setStatus("NO GAME DATA", 2200);
-    }
-
-    if (!horseId) {
-        return setStatus("NO HORSE", 1500);
-    }
-
-    const rewards = state.rewards || {};
-    const myRewards = rewards[String(playerId)] || {};
-    const hasFreeBet = Number(myRewards.horseFreeBets || 0) > 0;
-
-    if (!hasFreeBet) {
-        if (!amount || amount < 1) {
-            return setStatus("NO AMOUNT", 1500);
-        }
-
-        if (amount > getMyChipBalance()) {
-            return setStatus("NOT ENOUGH CHIPS", 2200);
-        }
-    } else {
-      
-        amount = 10000000;
-    }
-
-    try {
-        const json = await apiRequest("/racing/place-bet", {
-            method: "POST",
-            body: {
-                playerId,
-                playerName,
-                amount,
-                horseId
+                return setStatus("NO GAME DATA", 2200);
             }
-        });
 
-        state = json.state || state;
-        setStatus("RACE BET SENT", 1300);
-        render();
-    } catch (e) {
-        setStatus(String(e.message || e), 2500);
-    }
-}
+            if (!horseId) {
+                return setStatus("NO HORSE", 1500);
+            }
+
+            const rewards = state.rewards || {};
+            const myRewards = rewards[String(playerId)] || {};
+            const hasFreeBet = Number(myRewards.horseFreeBets || 0) > 0;
+
+            if (!hasFreeBet) {
+                if (!amount || amount < 1) {
+                    return setStatus("NO AMOUNT", 1500);
+                }
+
+                if (amount > getMyChipBalance()) {
+                    return setStatus("NOT ENOUGH CHIPS", 2200);
+                }
+            } else {
+
+                amount = 10000000;
+            }
+
+            try {
+                const json = await apiRequest("/racing/place-bet", {
+                    method: "POST",
+                    body: {
+                        playerId,
+                        playerName,
+                        amount,
+                        horseId
+                    }
+                });
+
+                state = json.state || state;
+                setStatus("RACE BET SENT", 1300);
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2500);
+            }
+        }
         function getHorseDecimalOdds(horse) {
             const value = Number(
                 horse?.decimalOdds ??
@@ -6829,15 +6853,15 @@
             }
         }
 
-const SCRATCH_SYMBOL_LABELS = {
-    blank: "🖕",
-    pear: "🍐",
-    cherry: "🍒",
-    bell: "🔔",
-    gem: "💎",
-    seven: "7️⃣",
-    crown: "👑"
-};
+        const SCRATCH_SYMBOL_LABELS = {
+            blank: "🖕",
+            pear: "🍐",
+            cherry: "🍒",
+            bell: "🔔",
+            gem: "💎",
+            seven: "7️⃣",
+            crown: "👑"
+        };
         const SLOT_SYMBOLS = {
             pear: "🍐", seven: "7️⃣", bell: "🔔", gem: "💎",
             crown: "👑", cherry: "🍒", wild: "🃏", scatter: "🐉"
@@ -7865,7 +7889,83 @@ const SCRATCH_SYMBOL_LABELS = {
                 );
             }
         }
+        const EUROPEAN_WHEEL = [
+            0,
+            32,
+            15,
+            19,
+            4,
+            21,
+            2,
+            25,
+            17,
+            34,
+            6,
+            27,
+            13,
+            36,
+            11,
+            30,
+            8,
+            23,
+            10,
+            5,
+            24,
+            16,
+            33,
+            1,
+            20,
+            14,
+            31,
+            9,
+            22,
+            18,
+            29,
+            7,
+            28,
+            12,
+            35,
+            3,
+            26
+        ];
+function buildRouletteWheel() {
+    const wheel = $("rouletteWheel");
+    if (!wheel || wheel.dataset.ready) return;
+    wheel.dataset.ready = "1";
 
+    const step = 360 / EUROPEAN_WHEEL.length;
+    const halfStep = step / 2;
+    const parts = [];
+    const radius = 120;
+
+    EUROPEAN_WHEEL.forEach((number, index) => {
+        const start = index * step;
+        const end = start + step;
+
+        const color =
+            number === 0 ? "#138a3d" :
+            ROULETTE_RED_NUMBERS.has(number) ? "#b72d2d" : "#171717";
+
+        parts.push(`${color} ${start}deg ${end}deg`);
+
+        
+        const shiftedCenter = start - halfStep + halfStep; 
+        const rad = (shiftedCenter - 90) * Math.PI / 180;
+        const x = Math.cos(rad) * radius;
+        const y = Math.sin(rad) * radius;
+
+        const label = document.createElement("span");
+        label.className = "rouletteNumberLabel";
+        label.textContent = number;
+        label.style.left = `calc(50% + ${x}px)`;
+        label.style.top = `calc(50% + ${y}px)`;
+        label.style.transform = "translate(-50%, -50%)";
+        wheel.appendChild(label);
+    });
+
+    wheel.style.background =
+        `conic-gradient(from -${halfStep}deg, ${parts.join(", ")})`;
+}
         const DEAL_PRIZE_MULTIPLIERS = [
             0, 0.05, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60,
             0.75, 0.90, 1, 1.20, 1.50, 2, 2.50, 3.20
@@ -8065,6 +8165,7 @@ const SCRATCH_SYMBOL_LABELS = {
             }
 
             buildRouletteBoard();
+            buildRouletteWheel();
 
             const roulette =
                 state.roulette || {
@@ -8187,34 +8288,20 @@ const SCRATCH_SYMBOL_LABELS = {
                         ""
                     ).toUpperCase();
 
-                const durationMs =
-                    Number(
-                        roulette.activeSpin.durationMs ||
-                        4300
-                    );
-const POCKETS = 37;
-const DEGREES_PER_SLOT = 360 / POCKETS;
+             const durationMs = Number(roulette.activeSpin.durationMs || 4300);
 
+const index = EUROPEAN_WHEEL.indexOf(number);
+const DEGREES_PER_SLOT = 360 / EUROPEAN_WHEEL.length;
+                const POINTER_OFFSET = -90;
 
-const WHEEL_OFFSET = -90;
+               const targetAngle = -(index * DEGREES_PER_SLOT);
 
-const targetAngle =
-    (number * DEGREES_PER_SLOT) + WHEEL_OFFSET;
+               const currentAngle = rouletteWheelRotation % 360;
+let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
+                rouletteWheelRotation += (360 * 6) + delta;
 
-const current =
-    rouletteWheelRotation % 360;
+            $("rouletteWheel").style.transform = `rotate(${rouletteWheelRotation}deg)`;
 
-const delta =
-    ((360 - current) + targetAngle) % 360;
-
-rouletteWheelRotation +=
-    (360 * 6) + delta;
-
-$("rouletteWheel").style.transform =
-    `rotate(${rouletteWheelRotation}deg)`;
-
-                $("rouletteWheel").style.transform =
-                    `rotate(${rouletteWheelRotation}deg)`;
 
                 $("rouletteResultText").textContent =
                     "Wheel spinning...";
@@ -8249,26 +8336,26 @@ $("rouletteWheel").style.transform =
 
         }
 
-    function renderScratchPaytable() {
-    const box = $("scratchPaytable");
-    if (!box) return;
-    const multipliers = { pear: 1.5, cherry: 2.5, bell: 4.5, gem: 6, seven: 7, crown: 8 };
-    box.innerHTML = Object.entries(SCRATCH_SYMBOL_LABELS)
-        .filter(([id]) => id !== "blank")
-        .map(([id, label]) =>
-            `<div class="slotPayItem">${label} 3+ matching<b>x${multipliers[id]}</b></div>`
-        ).join('');
-}
-function renderScratchHistory() {
-    const box = $("scratchHistoryBox");
-    if (!box) return;
-    const history = (state.scratch?.history || [])
-        .filter(entry => String(entry.playerId) === String(autoUserId))
-        .slice(0, 10);
+        function renderScratchPaytable() {
+            const box = $("scratchPaytable");
+            if (!box) return;
+            const multipliers = { pear: 1.5, cherry: 2.5, bell: 4.5, gem: 6, seven: 7, crown: 8 };
+            box.innerHTML = Object.entries(SCRATCH_SYMBOL_LABELS)
+                .filter(([id]) => id !== "blank")
+                .map(([id, label]) =>
+                    `<div class="slotPayItem">${label} 3+ matching<b>x${multipliers[id]}</b></div>`
+                ).join('');
+        }
+        function renderScratchHistory() {
+            const box = $("scratchHistoryBox");
+            if (!box) return;
+            const history = (state.scratch?.history || [])
+                .filter(entry => String(entry.playerId) === String(autoUserId))
+                .slice(0, 10);
 
-    box.innerHTML = !history.length
-        ? '<div class="emptyState">No scratch tickets bought yet.</div>'
-        : history.map(entry => `
+            box.innerHTML = !history.length
+                ? '<div class="emptyState">No scratch tickets bought yet.</div>'
+                : history.map(entry => `
             <div class="historyRow">
                 <div>${entry.quantity} ticket(s) at ${shortMoney(entry.ticketPrice)} • ${entry.winningTickets} winner(s)</div>
                 <div class="betRight ${entry.profit >= 0 ? 'win' : 'loss'}">
@@ -8276,250 +8363,250 @@ function renderScratchHistory() {
                 </div>
             </div>
         `).join('');
-}
+        }
 
-function buildScratchCardsGrid() {
-    const grid = $("scratchCardsGrid");
-    if (!grid) return;
+        function buildScratchCardsGrid() {
+            const grid = $("scratchCardsGrid");
+            if (!grid) return;
 
-    if (!scratchTickets.length) {
-        grid.innerHTML = '<div class="emptyState">Buy tickets to see them here.</div>';
-        $("scratchRevealAllButton").style.display = "none";
-        return;
-    }
+            if (!scratchTickets.length) {
+                grid.innerHTML = '<div class="emptyState">Buy tickets to see them here.</div>';
+                $("scratchRevealAllButton").style.display = "none";
+                return;
+            }
 
-    grid.innerHTML = scratchTickets.map((ticket, ticketIndex) => `
+            grid.innerHTML = scratchTickets.map((ticket, ticketIndex) => `
         <div class="scratchCard" data-ticket="${ticketIndex}">
             <div class="scratchCardLabel">Ticket ${ticketIndex + 1}</div>
             <div class="scratchGrid3x3">
                 ${ticket.cells.map((symbolId, cellIndex) => {
-                    const label = SCRATCH_SYMBOL_LABELS[symbolId] || symbolId;
-                    return `
+                const label = SCRATCH_SYMBOL_LABELS[symbolId] || symbolId;
+                return `
                         <div class="scratchCell">
                             ${label}
                             <div class="scratchCellCover" data-ticket="${ticketIndex}" data-cell="${cellIndex}"></div>
                         </div>
                     `;
-                }).join('')}
+            }).join('')}
             </div>
             <div class="scratchCardResult" data-ticket-result="${ticketIndex}"></div>
         </div>
     `).join('');
 
-    grid.querySelectorAll('.scratchCellCover').forEach(cover => {
-        cover.addEventListener('click', () =>
-            scratchCell(Number(cover.dataset.ticket), Number(cover.dataset.cell))
-        );
-    });
+            grid.querySelectorAll('.scratchCellCover').forEach(cover => {
+                cover.addEventListener('click', () =>
+                    scratchCell(Number(cover.dataset.ticket), Number(cover.dataset.cell))
+                );
+            });
 
-    $("scratchRevealAllButton").style.display = "block";
-}
+            $("scratchRevealAllButton").style.display = "block";
+        }
 
-function showScratchTicketResult(ticketIndex) {
-    const ticket = scratchTickets[ticketIndex];
-    const resultBox = document.querySelector(`[data-ticket-result="${ticketIndex}"]`);
-    const card = document.querySelector(`.scratchCard[data-ticket="${ticketIndex}"]`);
-    if (!ticket || !resultBox) return;
+        function showScratchTicketResult(ticketIndex) {
+            const ticket = scratchTickets[ticketIndex];
+            const resultBox = document.querySelector(`[data-ticket-result="${ticketIndex}"]`);
+            const card = document.querySelector(`.scratchCard[data-ticket="${ticketIndex}"]`);
+            if (!ticket || !resultBox) return;
 
-    card?.classList.remove('winner', 'loser');
+            card?.classList.remove('winner', 'loser');
 
-    if (ticket.isWin) {
-        resultBox.textContent = `Won ${shortMoney(ticket.payout)}!`;
-        resultBox.className = 'scratchCardResult win';
-        card?.classList.add('winner');
-    } else {
-        const lossAmount = ticket.ticketPrice - ticket.payout;
-        resultBox.textContent = `Loss: ${shortMoney(lossAmount)}`;
-        resultBox.className = 'scratchCardResult loss';
-        card?.classList.add('loser');
-    }
-}
+            if (ticket.isWin) {
+                resultBox.textContent = `Won ${shortMoney(ticket.payout)}!`;
+                resultBox.className = 'scratchCardResult win';
+                card?.classList.add('winner');
+            } else {
+                const lossAmount = ticket.ticketPrice - ticket.payout;
+                resultBox.textContent = `Loss: ${shortMoney(lossAmount)}`;
+                resultBox.className = 'scratchCardResult loss';
+                card?.classList.add('loser');
+            }
+        }
 
-async function scratchCell(ticketIndex, cellIndex) {
+        async function scratchCell(ticketIndex, cellIndex) {
 
-    const cover = document.querySelector(
-        `.scratchCellCover[data-ticket="${ticketIndex}"][data-cell="${cellIndex}"]`
-    );
+            const cover = document.querySelector(
+                `.scratchCellCover[data-ticket="${ticketIndex}"][data-cell="${cellIndex}"]`
+            );
 
-    if (!cover || cover.classList.contains("scratched")) return;
-
-    cover.classList.add("scratched");
-
-    const allTicketsFinished = scratchTickets.every((_, t) => {
-
-        return Array.from(
-            document.querySelectorAll(
-                `.scratchCellCover[data-ticket="${t}"]`
-            )
-        ).every(c => c.classList.contains("scratched"));
-
-    });
-
-    if (!allTicketsFinished) return;
-
-    scratchTickets.forEach((_, i) =>
-        showScratchTicketResult(i)
-    );
-
-    if (scratchTickets.some(t => t.isWin)) {
-        playSlotPayoutSound();
-    }
-
-    showScratchBatchSummary(currentScratchBatch);
-    await wait(6000);
-
-    await claimScratchTickets();
-}
-
-async function revealAllScratchTickets() {
-
-    if (scratchRevealing) return;
-
-    scratchRevealing = true;
-
-    try {
-
-        const covers = document.querySelectorAll(
-            ".scratchCellCover:not(.scratched)"
-        );
-
-        for (const cover of covers) {
+            if (!cover || cover.classList.contains("scratched")) return;
 
             cover.classList.add("scratched");
 
-            await wait(45);
-        }
+            const allTicketsFinished = scratchTickets.every((_, t) => {
 
-        scratchTickets.forEach((_, i) =>
-            showScratchTicketResult(i)
-        );
+                return Array.from(
+                    document.querySelectorAll(
+                        `.scratchCellCover[data-ticket="${t}"]`
+                    )
+                ).every(c => c.classList.contains("scratched"));
 
-        if (scratchTickets.some(t => t.isWin)) {
-            playSlotPayoutSound();
-        }
+            });
 
-        showScratchBatchSummary(currentScratchBatch);
-        await wait(3000);
-        await claimScratchTickets();
+            if (!allTicketsFinished) return;
 
-    } finally {
+            scratchTickets.forEach((_, i) =>
+                showScratchTicketResult(i)
+            );
 
-        scratchRevealing = false;
-
-    }
-
-}
-async function claimScratchTickets() {
-    if (!scratchTickets.length) return;
-
-    try {
-        const json = await apiRequest("/scratch/claim", {
-            method: "POST",
-            body: {
-                playerId: autoUserId
+            if (scratchTickets.some(t => t.isWin)) {
+                playSlotPayoutSound();
             }
-        });
 
-       state = json.state || state;
+            showScratchBatchSummary(currentScratchBatch);
+            await wait(6000);
 
-renderScratchHistory();
-
-scratchTickets = [];
-currentScratchBatch = null;
-
-buildScratchCardsGrid();
-
-render();
-
-        $("scratchRevealAllButton").style.display = "none";
-
-        const buyButton = $("scratchBuyButton");
-        if (buyButton) {
-            buyButton.disabled = false;
+            await claimScratchTickets();
         }
 
-        setStatus("SCRATCH COMPLETE", 1800);
+        async function revealAllScratchTickets() {
 
-    } catch (error) {
-        setStatus(error.message || "Claim failed", 2500);
-    }
-}
-async function buyScratchTickets() {
-    const playerId = String(autoUserId || "").trim();
-    const playerName = String(autoName || "").trim();
-    let ticketPrice = parseMoneyInput($("scratchPriceInput").value);
-    let quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
+            if (scratchRevealing) return;
 
-    if (!playerId || !playerName)
-        return setStatus("NO GAME DATA", 1800);
+            scratchRevealing = true;
 
-    const rewards = state.rewards || {};
-    const myRewards = rewards[String(playerId)] || {};
-    const hasFreeBet = Number(myRewards.scratchFreeBets || 0) > 0;
+            try {
 
-    if (!hasFreeBet) {
-        if (!ticketPrice || ticketPrice < 1)
-            return setStatus("NO TICKET PRICE", 1800);
+                const covers = document.querySelectorAll(
+                    ".scratchCellCover:not(.scratched)"
+                );
 
-        if (!quantity || quantity < 1 || quantity > 20)
-            return setStatus("CHOOSE 1-20 TICKETS", 2000);
+                for (const cover of covers) {
 
-        if (ticketPrice * quantity > getMyChipBalance())
-            return setStatus("NOT ENOUGH CHIPS", 2200);
-    } else {
-        
-        ticketPrice = 10000000;
-        quantity = 1;
-    }
+                    cover.classList.add("scratched");
 
-    if (scratchTickets.length) {
-        return setStatus("Reveal your current scratch cards first.", 2500);
-    }
+                    await wait(45);
+                }
 
-    try {
-        const json = await apiRequest("/scratch/buy", {
-            method: "POST",
-            body: {
-                playerId,
-                playerName,
-                ticketPrice,
-                quantity
+                scratchTickets.forEach((_, i) =>
+                    showScratchTicketResult(i)
+                );
+
+                if (scratchTickets.some(t => t.isWin)) {
+                    playSlotPayoutSound();
+                }
+
+                showScratchBatchSummary(currentScratchBatch);
+                await wait(3000);
+                await claimScratchTickets();
+
+            } finally {
+
+                scratchRevealing = false;
+
             }
-        });
 
-        state = json.state || state;
-        scratchTickets = json.tickets || [];
-        currentScratchBatch = json.batch || null;
-        scratchSummaryShown = false;
-buildScratchCardsGrid();
-        const buyButton = $("scratchBuyButton");
-        if (buyButton) {
-            buyButton.disabled = true;
+        }
+        async function claimScratchTickets() {
+            if (!scratchTickets.length) return;
+
+            try {
+                const json = await apiRequest("/scratch/claim", {
+                    method: "POST",
+                    body: {
+                        playerId: autoUserId
+                    }
+                });
+
+                state = json.state || state;
+
+                renderScratchHistory();
+
+                scratchTickets = [];
+                currentScratchBatch = null;
+
+                buildScratchCardsGrid();
+
+                render();
+
+                $("scratchRevealAllButton").style.display = "none";
+
+                const buyButton = $("scratchBuyButton");
+                if (buyButton) {
+                    buyButton.disabled = false;
+                }
+
+                setStatus("SCRATCH COMPLETE", 1800);
+
+            } catch (error) {
+                setStatus(error.message || "Claim failed", 2500);
+            }
+        }
+        async function buyScratchTickets() {
+            const playerId = String(autoUserId || "").trim();
+            const playerName = String(autoName || "").trim();
+            let ticketPrice = parseMoneyInput($("scratchPriceInput").value);
+            let quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
+
+            if (!playerId || !playerName)
+                return setStatus("NO GAME DATA", 1800);
+
+            const rewards = state.rewards || {};
+            const myRewards = rewards[String(playerId)] || {};
+            const hasFreeBet = Number(myRewards.scratchFreeBets || 0) > 0;
+
+            if (!hasFreeBet) {
+                if (!ticketPrice || ticketPrice < 1)
+                    return setStatus("NO TICKET PRICE", 1800);
+
+                if (!quantity || quantity < 1 || quantity > 20)
+                    return setStatus("CHOOSE 1-20 TICKETS", 2000);
+
+                if (ticketPrice * quantity > getMyChipBalance())
+                    return setStatus("NOT ENOUGH CHIPS", 2200);
+            } else {
+
+                ticketPrice = 10000000;
+                quantity = 1;
+            }
+
+            if (scratchTickets.length) {
+                return setStatus("Reveal your current scratch cards first.", 2500);
+            }
+
+            try {
+                const json = await apiRequest("/scratch/buy", {
+                    method: "POST",
+                    body: {
+                        playerId,
+                        playerName,
+                        ticketPrice,
+                        quantity
+                    }
+                });
+
+                state = json.state || state;
+                scratchTickets = json.tickets || [];
+                currentScratchBatch = json.batch || null;
+                scratchSummaryShown = false;
+                buildScratchCardsGrid();
+                const buyButton = $("scratchBuyButton");
+                if (buyButton) {
+                    buyButton.disabled = true;
+                }
+
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2500);
+            }
         }
 
-        render();
-    } catch (e) {
-        setStatus(String(e.message || e), 2500);
-    }
-}
 
-    
 
-function showScratchBatchSummary(batch) {
-    const box = $("scratchBatchSummary");
-    if (!box || !batch) return;
+        function showScratchBatchSummary(batch) {
+            const box = $("scratchBatchSummary");
+            if (!box || !batch) return;
 
-    const net = batch.profit; 
+            const net = batch.profit;
 
-    $("scratchBatchSpent").textContent = shortMoney(batch.totalCost);
-    $("scratchBatchWon").textContent = shortMoney(batch.totalPayout);
+            $("scratchBatchSpent").textContent = shortMoney(batch.totalCost);
+            $("scratchBatchWon").textContent = shortMoney(batch.totalPayout);
 
-    const netLabel = $("scratchBatchNet");
-    netLabel.textContent = (net >= 0 ? "+" : "") + shortMoney(net);
-    netLabel.className = net > 0 ? "win" : net < 0 ? "loss" : "neutral";
+            const netLabel = $("scratchBatchNet");
+            netLabel.textContent = (net >= 0 ? "+" : "") + shortMoney(net);
+            netLabel.className = net > 0 ? "win" : net < 0 ? "loss" : "neutral";
 
-    box.style.display = "block";
-}
+            box.style.display = "block";
+        }
         let selectedChickenRisk = "medium";
         let chickenHandlersInstalled = false;
         let chickenCrossQueue = 0;
@@ -8607,7 +8694,7 @@ function showScratchBatchSummary(batch) {
                         parseMoneyInput(
                             amountInput?.value || ""
                         );
-                       
+
 
                     if (!playerId || !playerName) {
                         setStatus(
@@ -8658,9 +8745,9 @@ function showScratchBatchSummary(batch) {
                         $("chickenCharacter")
                             ?.classList.remove("hit");
 
-                       if (amountInput) {
-                        amountInput.value = lastChickenBetAmount;
-                         }
+                        if (amountInput) {
+                            amountInput.value = lastChickenBetAmount;
+                        }
                         setStatus(
                             "CHICKEN GAME STARTED",
                             1800
@@ -9174,26 +9261,26 @@ function showScratchBatchSummary(batch) {
             const status = dailySpinStatus;
             const prizes = status?.prizes || state.dailySpin?.prizes || [];
 
-         if (prizeList) {
-    prizeList.innerHTML = prizes.length
-        ? prizes.map(prize => `
+            if (prizeList) {
+                prizeList.innerHTML = prizes.length
+                    ? prizes.map(prize => `
             <div class="dailySpinPrizeItem">
                 <b>${escapeHtml(prize.label || "Prize")}</b><br>
                 ${prize.type === "chips"
-                ? `${shortMoney(prize.amount || 0)} chips`
-                : prize.type === "item"
-                    ? `${Number(prize.quantity || 1)}x in-game item`
-                    : prize.type === "scratch_ticket"
-                        ? `${Number(prize.amount || 1)}x scratch ticket${Number(prize.amount || 1) === 1 ? "" : "s"}`
-                        : prize.type === "horse_free_bet"
-                            ? `${Number(prize.amount || 1)}x free horse race bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
-                            : prize.type === "blackjack_free_bet"
-                                ? `${Number(prize.amount || 1)}x free blackjack bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
-                                : "No prize"}
+                            ? `${shortMoney(prize.amount || 0)} chips`
+                            : prize.type === "item"
+                                ? `${Number(prize.quantity || 1)}x in-game item`
+                                : prize.type === "scratch_ticket"
+                                    ? `${Number(prize.amount || 1)}x scratch ticket${Number(prize.amount || 1) === 1 ? "" : "s"}`
+                                    : prize.type === "horse_free_bet"
+                                        ? `${Number(prize.amount || 1)}x free horse race bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
+                                        : prize.type === "blackjack_free_bet"
+                                            ? `${Number(prize.amount || 1)}x free blackjack bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
+                                            : "No prize"}
             </div>
         `).join("")
-        : '<div class="emptyState">Prize list unavailable.</div>';
-}
+                    : '<div class="emptyState">Prize list unavailable.</div>';
+            }
 
             if (!autoUserId) {
                 resultBox.textContent = "Waiting for your in-game user ID...";
@@ -9212,28 +9299,27 @@ function showScratchBatchSummary(batch) {
             const remainingSpins = Math.max(0, Number(status.remainingSpins || 0));
 
             if (status.claimedToday && last) {
-resultBox.innerHTML = `
+                resultBox.innerHTML = `
     <div class="panelTitle">${escapeHtml(last.prizeLabel || "Daily Prize")}</div>
     <div class="small">
-        ${
-            last.prizeType === "chips"
-                ? `${shortMoney(last.amount || 0)} chips were added instantly.`
+        ${last.prizeType === "chips"
+                        ? `${shortMoney(last.amount || 0)} chips were added instantly.`
 
-            : last.prizeType === "item"
-                ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
+                        : last.prizeType === "item"
+                            ? `Your ${Number(last.quantity || 1)}x ${escapeHtml(last.itemName || last.prizeLabel)} delivery is ${last.deliveryStatus === "delivered" ? "complete" : "pending in Discord"}.`
 
-            : last.prizeType === "scratch_ticket" ||
-              last.prizeType === "horse_free_bet" ||
-              last.prizeType === "blackjack_free_bet" ||
-              last.prizeType === "slot_free_spin" ||
-              last.prizeType === "mines_free_game" ||
-              last.prizeType === "roulette_free_bet" ||
-              last.prizeType === "chicken_free_run"
+                            : last.prizeType === "scratch_ticket" ||
+                                last.prizeType === "horse_free_bet" ||
+                                last.prizeType === "blackjack_free_bet" ||
+                                last.prizeType === "slot_free_spin" ||
+                                last.prizeType === "mines_free_game" ||
+                                last.prizeType === "roulette_free_bet" ||
+                                last.prizeType === "chicken_free_run"
 
-                ? `${escapeHtml(last.prizeLabel)} has been added to your rewards.<br><br><span style="color:#ffd84d;font-weight:900;">Maximum free bet: 10M chips.</span><br><span style="color:#aeb8c6;">If you place a bet over 10M, your free bet will not be used.</span>`
+                                ? `${escapeHtml(last.prizeLabel)} has been added to your rewards.<br><br><span style="color:#ffd84d;font-weight:900;">Maximum free bet: 10M chips.</span><br><span style="color:#aeb8c6;">If you place a bet over 10M, your free bet will not be used.</span>`
 
-            : "Better luck next time!"
-        }
+                                : "Better luck next time!"
+                    }
     </div>
 `;
             } else {
@@ -10511,48 +10597,48 @@ resultBox.innerHTML = `
             }
         }
         function renderLottery() {
-    const lottery = state.lottery || {
-        ticketPrice: 100000000,
-        totalTickets: 0,
-        pot: 0,
-        drawsAt: null,
-        entries: [],
-        history: []
-    };
+            const lottery = state.lottery || {
+                ticketPrice: 100000000,
+                totalTickets: 0,
+                pot: 0,
+                drawsAt: null,
+                entries: [],
+                history: []
+            };
 
-    $("lotteryPotValue") && ($("lotteryPotValue").textContent = shortMoney(lottery.pot) + " chips");
-    $("lotteryTotalTickets") && ($("lotteryTotalTickets").textContent = String(lottery.totalTickets || 0));
+            $("lotteryPotValue") && ($("lotteryPotValue").textContent = shortMoney(lottery.pot) + " chips");
+            $("lotteryTotalTickets") && ($("lotteryTotalTickets").textContent = String(lottery.totalTickets || 0));
 
-    const myEntry = (lottery.entries || []).find(
-        entry => String(entry.playerId) === String(autoUserId)
-    );
-    const myTickets = myEntry ? myEntry.count : 0;
-    const myChance = lottery.totalTickets > 0 ? (myTickets / lottery.totalTickets) * 100 : 0;
+            const myEntry = (lottery.entries || []).find(
+                entry => String(entry.playerId) === String(autoUserId)
+            );
+            const myTickets = myEntry ? myEntry.count : 0;
+            const myChance = lottery.totalTickets > 0 ? (myTickets / lottery.totalTickets) * 100 : 0;
 
-    if ($("lotteryMyChance")) {
-        $("lotteryMyChance").textContent = myTickets
-            ? `${myChance.toFixed(2)}% (${myTickets} tickets)`
-            : "0%";
-    }
+            if ($("lotteryMyChance")) {
+                $("lotteryMyChance").textContent = myTickets
+                    ? `${myChance.toFixed(2)}% (${myTickets} tickets)`
+                    : "0%";
+            }
 
-    if ($("lotteryCountdownText")) {
-        if (lottery.drawsAt) {
-            const remaining = Math.max(0, Number(lottery.drawsAt) - Date.now());
-            const days = Math.floor(remaining / 86400000);
-            const hours = Math.floor((remaining % 86400000) / 3600000);
-            const minutes = Math.floor((remaining % 3600000) / 60000);
-            $("lotteryCountdownText").textContent = `Next draw in ${days}d ${hours}h ${minutes}m`;
-        } else {
-            $("lotteryCountdownText").textContent = "Waiting for next round";
-        }
-    }
+            if ($("lotteryCountdownText")) {
+                if (lottery.drawsAt) {
+                    const remaining = Math.max(0, Number(lottery.drawsAt) - Date.now());
+                    const days = Math.floor(remaining / 86400000);
+                    const hours = Math.floor((remaining % 86400000) / 3600000);
+                    const minutes = Math.floor((remaining % 3600000) / 60000);
+                    $("lotteryCountdownText").textContent = `Next draw in ${days}d ${hours}h ${minutes}m`;
+                } else {
+                    $("lotteryCountdownText").textContent = "Waiting for next round";
+                }
+            }
 
-    const entriesBox = $("lotteryEntriesBox");
-    if (entriesBox) {
-        const entries = lottery.entries || [];
-        entriesBox.innerHTML = !entries.length
-            ? '<div class="emptyState">No tickets sold yet this round.</div>'
-            : entries.map(entry => `
+            const entriesBox = $("lotteryEntriesBox");
+            if (entriesBox) {
+                const entries = lottery.entries || [];
+                entriesBox.innerHTML = !entries.length
+                    ? '<div class="emptyState">No tickets sold yet this round.</div>'
+                    : entries.map(entry => `
                 <div class="betRow">
                     <div class="betLeft">
                         ${escapeHtml(entry.playerName)}
@@ -10561,14 +10647,14 @@ resultBox.innerHTML = `
                     <div class="betRight">${entry.count} ticket${entry.count === 1 ? "" : "s"}</div>
                 </div>
             `).join("");
-    }
+            }
 
-    const historyBox = $("lotteryHistoryBox");
-    if (historyBox) {
-        const history = lottery.history || [];
-        historyBox.innerHTML = !history.length
-            ? '<div class="emptyState">No draws yet.</div>'
-            : history.slice(0, 10).map(entry => `
+            const historyBox = $("lotteryHistoryBox");
+            if (historyBox) {
+                const history = lottery.history || [];
+                historyBox.innerHTML = !history.length
+                    ? '<div class="emptyState">No draws yet.</div>'
+                    : history.slice(0, 10).map(entry => `
                 <div class="historyRow">
                     <div>
                         ${entry.winnerName ? escapeHtml(entry.winnerName) + " won" : "No winner (no tickets sold)"}
@@ -10577,41 +10663,41 @@ resultBox.innerHTML = `
                     <div class="betRight win">${shortMoney(entry.pot)}</div>
                 </div>
             `).join("");
-    }
+            }
 
-    if ($("lotteryBuyButton")) $("lotteryBuyButton").disabled = !autoUserId;
-    if ($("lotteryDetectedPlayerName")) $("lotteryDetectedPlayerName").textContent = autoName || "Waiting for game data...";
-    if ($("lotteryDetectedPlayerId")) {
-        $("lotteryDetectedPlayerId").textContent = autoUserId
-            ? "User ID: " + autoUserId + " • locked from game data"
-            : "Open in-game so the app can read your name and ID.";
-    }
-}
+            if ($("lotteryBuyButton")) $("lotteryBuyButton").disabled = !autoUserId;
+            if ($("lotteryDetectedPlayerName")) $("lotteryDetectedPlayerName").textContent = autoName || "Waiting for game data...";
+            if ($("lotteryDetectedPlayerId")) {
+                $("lotteryDetectedPlayerId").textContent = autoUserId
+                    ? "User ID: " + autoUserId + " • locked from game data"
+                    : "Open in-game so the app can read your name and ID.";
+            }
+        }
 
-async function buyLotteryTickets() {
-    const playerId = String(autoUserId || "").trim();
-    const playerName = String(autoName || "").trim();
-    const quantity = Math.floor(Number($("lotteryQuantityInput").value || 1));
+        async function buyLotteryTickets() {
+            const playerId = String(autoUserId || "").trim();
+            const playerName = String(autoName || "").trim();
+            const quantity = Math.floor(Number($("lotteryQuantityInput").value || 1));
 
-    if (!playerId || !playerName) return setStatus("NO GAME DATA", 1800);
-    if (!quantity || quantity < 1 || quantity > 1000) return setStatus("CHOOSE 1-1000 TICKETS", 2000);
+            if (!playerId || !playerName) return setStatus("NO GAME DATA", 1800);
+            if (!quantity || quantity < 1 || quantity > 1000) return setStatus("CHOOSE 1-1000 TICKETS", 2000);
 
-    const totalCost = quantity * 100000000;
-    if (totalCost > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
+            const totalCost = quantity * 100000000;
+            if (totalCost > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
 
-    try {
-        const json = await apiRequest("/lottery/buy-tickets", {
-            method: "POST",
-            body: { playerId, playerName, quantity }
-        });
+            try {
+                const json = await apiRequest("/lottery/buy-tickets", {
+                    method: "POST",
+                    body: { playerId, playerName, quantity }
+                });
 
-        state = json.state || state;
-        setStatus(`BOUGHT ${quantity} LOTTERY TICKET(S)`, 2200);
-        render();
-    } catch (e) {
-        setStatus(String(e.message || e), 2500);
-    }
-}
+                state = json.state || state;
+                setStatus(`BOUGHT ${quantity} LOTTERY TICKET(S)`, 2200);
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2500);
+            }
+        }
 
         function render() {
             registerCasinoPlayer().catch(error => {
@@ -11281,14 +11367,14 @@ async function buyLotteryTickets() {
                     setTab("chicken")
                 }
                 else if (button.innerHTML.toLowerCase().includes("scratch")) {
-    setTab("scratch");
-    renderScratchPaytable();
-    renderScratchHistory();
-    renderRewardBanners();
-}
-else if (button.innerHTML.toLowerCase().includes("lottery")) {
-    setTab("lottery");
-}
+                    setTab("scratch");
+                    renderScratchPaytable();
+                    renderScratchHistory();
+                    renderRewardBanners();
+                }
+                else if (button.innerHTML.toLowerCase().includes("lottery")) {
+                    setTab("lottery");
+                }
                 else if (button.innerHTML.toLowerCase().includes("daily spin")) {
                     setTab("dailySpin");
                     loadDailySpinStatus();
@@ -11413,30 +11499,30 @@ else if (button.innerHTML.toLowerCase().includes("lottery")) {
         }
 
         function getMyRewards() {
-    return state.rewards?.[String(autoUserId)] || {
-        scratchTickets: 0,
-        horseFreeBets: 0,
-        blackjackFreeBets: 0
-    };
-}
+            return state.rewards?.[String(autoUserId)] || {
+                scratchTickets: 0,
+                horseFreeBets: 0,
+                blackjackFreeBets: 0
+            };
+        }
 
-function renderRewardBanner(elementId, count, label) {
-    const el = $(elementId);
-    if (!el) return;
-    if (count > 0) {
-        el.classList.add("active");
-        el.innerHTML = `<div class="freeSpinBannerTitle">🎁 FREE ${label.toUpperCase()}${count === 1 ? "" : "S"} READY</div><div class="freeSpinBannerAmount">${count} AVAILABLE</div>`;
-    } else {
-        el.classList.remove("active");
-    }
-}
+        function renderRewardBanner(elementId, count, label) {
+            const el = $(elementId);
+            if (!el) return;
+            if (count > 0) {
+                el.classList.add("active");
+                el.innerHTML = `<div class="freeSpinBannerTitle">🎁 FREE ${label.toUpperCase()}${count === 1 ? "" : "S"} READY</div><div class="freeSpinBannerAmount">${count} AVAILABLE</div>`;
+            } else {
+                el.classList.remove("active");
+            }
+        }
 
-function renderRewardBanners() {
-    const rewards = getMyRewards();
-    renderRewardBanner("scratchRewardBanner", rewards.scratchTickets, "scratch ticket");
-    renderRewardBanner("raceRewardBanner", rewards.horseFreeBets, "horse bet");
-    renderRewardBanner("bjRewardBanner", rewards.blackjackFreeBets, "blackjack bet");
-}
+        function renderRewardBanners() {
+            const rewards = getMyRewards();
+            renderRewardBanner("scratchRewardBanner", rewards.scratchTickets, "scratch ticket");
+            renderRewardBanner("raceRewardBanner", rewards.horseFreeBets, "horse bet");
+            renderRewardBanner("bjRewardBanner", rewards.blackjackFreeBets, "blackjack bet");
+        }
 
         function playSlotPayoutSound() {
             if (!userSettings.sounds) return;
@@ -12271,4 +12357,4 @@ function renderRewardBanners() {
 
 </body>
 
-</html>         
+</html>
