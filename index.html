@@ -4064,6 +4064,7 @@
                                 Open in-game so the app can read your name and ID.
                             </div>
                         </div>
+                        <div id="lotteryEligibilityNotice" class="chipRequestStatus" style="display:none;"></div>
 
                         <div class="row">
                             <input id="lotteryQuantityInput" type="number" min="1" max="1000" step="1" value="1"
@@ -10596,14 +10597,15 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                         }).join("");
             }
         }
-        function renderLottery() {
-            const lottery = state.lottery || {
+           function renderLottery() {
+            let lottery = state.lottery || {
                 ticketPrice: 100000000,
                 totalTickets: 0,
                 pot: 0,
                 drawsAt: null,
                 entries: [],
-                history: []
+                history: [],
+                eligible: null
             };
 
             $("lotteryPotValue") && ($("lotteryPotValue").textContent = shortMoney(lottery.pot) + " chips");
@@ -10665,7 +10667,20 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
             `).join("");
             }
 
-            if ($("lotteryBuyButton")) $("lotteryBuyButton").disabled = !autoUserId;
+            const lotteryEligible = lottery.eligible !== false;
+            const eligibilityNotice = $("lotteryEligibilityNotice");
+
+            if (eligibilityNotice) {
+                if (lottery.eligible === false) {
+                    eligibilityNotice.style.display = "block";
+                    eligibilityNotice.textContent =
+                        "You need to have received paid chips from a banker before you can enter the weekly lottery.";
+                } else {
+                    eligibilityNotice.style.display = "none";
+                }
+            }
+
+            if ($("lotteryBuyButton")) $("lotteryBuyButton").disabled = !autoUserId || !lotteryEligible;
             if ($("lotteryDetectedPlayerName")) $("lotteryDetectedPlayerName").textContent = autoName || "Waiting for game data...";
             if ($("lotteryDetectedPlayerId")) {
                 $("lotteryDetectedPlayerId").textContent = autoUserId
