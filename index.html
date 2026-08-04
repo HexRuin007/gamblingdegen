@@ -8532,33 +8532,32 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                 setStatus(error.message || "Claim failed", 2500);
             }
         }
-        async function buyScratchTickets() {
-            const playerId = String(autoUserId || "").trim();
-            const playerName = String(autoName || "").trim();
-            let ticketPrice = parseMoneyInput($("scratchPriceInput").value);
-            let quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
+    async function buyScratchTickets() {
+    const playerId = String(autoUserId || "").trim();
+    const playerName = String(autoName || "").trim();
+    let ticketPrice = parseMoneyInput($("scratchPriceInput").value);
+    let quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
 
-            if (!playerId || !playerName)
-                return setStatus("NO GAME DATA", 1800);
+    if (!playerId || !playerName)
+        return setStatus("NO GAME DATA", 1800);
 
-            const rewards = state.rewards || {};
-            const myRewards = rewards[String(playerId)] || {};
-            const hasFreeBet = Number(myRewards.scratchFreeBets || 0) > 0;
+    const rewards = state.rewards || {};
+    const myRewards = rewards[String(playerId)] || {};
+    const hasFreeBet = Number(myRewards.scratchTickets || 0) > 0;   
 
-            if (!hasFreeBet) {
-                if (!ticketPrice || ticketPrice < 1)
-                    return setStatus("NO TICKET PRICE", 1800);
+    if (!hasFreeBet) {
+        if (!ticketPrice || ticketPrice < 1)
+            return setStatus("NO TICKET PRICE", 1800);
 
-                if (!quantity || quantity < 1 || quantity > 20)
-                    return setStatus("CHOOSE 1-20 TICKETS", 2000);
+        if (!quantity || quantity < 1 || quantity > 20)
+            return setStatus("CHOOSE 1-20 TICKETS", 2000);
 
-                if (ticketPrice * quantity > getMyChipBalance())
-                    return setStatus("NOT ENOUGH CHIPS", 2200);
-            } else {
-
-                ticketPrice = 10000000;
-                quantity = 1;
-            }
+        if (ticketPrice * quantity > getMyChipBalance())
+            return setStatus("NOT ENOUGH CHIPS", 2200);
+    } else {
+        ticketPrice = 10000000;
+        quantity = 1;
+    }
 
             if (scratchTickets.length) {
                 return setStatus("Reveal your current scratch cards first.", 2500);
