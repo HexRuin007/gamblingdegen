@@ -6186,37 +6186,55 @@
             }
         }
 
-        async function approveWithdrawalRequest(withdrawalRequestId) {
-            if (!adminToken) return setStatus('LOCKED', 1500);
-            try {
-                const json = await apiRequest('/chips/withdrawal-approve', {
-                    method: 'POST',
-                    token: adminToken,
-                    body: { withdrawalRequestId, requesterId: autoUserId }
-                });
-                state = json.state || state;
-                setStatus('WITHDRAWAL APPROVED', 2200);
-                render();
-            } catch (e) {
-                setStatus(String(e.message || e), 2800);
-            }
-        }
+  async function approveWithdrawalRequest(withdrawalRequestId) {
+    if (!adminToken) return setStatus("LOCKED", 1500);
 
-        async function denyWithdrawalRequest(withdrawalRequestId) {
-            if (!adminToken) return setStatus('LOCKED', 1500);
-            try {
-                const json = await apiRequest('/chips/withdrawal-deny', {
-                    method: 'POST',
-                    token: adminToken,
-                    body: { withdrawalRequestId, requesterId: autoUserId }
-                });
-                state = json.state || state;
-                setStatus('WITHDRAWAL DENIED', 2200);
-                render();
-            } catch (e) {
-                setStatus(String(e.message || e), 2800);
+    const request = state.chips.withdrawalRequests.find(
+        r => r.withdrawalRequestId === withdrawalRequestId
+    );
+
+    if (!request) {
+        return setStatus("Request not found", 2500);
+    }
+
+    try {
+        const json = await apiRequest("/chips/cashout", {
+            method: "POST",
+            token: adminToken,
+            body: {
+                playerId: request.playerId,
+                playerName: request.playerName,
+                amount: request.amount
             }
-        }
+        });
+
+        state = json.state || state;
+        setStatus("WITHDRAWAL APPROVED", 2200);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2800);
+    }
+}
+
+    async function denyWithdrawalRequest(withdrawalRequestId) {
+    if (!adminToken) return setStatus("LOCKED", 1500);
+
+    try {
+        const json = await apiRequest("/chips/reject", {
+            method: "POST",
+            token: adminToken,
+            body: {
+                withdrawalRequestId
+            }
+        });
+
+        state = json.state || state;
+        setStatus("WITHDRAWAL DENIED", 2200);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2800);
+    }
+}
 
         async function submitBet() {
             const playerName = String(autoName || '').trim()
