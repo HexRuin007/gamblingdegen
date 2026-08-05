@@ -1439,12 +1439,16 @@
             margin-top: 4px;
         }
 
-        .bjActions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 7px;
-            margin-top: 7px;
-        }
+    .bjActions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.bjActions button {
+    flex: 1;
+    min-width: 90px;
+}
 
         .casinoConfirmBackdrop {
             position: fixed;
@@ -3336,10 +3340,28 @@
                             </div>
                             <div id="bjPlayerCards" style="margin-top: 10px;" class="cards"></div>
                             <hr class="divider">
-                            <div class="bjActions">
-                                <button id="bjHitButton" disabled>Hit</button>
-                                <button id="bjStandButton" class="gold" disabled>Stand</button>
-                            </div>
+                          <div class="bjActions">
+    <button id="bjHitButton" disabled>Hit</button>
+
+    <button id="bjStandButton" class="gold" disabled>
+        Stand
+    </button>
+
+    <button
+        id="bjDoubleButton"
+        class="green"
+        style="display:none"
+        disabled>
+        Double
+    </button>
+
+    <button
+        id="bjSplitButton"
+        style="display:none"
+        disabled>
+        Split
+    </button>
+</div>
                         </div>
                     </div>
                     <div class="panel">
@@ -6579,6 +6601,22 @@
                 setStatus(String(e.message || e), 2200)
             }
         }
+        async function bjSplit() {
+    try {
+        const json = await apiRequest("/blackjack/split", {
+            method: "POST",
+            body: {
+                playerId: autoUserId
+            }
+        });
+
+        state = json.state || state;
+        render();
+
+    } catch (e) {
+        setStatus(String(e.message || e), 2200);
+    }
+}
 
         async function raceSubmitBet() {
             const playerName = String(autoName || "").trim();
@@ -8358,7 +8396,7 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
         function renderScratchPaytable() {
             const box = $("scratchPaytable");
             if (!box) return;
-            const multipliers = { pear: 1.5, cherry: 2.5, bell: 4.5, gem: 6, seven: 7, crown: 8 };
+            const multipliers = { pear: 1.05, cherry: 1.75, bell: 3.15, gem: 4.2, seven: 4.9, crown: 5.6 };
             box.innerHTML = Object.entries(SCRATCH_SYMBOL_LABELS)
                 .filter(([id]) => id !== "blank")
                 .map(([id, label]) =>
@@ -10923,19 +10961,39 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
 
             const localPlayer = bjPlayers.find(p => p.playerId === autoUserId);
 
-            if (localPlayer) {
-                $('bjPlayerCards').innerHTML = renderCards(localPlayer.hand || []);
-                $('bjPlayerTotal').textContent =
-                    'Total: ' + (
-                        Number.isFinite(Number(localPlayer.total))
-                            ? Number(localPlayer.total)
-                            : '--'
-                    );
-            } else {
-                $('bjPlayerCards').innerHTML = '';
-                $('bjPlayerTotal').textContent = 'Total: --';
-            }
+          if (localPlayer) {
 
+    const hands = localPlayer.hands || [];
+    const activeHand = Number(localPlayer.activeHand || 0);
+
+    $('bjPlayerCards').innerHTML = hands.map((hand, index) => `
+        <div class="${index === activeHand ? 'turnGlow' : ''}"
+             style="margin-bottom:8px;padding:6px;border-radius:8px;">
+            <div style="font-size:11px;font-weight:700;margin-bottom:4px;">
+                Hand ${index + 1}
+                ${hand.doubled ? ' • DOUBLE' : ''}
+                ${hand.split ? ' • SPLIT' : ''}
+            </div>
+
+            <div class="cards">
+                ${renderCards(hand.cards || [])}
+            </div>
+
+            <div class="small">
+                Total: ${hand.total ?? handValue(hand.cards || [])}
+            </div>
+        </div>
+    `).join('');
+
+    $('bjPlayerTotal').textContent =
+        `Playing hand ${activeHand + 1} of ${hands.length}`;
+
+} else {
+
+    $('bjPlayerCards').innerHTML = '';
+    $('bjPlayerTotal').textContent = 'Total: --';
+
+}
 
             let playerHtml = '';
 
@@ -10955,27 +11013,89 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                         `).join('');
             }
 
-            if (otherPlayers.length) {
-                playerHtml += otherPlayers.map(p => `
-                        <div class="bjRow ${p.playerId === bj.currentTurnId ? 'turnGlow' : ''}">
-                            <div class="betLeft">
-                                <b>${escapeHtml(p.playerName)}</b>
-                                • ${escapeHtml(p.status)}
-                                • Total ${p.total}
-                                <div class="cards">${renderCards(p.hand)}</div>
+           if (otherPlayers.length) {
+
+    playerHtml += otherPlayers.map(player => {
+
+        const hands = player.hands || [];
+
+        return `
+            <div class="bjRow ${player.playerId === bj.currentTurnId ? 'turnGlow' : ''}">
+                <div class="betLeft">
+
+                    <b>${escapeHtml(player.playerName)}</b>
+
+                    ${hands.map((hand, index) => `
+                        <div style="margin-top:6px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);">
+
+                            <div class="small">
+                                Hand ${index + 1}
+                                ${hand.doubled ? " • DOUBLE" : ""}
+                                ${hand.split ? " • SPLIT" : ""}
+                                • ${escapeHtml(hand.status)}
+                                • Total ${hand.total}
                             </div>
-                            <div class="betRight">
-                                ${p.payout ? shortMoney(p.payout) : shortMoney(p.amount)}
+
+                            <div class="cards">
+                                ${renderCards(hand.cards || [])}
                             </div>
+
                         </div>
-                    `).join('');
-            }
+                    `).join("")}
+
+                </div>
+
+                <div class="betRight">
+                    ${hands.map(hand =>
+                        shortMoney(hand.payout || hand.amount)
+                    ).join("<br>")}
+                </div>
+
+            </div>
+        `;
+
+    }).join("");
+}
 
             $('bjPlayersBox').innerHTML = playerHtml || '<div class="emptyState">No other blackjack players yet.</div>';
 
-            $('bjHitButton').disabled = !(bj.status === 'playing' && bj.currentTurnId === autoUserId);
-            $('bjStandButton').disabled = $('bjHitButton').disabled;
+        const myTurn =
+    bj.status === "playing" &&
+    bj.currentTurnId === autoUserId;
 
+$("bjHitButton").disabled = !myTurn;
+$("bjStandButton").disabled = !myTurn;
+
+const currentHand =
+    localPlayer?.hands?.[
+        localPlayer.activeHand || 0
+    ];
+
+const canDouble =
+    myTurn &&
+    currentHand &&
+    currentHand.cards &&
+    currentHand.cards.length === 2 &&
+    !currentHand.finished;
+
+const canSplit =
+    canDouble &&
+    currentHand.cards[0] &&
+    currentHand.cards[1] &&
+    currentHand.cards[0].rank ===
+        currentHand.cards[1].rank;
+
+$("bjDoubleButton").style.display =
+    canDouble ? "" : "none";
+
+$("bjSplitButton").style.display =
+    canSplit ? "" : "none";
+
+$("bjDoubleButton").disabled =
+    !canDouble;
+
+$("bjSplitButton").disabled =
+    !canSplit;
             const bjConfirmed = bjBets.filter(b => b.confirmed).length;
 
             const myBlackjackBet = bjBets.find(
@@ -11025,18 +11145,27 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
             $('bjStartButton').disabled = !unlocked || !bjBets.length || bj.status === 'playing' || bjConfirmed !== bjBets.length;
             $('bjResetButton').disabled = !unlocked || bj.status === 'playing';
 
-            $('bjHistoryBox').innerHTML = (!bj.history || !bj.history.length)
-                ? '<div class="emptyState">No blackjack rounds yet.</div>'
-                : bj.history.slice(0, 4).map(h => `
-                        <div class="historyRow">
-                            <div>
-                                <b>Dealer ${h.dealerTotal}</b><br>
-                                ${(h.results || []).map(r =>
-                    `${escapeHtml(r.playerName)}: ${r.total} ${r.result} (${r.profit >= 0 ? '+' : ''}${shortMoney(r.profit)})`
-                ).join('<br>')}
-                            </div>
-                        </div>
-                    `).join('');
+       $('bjHistoryBox').innerHTML = (!bj.history || !bj.history.length)
+    ? '<div class="emptyState">No blackjack rounds yet.</div>'
+    : bj.history.slice(0, 4).map(h => `
+        <div class="historyRow">
+            <div>
+                <b>Dealer ${h.dealerTotal}${h.dealerBust ? ' (Bust)' : ''}</b><br>
+
+                ${(h.results || []).map(player => `
+                    <b>${escapeHtml(player.playerName)}</b><br>
+
+                    ${(player.hands || []).map((hand, index) => `
+                        Hand ${index + 1}:
+                        ${hand.total}
+                        ${escapeHtml(hand.status)}
+                        (${hand.profit >= 0 ? '+' : ''}${shortMoney(hand.profit)})
+                    `).join("<br>")}
+
+                `).join("<br>")}
+            </div>
+        </div>
+    `).join('');
 
             const bjlast = bj.history && bj.history[0];
             if (bjlast) {
@@ -11658,74 +11787,123 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
             showRoundResultPopup(type, round, mine);
         }
 
-        function showRoundResultPopup(type, round, mine) {
-            const popup = $("roundResultPopup");
-            const title = $("roundResultTitle");
-            const body = $("roundResultBody");
-            const close = $("roundResultClose");
+       function showRoundResultPopup(type, round, mine) {
+    const popup = $("roundResultPopup");
+    const title = $("roundResultTitle");
+    const body = $("roundResultBody");
+    const close = $("roundResultClose");
 
-            const banker = isBanker();
+    const banker = isBanker();
 
-            popup.classList.remove("hidden");
+    popup.classList.remove("hidden");
 
-            if (roundPopupTimer) {
-                clearTimeout(roundPopupTimer);
-                roundPopupTimer = null;
-            }
+    if (roundPopupTimer) {
+        clearTimeout(roundPopupTimer);
+        roundPopupTimer = null;
+    }
 
-            close.style.display = banker ? "" : "none";
+    close.style.display = banker ? "" : "none";
 
-            if (banker) {
-                title.textContent = "All Round Results";
+    if (banker) {
+        title.textContent = "All Round Results";
 
-                body.innerHTML = round.results.map(r => {
-                    const profit = Number(r.profit || 0);
-                    return `
+        body.innerHTML = round.results.map(r => {
+
+            const profit = type === "blackjack"
+                ? (r.hands || []).reduce(
+                    (sum, hand) => sum + Number(hand.profit || 0),
+                    0
+                )
+                : Number(r.profit || 0);
+
+            return `
                 <div class="roundResultLine">
                     <span>
                         ${escapeHtml(r.playerName)}<br>
+
                         <span class="small">
-                            ${type === "racing" ? `Horse ${escapeHtml(r.horseName || "")}` : `Bet ${shortMoney(r.amount)}${r.multiplier !== undefined ? ` • x${r.multiplier}` : ""}`}
+
+                            ${
+                                type === "blackjack"
+                                    ? (r.hands || []).map((hand, i) => `
+                                        Hand ${i + 1}
+                                        • ${shortMoney(hand.amount)}
+                                        • ${escapeHtml(hand.status)}
+                                    `).join("<br>")
+                                    : type === "racing"
+                                        ? `Horse ${escapeHtml(r.horseName || "")}`
+                                        : `Bet ${shortMoney(r.amount)}${r.multiplier !== undefined ? ` • x${r.multiplier}` : ""}`
+                            }
+
                         </span>
                     </span>
+
                     <b class="${profit > 0 ? "win" : profit < 0 ? "loss" : "neutral"}">
                         ${profit >= 0 ? "+" : ""}${shortMoney(profit)}
                     </b>
                 </div>
             `;
-                }).join("");
-            }
+        }).join("");
+    }
 
-            if (!mine) {
-                popup.classList.add("hidden");
-                return;
-            }
+    if (!mine) {
+        popup.classList.add("hidden");
+        return;
+    }
 
-            const profit = Number(mine.profit || 0);
-            const won = profit > 0;
+    const profit = type === "blackjack"
+        ? (mine.hands || []).reduce(
+            (sum, hand) => sum + Number(hand.profit || 0),
+            0
+        )
+        : Number(mine.profit || 0);
 
-            title.textContent = won ? "You Won!" : profit < 0 ? "You Lost" : "Break Even";
+    const won = profit > 0;
 
-            body.innerHTML = `
+    title.textContent =
+        won
+            ? "You Won!"
+            : profit < 0
+                ? "You Lost"
+                : "Break Even";
+
+    body.innerHTML = `
         <div class="bigResult ${won ? "win" : profit < 0 ? "loss" : "neutral"}">
             ${profit >= 0 ? "+" : ""}${shortMoney(profit)}
         </div>
+
         <div class="subResult">
-            ${type === "racing" ? `Horse ${escapeHtml(mine.horseName || "")}<br>` : ""}
-            Bet ${shortMoney(mine.amount)}
-            ${mine.multiplier !== undefined ? ` • Multiplier x${mine.multiplier}` : ""}<br>
-            Payout ${shortMoney(mine.payout || 0)}
+
+            ${
+                type === "blackjack"
+                    ? (mine.hands || []).map((hand, i) => `
+                        <b>Hand ${i + 1}</b><br>
+                        Bet ${shortMoney(hand.amount)}<br>
+                        Result ${escapeHtml(hand.status)}<br>
+                        Payout ${shortMoney(hand.payout || 0)}
+                    `).join("<br><br>")
+                    : type === "racing"
+                        ? `Horse ${escapeHtml(mine.horseName || "")}<br>
+                           Bet ${shortMoney(mine.amount)}<br>
+                           Payout ${shortMoney(mine.payout || 0)}`
+                        : `
+                            Bet ${shortMoney(mine.amount)}
+                            ${mine.multiplier !== undefined ? ` • Multiplier x${mine.multiplier}` : ""}<br>
+                            Payout ${shortMoney(mine.payout || 0)}
+                        `
+            }
+
         </div>
     `;
 
-            if (won) {
-                showWinEffect();
-            }
+    if (won) {
+        showWinEffect();
+    }
 
-            roundPopupTimer = setTimeout(() => {
-                popup.classList.add("hidden");
-            }, 5000);
-        }
+    roundPopupTimer = setTimeout(() => {
+        popup.classList.add("hidden");
+    }, 5000);
+}
 
         function hideRoundResultPopup() {
             $("roundResultPopup").classList.add("hidden");
@@ -12141,12 +12319,16 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
             $('confirmAllButton').addEventListener('click', () => adminAction('confirmAll'));
             $('spinButton').addEventListener('click', () => adminAction('spin'));
             $('clearRoundButton').addEventListener('click', () => adminAction('clearRound'));
-            $('bjSubmitBetButton').addEventListener('click', bjSubmitBet);
-            $('bjConfirmAllButton').addEventListener('click', () => adminAction('bjConfirm'));
-            $('bjStartButton').addEventListener('click', () => adminAction('bjStart'));
-            $('bjResetButton').addEventListener('click', () => adminAction('bjReset'));
-            $('bjHitButton').addEventListener('click', () => bjPlayerAction('hit'));
-            $('bjStandButton').addEventListener('click', () => bjPlayerAction('stand'));
+   $('bjSubmitBetButton').addEventListener('click', bjSubmitBet);
+$('bjConfirmAllButton').addEventListener('click', () => adminAction('bjConfirm'));
+$('bjStartButton').addEventListener('click', () => adminAction('bjStart'));
+$('bjResetButton').addEventListener('click', () => adminAction('bjReset'));
+
+$('bjHitButton').addEventListener('click', () => bjPlayerAction('hit'));
+$('bjStandButton').addEventListener('click', () => bjPlayerAction('stand'));
+
+$('bjDoubleButton').addEventListener('click', () => bjPlayerAction('double'));
+$('bjSplitButton').addEventListener('click', () => bjPlayerAction('split'));
             $('raceSubmitBetButton').addEventListener('click', raceSubmitBet);
             $('raceConfirmAllButton').addEventListener('click', () => adminAction('raceConfirm'));
             $('raceStartButton').addEventListener('click', () => adminAction('raceStart'));
