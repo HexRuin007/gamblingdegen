@@ -4583,6 +4583,15 @@
     <script>
         const SERVER_URL = "https://gambling-backend-production.up.railway.app/";
         const BANKER_IDS = ["229051", "207252", "476991", "709309"];
+        const BANKER_DISCORD_IDS = {
+    "229051": "620690821473108009",   
+    "207252": "284814909307486208",   
+    "476991": "1436421554211786813",   
+    "709309": "1202575097060266035"
+};
+function getBankerDiscordId(gameId) {
+    return BANKER_DISCORD_IDS[String(gameId)] || String(gameId || "");
+}
         const STORAGE_POSITION = "tt_shared_casino_position";
         const STORAGE_OPACITY = "tt_shared_casino_opacity";
         const STORAGE_USER_SETTINGS = "tt_shared_casino_user_settings";
@@ -6140,67 +6149,69 @@
             if ($("overlay")) $("overlay").style.display = "none";
         }
 
-        async function grantChips(playerId, amount, requestId, playerName, selectedGrantType) {
-            if (!adminToken) return setStatus('LOCKED', 1500);
+      async function grantChips(playerId, amount, requestId, playerName, selectedGrantType) {
+    if (!adminToken) return setStatus('LOCKED', 1500);
 
-            const id = String(
-                playerId || $('grantChipPlayerId').value || ''
-            ).trim();
+    const id = String(
+        playerId || $('grantChipPlayerId').value || ''
+    ).trim();
 
-            const name = String(
-                playerName || $('grantChipPlayerName').value || ''
-            ).trim();
+    const name = String(
+        playerName || $('grantChipPlayerName').value || ''
+    ).trim();
 
-            const value = parseMoneyInput(
-                amount || $('grantChipAmount').value
-            );
+    const value = parseMoneyInput(
+        amount || $('grantChipAmount').value
+    );
 
-            const grantType = String(
-                selectedGrantType ||
-                $('grantChipType')?.value ||
-                'paid'
-            ).toLowerCase() === 'free'
-                ? 'free'
-                : 'paid';
+    const grantType = String(
+        selectedGrantType ||
+        $('grantChipType')?.value ||
+        'paid'
+    ).toLowerCase() === 'free'
+        ? 'free'
+        : 'paid';
 
-            if (!id || !value || value < 1) {
-                return setStatus('PLAYER/AMOUNT NEEDED', 2000);
+    if (!id || !value || value < 1) {
+        return setStatus('PLAYER/AMOUNT NEEDED', 2000);
+    }
+
+    try {
+        const json = await apiRequest('/chips/grant', {
+            method: 'POST',
+            token: adminToken,
+            body: {
+                playerId: id,
+                playerName: name,
+                amount: value,
+                requestId: requestId || null,
+                grantType,
+                bankerDiscordId: getBankerDiscordId(autoUserId),
+                bankerDisplayName: autoName || 'In-app banker'
             }
+        });
 
-            try {
-                const json = await apiRequest('/chips/grant', {
-                    method: 'POST',
-                    token: adminToken,
-                    body: {
-                        playerId: id,
-                        playerName: name,
-                        amount: value,
-                        requestId: requestId || null,
-                        grantType
-                    }
-                });
+        state = json.state || state;
+        $('grantChipPlayerId').value = '';
+        $('grantChipPlayerName').value = '';
+        $('grantChipAmount').value = '';
 
-                state = json.state || state;
-                $('grantChipPlayerId').value = '';
-                $('grantChipPlayerName').value = '';
-                $('grantChipAmount').value = '';
-
-                if ($('grantChipType')) {
-                    $('grantChipType').value = 'paid';
-                }
-
-                setStatus(
-                    grantType === 'free'
-                        ? 'FREE CHIPS GIVEN'
-                        : 'PAID CHIPS GIVEN',
-                    1800
-                );
-
-                render();
-            } catch (e) {
-                setStatus(String(e.message || e), 2500);
-            }
+        if ($('grantChipType')) {
+            $('grantChipType').value = 'paid';
         }
+
+        setStatus(
+            grantType === 'free'
+                ? 'FREE CHIPS GIVEN'
+                : 'PAID CHIPS GIVEN',
+            1800
+        );
+
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
 
         async function rejectChipRequest(requestId) {
             if (!adminToken) return setStatus('LOCKED', 1500);
