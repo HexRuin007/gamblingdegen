@@ -391,10 +391,12 @@
             color: #edf2f7;
         }
 
-        .panelHint {
-            font-size: 17px;
-            color: var(--text-soft);
-        }
+    .panelHint {
+    font-size: 24px;
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
+}
 
         #wheelWrap {
             display: flex;
@@ -1401,36 +1403,44 @@
             border: 1px solid rgba(110, 231, 124, 0.22);
         }
 
-        .cards {
-            user-select: none;
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin-top: 5px;
-        }
+    .cards {
+    user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
 
-        .card {
-            min-width: 28px;
-            height: 38px;
-            border-radius: 6px;
-            background: #f7f7f7;
-            color: #101522;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 950;
-            font-size: 13px;
-            box-shadow: 0 2px 7px rgba(0, 0, 0, 0.24);
-        }
+.card {
+    width: 64px;
+    height: 92px;
+    border-radius: 10px;
+    background: #f7f7f7;
+    color: #101522;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 950;
+    font-size: 28px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+    transition: transform .15s ease;
+}
 
-        .card.red {
-            color: #c0392b;
-        }
+.card:hover {
+    transform: translateY(-2px);
+}
 
-        .cardBack {
-            background: linear-gradient(135deg, #4c8df7, #7c4dff);
-            color: white;
-        }
+.card.red {
+    color: #c0392b;
+}
+
+.cardBack {
+    background: linear-gradient(135deg, #4c8df7, #7c4dff);
+    color: white;
+}
 
         .turnGlow {
             border-radius: 10px;
@@ -3254,7 +3264,7 @@
                         </div>
                     </div>
 
-                    <div class="panel">
+                    <div class="panel" style="padding: 16px;">
                         <div class="panelHeader">
                             <div class="panelTitle">💸 Place Wheel Bet</div>
                             <div class="panelHint">Uses chips</div>
