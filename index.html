@@ -1212,13 +1212,21 @@
                             </div>
                         </div>
 
-                        <div class="playerAuditPanel">
-                            <div class="panelHeader">
-                                <div>
-                                    <div class="panelTitle">🕵️ Player Gambling Audit</div>
-                                    <div class="panelHint">Latest 20 wins and losses</div>
-                                </div>
-                            </div>
+      <div class="playerAuditPanel">
+    <div class="panelHeader playerAuditHeader">
+        <div>
+            <div class="panelTitle">🕵️ Player Gambling Audit</div>
+            <div class="panelHint">Latest 20 wins and losses</div>
+        </div>
+
+        <button
+            id="clearPlayerAuditButton"
+            class="playerAuditClearButton"
+            type="button"
+            title="Clear the current audit from this panel">
+            Clear Audit
+        </button>
+    </div>
 
                             <div class="row">
                                 <input id="auditPlayerIdInput" type="text" placeholder="Player ID to inspect" />
@@ -2319,7 +2327,24 @@ function getBankerDiscordId(gameId) {
                 button.textContent = "Check Player";
             }
         }
+function clearPlayerAudit() {
+    const input = $("auditPlayerIdInput");
+    const box = $("playerAuditBox");
 
+    if (input) {
+        input.value = "";
+    }
+
+    if (box) {
+        box.innerHTML = `
+            <div class="emptyState">
+                Enter a player ID to inspect their recent gambling.
+            </div>
+        `;
+    }
+
+    setStatus("AUDIT CLEARED", 1200);
+}
         function payoutClass(m) {
             if (m > 1)
                 return 'win';
@@ -9278,19 +9303,24 @@ $("bjSplitButton").disabled =
             $("blacklistPlayerIdInput")?.addEventListener("keydown", event => {
                 if (event.key === "Enter") blacklistPlayer();
             });
-            $("loadPlayerAuditButton").addEventListener(
-                "click",
-                loadPlayerAudit
-            );
+         $("loadPlayerAuditButton").addEventListener(
+    "click",
+    loadPlayerAudit
+);
 
-            $("auditPlayerIdInput").addEventListener(
-                "keydown",
-                event => {
-                    if (event.key === "Enter") {
-                        loadPlayerAudit();
-                    }
-                }
-            );
+$("clearPlayerAuditButton").addEventListener(
+    "click",
+    clearPlayerAudit
+);
+
+$("auditPlayerIdInput").addEventListener(
+    "keydown",
+    event => {
+        if (event.key === "Enter") {
+            loadPlayerAudit();
+        }
+    }
+);
             $('submitBetButton').addEventListener('click', submitBet);
             $('loginAdminButton').addEventListener('click', loginAdmin);
             $('confirmAllButton').addEventListener('click', () => adminAction('confirmAll'));
@@ -9300,6 +9330,7 @@ $("bjSplitButton").disabled =
 $('bjConfirmAllButton').addEventListener('click', () => adminAction('bjConfirm'));
 $('bjStartButton').addEventListener('click', () => adminAction('bjStart'));
 $('bjResetButton').addEventListener('click', () => adminAction('bjReset'));
+
 
 $('bjHitButton').addEventListener('click', () => bjPlayerAction('hit'));
 $('bjStandButton').addEventListener('click', () => bjPlayerAction('stand'));

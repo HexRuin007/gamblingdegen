@@ -3265,78 +3265,334 @@ button:disabled {
     border: 1px solid rgba(110, 231, 124, 0.2);
 }
 
+
 .dailySpinWheelWrap {
     position: relative;
-    width: 250px;
-    height: 250px;
-    margin: 12px auto 16px;
-}
 
-.dailySpinPointer {
-    position: absolute;
-    left: 50%;
-    top: -8px;
-    transform: translateX(-50%);
-    z-index: 5;
-    width: 0;
-    height: 0;
-    border-left: 14px solid transparent;
-    border-right: 14px solid transparent;
-    border-top: 28px solid var(--gold-bright);
-    filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .55));
-}
+    width: 260px;
+    height: 260px;
 
-.dailySpinWheel {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 7px solid var(--gold-deep);
-    background: conic-gradient(var(--gold) 0 60deg, var(--pear) 60deg 120deg, var(--felt-lighter) 120deg 180deg, var(--gold-bright) 180deg 240deg, #b0332f 240deg 300deg, var(--pear-deep) 300deg 360deg);
-    box-shadow: inset 0 0 0 5px rgba(255, 255, 255, .1), 0 14px 28px rgba(0, 0, 0, .48);
-    transition: transform 4.2s cubic-bezier(.08, .82, .17, 1.05);
-}
+    margin: 16px auto 18px;
 
-.dailySpinWheel::after {
-    content: "DAILY";
-    position: absolute;
-    inset: 78px;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--ink);
-    border: 3px solid var(--gold);
-    color: var(--gold-bright);
-    font-family: var(--font-mono);
-    font-size: 15px;
-    font-weight: 700;
+
+    filter:
+        drop-shadow(0 14px 20px rgba(0, 0, 0, 0.38));
 }
+
+
+
+.dailySpinPointer {
+    position: absolute;
+
+    left: 50%;
+    top: -12px;
+
+    transform: translateX(-50%);
+
+    z-index: 10;
+
+    width: 0;
+    height: 0;
+
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 31px solid #f6c85f;
+
+    filter:
+        drop-shadow(0 3px 3px rgba(0, 0, 0, 0.65));
+
+    animation: dailyPointerPulse 1.6s ease-in-out infinite;
+}
+
+
+@keyframes dailyPointerPulse {
+    0%,
+    100% {
+        filter:
+            drop-shadow(0 3px 3px rgba(0, 0, 0, 0.65))
+            brightness(1);
+    }
+
+    50% {
+        filter:
+            drop-shadow(0 3px 5px rgba(0, 0, 0, 0.7))
+            brightness(1.18);
+    }
+}
+
+
+
+
+.dailySpinWheel {
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    border: 8px solid #9d6b16;
+
+    background:
+        conic-gradient(
+            #e4a62c 0deg 45deg,
+            #78b94c 45deg 90deg,
+            #e9c35a 90deg 135deg,
+            #bd3d38 135deg 180deg,
+            #8dca62 180deg 225deg,
+            #d89426 225deg 270deg,
+            #c5423b 270deg 315deg,
+            #6fad48 315deg 360deg
+        );
+
+    box-shadow:
+        inset 0 0 0 3px rgba(255, 255, 255, 0.42),
+        inset 0 0 0 8px rgba(0, 0, 0, 0.18),
+        inset 0 0 22px rgba(0, 0, 0, 0.35),
+        0 0 0 3px rgba(255, 220, 130, 0.25),
+        0 12px 25px rgba(0, 0, 0, 0.5);
+
+    transition:
+        transform 4.2s cubic-bezier(.08, .82, .17, 1.05);
+}
+
+
+
+.dailySpinWheel::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 8px;
+
+    border-radius: 50%;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.24),
+            transparent 22%,
+            transparent 72%,
+            rgba(0, 0, 0, 0.16)
+        );
+
+    box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.45),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.22);
+}
+
+
+
+.dailySpinWheel::after {
+    content: "DAILY";
+
+    position: absolute;
+
+    inset: 82px;
+
+    z-index: 5;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            rgba(255, 255, 255, 0.14),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            #252525,
+            #090909
+        );
+
+    border: 4px solid #d49a28;
+
+    color: #ffd86a;
+
+    font-family: var(--font-mono);
+
+    font-size: 15px;
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    text-shadow:
+        0 0 8px rgba(255, 202, 70, 0.35);
+
+    box-shadow:
+        inset 0 3px 7px rgba(255, 255, 255, 0.08),
+        inset 0 -5px 10px rgba(0, 0, 0, 0.55),
+        0 0 0 2px rgba(255, 220, 120, 0.16),
+        0 4px 10px rgba(0, 0, 0, 0.45);
+}
+
+
+
 
 .dailySpinPrizeList {
     display: grid;
+
     grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    margin-top: 10px;
+
+    gap: 7px;
+
+    margin-top: 12px;
+
+    padding: 6px;
+
+    border-radius: 11px;
+
+    background:
+        rgba(0, 0, 0, 0.12);
+
+    border: 1px solid rgba(255, 255, 255, 0.055);
 }
+
 
 .dailySpinPrizeItem {
-    padding: 8px;
-    border-radius: 9px;
-    background: rgba(232, 179, 77, .045);
-    border: 1px solid var(--rail-soft);
+    position: relative;
+
+    min-height: 34px;
+
+    padding: 8px 9px;
+
+    display: flex;
+    align-items: center;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.055),
+            rgba(255, 255, 255, 0.018)
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    font-family: var(--font-mono);
+
     font-size: 10px;
+    font-weight: 700;
+
+    color: var(--text-soft);
+
     text-align: left;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 2px 5px rgba(0, 0, 0, 0.15);
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        border-color 0.15s ease;
 }
 
-.dailySpinResultBox {
-    margin-top: 10px;
-    padding: 13px;
-    border-radius: 13px;
-    background: rgba(232, 179, 77, .09);
-    border: 1px solid rgba(232, 179, 77, .3);
-    text-align: center;
+
+.dailySpinPrizeItem:hover {
+    transform: translateY(-1px);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(232, 179, 77, 0.12),
+            rgba(255, 255, 255, 0.025)
+        );
+
+    border-color:
+        rgba(232, 179, 77, 0.3);
 }
+
+
+
+
+.dailySpinResultBox {
+    position: relative;
+
+    margin-top: 10px;
+    padding: 11px 12px;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(232, 179, 77, 0.105),
+            rgba(0, 0, 0, 0.14)
+        );
+
+    border: 1px solid rgba(232, 179, 77, 0.28);
+
+    text-align: center;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.055),
+        inset 0 -5px 10px rgba(0, 0, 0, 0.12),
+        0 4px 10px rgba(0, 0, 0, 0.18);
+
+    overflow: hidden;
+}
+
+
+
+.dailySpinResultBox::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            110deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.035) 45%,
+            rgba(255, 255, 255, 0.07) 50%,
+            rgba(255, 255, 255, 0.035) 55%,
+            transparent 100%
+        );
+
+    pointer-events: none;
+}
+
+
+
+
+@media (max-width: 420px) {
+    .dailySpinWheelWrap {
+        width: 235px;
+        height: 235px;
+    }
+
+    .dailySpinWheel::after {
+        inset: 74px;
+    }
+
+    .dailySpinPrizeList {
+        gap: 5px;
+    }
+
+    .dailySpinPrizeItem {
+        padding: 7px;
+        font-size: 9px;
+    }
+}
+
+
 
 .firstLoginGuideBackdrop {
     position: fixed;
@@ -6182,4 +6438,639 @@ button.danger {
     height: calc(100% - 8px);
     border: 0;
     border-radius: 10px;
+}
+
+
+
+#chipsPage .bankerOnly {
+    position: relative;
+}
+
+
+
+#chipsPage .bankerOnly.panel {
+    padding: 14px;
+
+    border-radius: 16px;
+
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(232, 179, 77, 0.11),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(23, 42, 30, 0.96),
+            rgba(7, 13, 10, 0.96)
+        );
+
+    border: 1px solid rgba(232, 179, 77, 0.25);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.045),
+        0 8px 20px rgba(0, 0, 0, 0.28);
+}
+
+
+#chipsPage .bankerOnly .panelHeader {
+    margin-bottom: 11px;
+
+    padding-bottom: 9px;
+
+    border-bottom: 1px solid rgba(232, 179, 77, 0.13);
+}
+
+
+#chipsPage .bankerOnly .panelTitle {
+    color: #fff0bd;
+    font-size: 16px;
+}
+
+
+#chipsPage .bankerOnly .panelHint {
+    color: #cdbd91;
+}
+
+
+
+
+#chipsPage .bankerRequest {
+    position: relative;
+
+    margin-top: 7px;
+    padding: 11px;
+
+    border: 1px solid rgba(232, 179, 77, 0.12);
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.035),
+            rgba(0, 0, 0, 0.16)
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 3px 8px rgba(0, 0, 0, 0.16);
+
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+
+#chipsPage .bankerRequest:first-child {
+    margin-top: 0;
+}
+
+
+#chipsPage .bankerRequest:hover {
+    transform: translateY(-1px);
+
+    border-color:
+        rgba(232, 179, 77, 0.28);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(232, 179, 77, 0.07),
+            rgba(0, 0, 0, 0.16)
+        );
+}
+
+
+
+#chipsPage .bankerRequestActions {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 7px;
+
+    margin-top: 9px;
+}
+
+
+#chipsPage .bankerRequestActions button {
+    margin: 0;
+
+    min-height: 34px;
+
+    border-radius: 9px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    transition:
+        transform 0.12s ease,
+        filter 0.12s ease,
+        box-shadow 0.12s ease;
+}
+
+
+
+#chipsPage .bankerRequestActions button:first-child {
+    background:
+        linear-gradient(
+            180deg,
+            #a6e58b,
+            #4d983e
+        );
+
+    box-shadow:
+        0 4px 10px rgba(70, 160, 70, 0.18);
+}
+
+
+#chipsPage .bankerRequestActions button:last-child {
+    color: white;
+
+    background:
+        linear-gradient(
+            180deg,
+            #e66d69,
+            #8f302f
+        );
+
+    box-shadow:
+        0 4px 10px rgba(180, 55, 55, 0.16);
+}
+
+
+#chipsPage .bankerRequestActions button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+
+
+
+#chipsPage .bankerOnly .chipWallet {
+    position: relative;
+
+    margin-bottom: 10px;
+
+    padding: 14px;
+
+    border-radius: 15px;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(246, 200, 106, 0.14),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(232, 179, 77, 0.12),
+            rgba(255, 255, 255, 0.018)
+        );
+
+    border: 1px solid rgba(232, 179, 77, 0.3);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        0 6px 16px rgba(0, 0, 0, 0.22);
+}
+
+
+#chipsPage .bankerOnly .chipWalletTop {
+    align-items: flex-end;
+}
+
+
+#chipsPage .bankerOnly .chipBalance {
+    font-size: 26px;
+
+    color: #f8d477;
+
+    text-shadow:
+        0 0 14px rgba(232, 179, 77, 0.22);
+}
+
+
+#chipsPage .bankerOnly .chipRequestStatus {
+    margin-top: 6px;
+
+    padding-top: 7px;
+
+    border-top: 1px solid rgba(232, 179, 77, 0.1);
+
+    line-height: 1.4;
+}
+
+
+
+
+#chipsPage .playerAuditPanel {
+    margin-top: 10px;
+
+    padding: 13px;
+
+    border-radius: 15px;
+
+    background:
+        radial-gradient(
+            circle at 0% 100%,
+            rgba(110, 231, 124, 0.09),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(20, 53, 36, 0.82),
+            rgba(7, 13, 10, 0.94)
+        );
+
+    border: 1px solid rgba(110, 231, 124, 0.24);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 7px 18px rgba(0, 0, 0, 0.24);
+}
+
+
+#chipsPage .playerAuditPanel .panelHeader {
+    margin-bottom: 9px;
+}
+
+
+#chipsPage .playerAuditPanel .panelTitle {
+    color: #d5f7df;
+}
+
+
+#chipsPage .playerAuditPanel .panelHint {
+    color: #83c79a;
+}
+
+
+
+#chipsPage .playerAuditSummary {
+    margin: 8px 0;
+
+    padding: 10px;
+
+    border-radius: 11px;
+
+    background:
+        rgba(3, 10, 7, 0.68);
+
+    border: 1px solid rgba(110, 231, 124, 0.12);
+
+    box-shadow:
+        inset 0 2px 7px rgba(0, 0, 0, 0.2);
+}
+
+
+
+#chipsPage .playerAuditResult {
+    margin-top: 7px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.035),
+            rgba(0, 0, 0, 0.16)
+        );
+
+    border-top: 1px solid rgba(255, 255, 255, 0.035);
+
+    border-right: 1px solid rgba(255, 255, 255, 0.035);
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+
+    border-left-width: 4px;
+}
+
+
+
+#chipsPage .playerAuditResult.win {
+    border-left-color: var(--win);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(110, 231, 124, 0.08),
+            rgba(255, 255, 255, 0.025)
+        );
+}
+
+
+#chipsPage .playerAuditResult.loss {
+    border-left-color: var(--loss);
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255, 107, 107, 0.08),
+            rgba(255, 255, 255, 0.025)
+        );
+}
+
+
+#chipsPage .playerAuditResult.pending,
+#chipsPage .playerAuditResult.break-even,
+#chipsPage .playerAuditResult.refund {
+    border-left-color: var(--neutral);
+}
+
+
+
+
+#chipsPage .dailyProfitPanel {
+    margin-top: 10px;
+
+    padding: 13px;
+
+    border-radius: 15px;
+
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(110, 231, 124, 0.08),
+            transparent 38%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(18, 48, 32, 0.8),
+            rgba(7, 13, 10, 0.95)
+        );
+
+    border: 1px solid rgba(110, 231, 124, 0.2);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 7px 18px rgba(0, 0, 0, 0.22);
+}
+
+
+#chipsPage .dailyProfitHeader {
+    padding-bottom: 8px;
+
+    border-bottom: 1px solid rgba(110, 231, 124, 0.1);
+}
+
+
+#chipsPage .dailyProfitTotal {
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(110, 231, 124, 0.08),
+            rgba(0, 0, 0, 0.3)
+        );
+
+    border-color:
+        rgba(110, 231, 124, 0.14);
+}
+
+
+#chipsPage .dailyProfitTotal strong {
+    color: #9cf2a5;
+
+    text-shadow:
+        0 0 12px rgba(110, 231, 124, 0.18);
+}
+
+
+
+
+#chipsPage .chipResetDangerZone {
+    margin-top: 12px;
+
+    padding: 13px;
+
+    border-radius: 14px;
+
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(255, 107, 107, 0.12),
+            transparent 42%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(94, 35, 35, 0.32),
+            rgba(35, 12, 12, 0.55)
+        );
+
+    border: 1px solid rgba(255, 107, 107, 0.28);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        0 6px 16px rgba(0, 0, 0, 0.22);
+}
+
+
+#chipsPage .chipResetDangerTitle {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #ff9b9b;
+
+    font-size: 14px;
+}
+
+
+#chipsPage .chipResetDangerText {
+    margin-top: 6px;
+
+    line-height: 1.45;
+
+    color: #c59b9b;
+}
+
+
+#chipsPage #resetAllChipsButton {
+    margin-top: 10px;
+
+    min-height: 36px;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #e66b68,
+            #812927
+        );
+
+    box-shadow:
+        0 5px 12px rgba(160, 45, 45, 0.2);
+}
+
+
+#chipsPage #resetAllChipsButton:hover:not(:disabled) {
+    filter: brightness(1.08);
+
+    box-shadow:
+        0 6px 16px rgba(200, 55, 55, 0.28);
+}
+
+
+
+
+#chipsPage .bankerOnly input,
+#chipsPage .bankerOnly select {
+    background:
+        rgba(2, 8, 5, 0.72);
+
+    border-color:
+        rgba(232, 179, 77, 0.14);
+
+    border-radius: 9px;
+}
+
+
+#chipsPage .bankerOnly input:focus,
+#chipsPage .bankerOnly select:focus {
+    border-color:
+        rgba(232, 179, 77, 0.5);
+
+    box-shadow:
+        0 0 0 3px rgba(232, 179, 77, 0.1);
+}
+
+
+
+
+#chipsPage .bankerOnly button {
+    border-radius: 9px;
+
+    font-weight: 750;
+
+    transition:
+        transform 0.12s ease,
+        filter 0.12s ease,
+        box-shadow 0.12s ease;
+}
+
+
+#chipsPage .bankerOnly button:hover:not(:disabled) {
+    transform: translateY(-1px);
+
+    filter: brightness(1.06);
+}
+
+
+#chipsPage .bankerOnly button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+
+
+
+@media (max-width: 420px) {
+
+    #chipsPage .bankerOnly.panel,
+    #chipsPage .playerAuditPanel,
+    #chipsPage .dailyProfitPanel {
+        padding: 10px;
+        border-radius: 13px;
+    }
+
+    #chipsPage .bankerRequest {
+        padding: 9px;
+    }
+
+    #chipsPage .bankerRequestActions {
+        gap: 5px;
+    }
+
+    #chipsPage .bankerRequestActions button {
+        min-height: 32px;
+        font-size: 10px;
+    }
+
+    #chipsPage .chipBalance {
+        font-size: 22px;
+    }
+}
+
+#chipsPage .playerAuditHeader {
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+
+#chipsPage .playerAuditClearButton {
+    width: auto;
+    min-width: 82px;
+
+    margin: 0;
+    padding: 6px 9px;
+
+    border-radius: 8px;
+
+    color: #dce9df;
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    border: 1px solid rgba(143, 191, 91, 0.18);
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.12s ease;
+}
+
+
+#chipsPage .playerAuditClearButton:hover {
+    color: #ffffff;
+
+    background:
+        rgba(143, 191, 91, 0.12);
+
+    border-color:
+        rgba(143, 191, 91, 0.38);
+
+    transform: translateY(-1px);
+}
+
+
+#chipsPage .playerAuditClearButton:active {
+    transform: translateY(1px);
+}
+
+
+
+#chipsPage #playerAuditBox > .emptyState {
+    margin-top: 8px;
+
+    padding: 13px 8px;
+
+    background:
+        rgba(5, 10, 7, 0.45);
+
+    border:
+        1px dashed rgba(143, 191, 91, 0.18);
+
+    color:
+        var(--text-soft);
+}
+
+
+@media (max-width: 420px) {
+
+    #chipsPage .playerAuditClearButton {
+        min-width: 72px;
+        padding: 6px 7px;
+        font-size: 9px;
+    }
+
 }
