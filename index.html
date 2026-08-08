@@ -888,6 +888,7 @@
         <div class="panelHeader">
             <div class="panelTitle">🎴 Hi-Low</div>
             <div class="panelHint" id="hiloStreakText">Streak: 0</div>
+            <div class="panelHint">Cards run 2 – 14 (Jack=11, Queen=12, King=13, Ace=14)</div>
         </div>
 
         <div class="cards" id="hiloCardDisplay">
@@ -899,12 +900,12 @@
 
         <div class="hiloGuessRow">
             <button id="hiloLowerButton" class="danger" disabled>🔻 Lower</button>
+            <button id="hiloEqualButton" class="gold" disabled>⚖️ Equal</button>
             <button id="hiloHigherButton" class="green" disabled>🔺 Higher</button>
         </div>
 
         <button id="hiloCashoutButton" class="gold" disabled>Cash Out</button>
     </div>
-    <button id="hiloForfeitButton" class="danger" disabled>Cancel Game</button>
                
 
     <div class="panel">
@@ -1523,12 +1524,29 @@
                                 <div class="settingsOptionHint">
                                     Confetti winning (Snowfall)
                                 </div>
+                                
+                            
+     
                             </div>
                             <label class="settingsToggle">
                                 <input id="settingConfettiEnabled" type="checkbox" checked />
                                 <span class="settingsToggleSlider"></span>
                             </label>
                         </div>
+
+    <div class="settingsOption">
+    <div class="settingsOptionText">
+        <div class="settingsOptionTitle">Hi-Low Card Display</div>
+        <div class="settingsOptionHint">
+            Show cards as plain numbers, or as Jack/Queen/King/Ace.
+        </div>
+    </div>
+</div>
+
+<div class="quickBetGrid" style="grid-template-columns: 1fr 1fr; margin-top: -6px;">
+    <button id="hiloStyleNumbersButton" class="quickBetButton" type="button">Numbers</button>
+    <button id="hiloStyleNamesButton" class="quickBetButton" type="button">Card Names</button>
+</div>
 
                         <div class="settingsOption">
                             <div class="settingsOptionText">
@@ -1592,7 +1610,8 @@ function getBankerDiscordId(gameId) {
             sounds: true,
             confetti: true,
             media: true,
-            compactMode: false
+            compactMode: false,
+             hiloCardStyle: "numbers" 
         };
 
         let userSettings = loadUserSettings();
@@ -1604,34 +1623,38 @@ function getBankerDiscordId(gameId) {
         let scratchSummaryShown = false;
 
         function loadUserSettings() {
-            try {
-                const saved = JSON.parse(
-                    localStorage.getItem(STORAGE_USER_SETTINGS) || "{}"
-                );
+    try {
+        const saved = JSON.parse(
+            localStorage.getItem(STORAGE_USER_SETTINGS) || "{}"
+        );
 
-                return {
-                    sounds:
-                        typeof saved.sounds === "boolean"
-                            ? saved.sounds
-                            : DEFAULT_USER_SETTINGS.sounds,
-                    confetti:
-                        typeof saved.confetti === "boolean"
-                            ? saved.confetti
-                            : DEFAULT_USER_SETTINGS.confetti,
-                    media:
-                        typeof saved.media === "boolean"
-                            ? saved.media
-                            : DEFAULT_USER_SETTINGS.media,
-                    compactMode:
-                        typeof saved.compactMode === "boolean"
-                            ? saved.compactMode
-                            : DEFAULT_USER_SETTINGS.compactMode
-                };
-            } catch (error) {
-                console.error("Could not load casino user settings:", error);
-                return { ...DEFAULT_USER_SETTINGS };
-            }
-        }
+        return {
+            sounds:
+                typeof saved.sounds === "boolean"
+                    ? saved.sounds
+                    : DEFAULT_USER_SETTINGS.sounds,
+            confetti:
+                typeof saved.confetti === "boolean"
+                    ? saved.confetti
+                    : DEFAULT_USER_SETTINGS.confetti,
+            media:
+                typeof saved.media === "boolean"
+                    ? saved.media
+                    : DEFAULT_USER_SETTINGS.media,
+            compactMode:
+                typeof saved.compactMode === "boolean"
+                    ? saved.compactMode
+                    : DEFAULT_USER_SETTINGS.compactMode,
+            hiloCardStyle:
+                saved.hiloCardStyle === "names" || saved.hiloCardStyle === "numbers"
+                    ? saved.hiloCardStyle
+                    : DEFAULT_USER_SETTINGS.hiloCardStyle
+        };
+    } catch (error) {
+        console.error("Could not load casino user settings:", error);
+        return { ...DEFAULT_USER_SETTINGS };
+    }
+}
 
         function saveUserSettings() {
             try {
@@ -1781,58 +1804,62 @@ function getBankerDiscordId(gameId) {
             applyCompactMode();
         }
 
-        function applyUserSettingsToUI() {
-            const soundsToggle =
-                document.getElementById("settingSoundsEnabled");
-            const confettiToggle =
-                document.getElementById("settingConfettiEnabled");
-            const mediaToggle =
-                document.getElementById("settingMediaEnabled");
-            const compactToggle =
-                document.getElementById("settingCompactMode");
+function applyUserSettingsToUI() {
+    const soundsToggle = document.getElementById("settingSoundsEnabled");
+    const confettiToggle = document.getElementById("settingConfettiEnabled");
+    const mediaToggle = document.getElementById("settingMediaEnabled");
+    const compactToggle = document.getElementById("settingCompactMode");
 
-            if (soundsToggle) soundsToggle.checked = userSettings.sounds;
-            if (confettiToggle) confettiToggle.checked = userSettings.confetti;
-            if (mediaToggle) mediaToggle.checked = userSettings.media;
-            if (compactToggle) compactToggle.checked = userSettings.compactMode;
+    if (soundsToggle) soundsToggle.checked = userSettings.sounds;
+    if (confettiToggle) confettiToggle.checked = userSettings.confetti;
+    if (mediaToggle) mediaToggle.checked = userSettings.media;
+    if (compactToggle) compactToggle.checked = userSettings.compactMode;
 
-            applyCompactMode();
-            stopDisabledSounds();
-            stopDisabledMedia();
+    const numbersButton = document.getElementById("hiloStyleNumbersButton");
+    const namesButton = document.getElementById("hiloStyleNamesButton");
 
-            if (!userSettings.confetti) {
-                document
-                    .getElementById("winOverlay")
-                    ?.classList.remove("active");
+    if (numbersButton && namesButton) {
+        numbersButton.classList.toggle("selected", userSettings.hiloCardStyle === "numbers");
+        namesButton.classList.toggle("selected", userSettings.hiloCardStyle === "names");
+    }
 
-                document
-                    .querySelectorAll(".confetti")
-                    .forEach(piece => piece.remove());
-            }
-        }
+    applyCompactMode();
+    stopDisabledSounds();
+    stopDisabledMedia();
 
-        function bindUserSettingsControls() {
-            const controls = {
-                settingSoundsEnabled: "sounds",
-                settingConfettiEnabled: "confetti",
-                settingMediaEnabled: "media",
-                settingCompactMode: "compactMode"
-            };
+    if (!userSettings.confetti) {
+        document
+            .getElementById("winOverlay")
+            ?.classList.remove("active");
 
-            Object.entries(controls).forEach(([id, key]) => {
-                const input = document.getElementById(id);
-                if (!input || input.dataset.settingsBound === "true") return;
+        document
+            .querySelectorAll(".confetti")
+            .forEach(piece => piece.remove());
+    }
+}
+function bindUserSettingsControls() {
+    const controls = {
+        settingSoundsEnabled: "sounds",
+        settingConfettiEnabled: "confetti",
+        settingMediaEnabled: "media",
+        settingCompactMode: "compactMode"
+    };
 
-                input.dataset.settingsBound = "true";
-                input.addEventListener("change", () => {
-                    userSettings[key] = input.checked;
-                    saveUserSettings();
-                    applyUserSettingsToUI();
-                });
-            });
+    Object.entries(controls).forEach(([id, key]) => {
+        const input = document.getElementById(id);
+        if (!input || input.dataset.settingsBound === "true") return;
 
+        input.dataset.settingsBound = "true";
+        input.addEventListener("change", () => {
+            userSettings[key] = input.checked;
+            saveUserSettings();
             applyUserSettingsToUI();
-        }
+        });
+    });
+
+    bindHiloStyleControls();
+    applyUserSettingsToUI();
+}
 
         let state = {
             wheel: {
@@ -7147,10 +7174,12 @@ function getMyHiloGame() {
 }
 
 function hiloCardLabel(value) {
-    const labels = { 11: "J", 12: "Q", 13: "K", 14: "A" };
-    return labels[value] || String(value);
+    const names = { 11: "Jack", 12: "Queen", 13: "King", 14: "Ace" };
+    return {
+        number: value,
+        name: names[value] || null
+    };
 }
-
 async function startHiloGame() {
     const playerId = String(autoUserId || "").trim();
     const playerName = String(autoName || "").trim();
@@ -7275,30 +7304,7 @@ async function cashoutHilo() {
     }
 }
 
-async function forfeitHilo() {
-    const game = getMyHiloGame();
-    if (!game) return;
 
-    try {
-        const json = await apiRequest("/hilo/forfeit", {
-            method: "POST",
-            body: { playerId: autoUserId }
-        });
-
-        state = json.state || state;
-        setStatus("HI-LOW GAME CANCELLED", 1800);
-
-        if (hiloFinishedViewTimer) {
-            clearTimeout(hiloFinishedViewTimer);
-            hiloFinishedViewTimer = null;
-        }
-        hiloFinishedView = null;
-
-        render();
-    } catch (e) {
-        setStatus(String(e.message || e), 2500);
-    }
-}
 
 function renderHilo() {
     const hiloState = state.hilo || { games: {}, history: [] };
@@ -7306,12 +7312,22 @@ function renderHilo() {
     const showingFinished = !!hiloFinishedView && !liveGame;
     const game = liveGame || (showingFinished ? hiloFinishedView : null);
 
-    const cardBox = $("hiloCardDisplay");
-    if (cardBox) {
-        cardBox.innerHTML = game
-            ? `<div class="card">${escapeHtml(hiloCardLabel(game.currentValue ?? game.value))}</div>`
-            : `<div class="card cardBack">?</div>`;
+const cardBox = $("hiloCardDisplay");
+if (cardBox) {
+    if (game) {
+        const label = hiloCardLabel(game.currentValue ?? game.value);
+        const useNames = userSettings.hiloCardStyle === "names" && label.name;
+        const display = useNames ? label.name : String(label.number);
+
+        cardBox.innerHTML = `
+            <div class="card hiloNumberCard">
+                <div class="hiloCardNumber">${escapeHtml(display)}</div>
+            </div>
+        `;
+    } else {
+        cardBox.innerHTML = `<div class="card cardBack">?</div>`;
     }
+}
 
     $("hiloMultiplierText").textContent = game ? `x${Number(game.multiplier || 1).toFixed(2)}` : "x1.00";
     $("hiloStreakText").textContent = `Streak: ${game ? game.streak : 0}`;
@@ -7330,9 +7346,9 @@ function renderHilo() {
     }
 
     $("hiloHigherButton").disabled = !liveGame || liveGame.currentValue >= 14;
+    $("hiloEqualButton").disabled = !liveGame;
     $("hiloLowerButton").disabled = !liveGame || liveGame.currentValue <= 2;
     $("hiloCashoutButton").disabled = !liveGame || liveGame.streak < 1;
-    $("hiloForfeitButton").disabled = !liveGame;
     $("hiloStartButton").disabled = !!liveGame || !autoUserId;
     $("hiloBetInput").disabled = !!liveGame;
 
@@ -7497,6 +7513,29 @@ function renderHilo() {
                 `.chickenLane[data-step="${Number(step)}"]`
             );
         }
+        function setHiloCardStyle(style) {
+    if (style !== "numbers" && style !== "names") return;
+
+    userSettings.hiloCardStyle = style;
+    saveUserSettings();
+    applyUserSettingsToUI();
+    renderHilo();
+}
+
+function bindHiloStyleControls() {
+    const numbersButton = document.getElementById("hiloStyleNumbersButton");
+    const namesButton = document.getElementById("hiloStyleNamesButton");
+
+    if (numbersButton && numbersButton.dataset.bound !== "true") {
+        numbersButton.dataset.bound = "true";
+        numbersButton.addEventListener("click", () => setHiloCardStyle("numbers"));
+    }
+
+    if (namesButton && namesButton.dataset.bound !== "true") {
+        namesButton.dataset.bound = "true";
+        namesButton.addEventListener("click", () => setHiloCardStyle("names"));
+    }
+}
 
         function positionChicken(step, animate = false) {
             const road = $("chickenRoad");
@@ -9647,9 +9686,9 @@ $('bjStartButton').addEventListener('click', () => adminAction('bjStart'));
 $('bjResetButton').addEventListener('click', () => adminAction('bjReset'));
 $("hiloStartButton")?.addEventListener("click", startHiloGame);
 $("hiloHigherButton")?.addEventListener("click", () => guessHilo("higher"));
+$("hiloEqualButton")?.addEventListener("click", () => guessHilo("equal"));
 $("hiloLowerButton")?.addEventListener("click", () => guessHilo("lower"));
 $("hiloCashoutButton")?.addEventListener("click", cashoutHilo);
-$("hiloForfeitButton")?.addEventListener("click", forfeitHilo);
 
 
 $('bjHitButton').addEventListener('click', () => bjPlayerAction('hit'));
