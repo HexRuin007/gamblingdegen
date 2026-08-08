@@ -148,6 +148,7 @@
                         <button id="dealTabButton" class="tabButton">💼 Deal OR No Deal</button>
                         <button id="rouletteTabButton" class="tabButton">🎯 Roulette</button>
                         <button id="chickenTabButton" class="tabButton">🐔 Chicken</button>
+                        <button id="hiloTabButton" class="tabButton">🎴 Hi-Low</button>
                         <button id="scratchTabButton" class="tabButton">🎫 Scratch</button>
                         <button id="lotteryTabButton" class="tabButton">🎟️ Lottery</button>
                         <button id="dailySpinTabButton" class="tabButton">🎁 Daily Spin</button>
@@ -877,6 +878,72 @@
                         </div>
                     </div>
                 </div>
+                <div id="hiloPage" class="tabPage">
+    <div class="gameMetaRow">
+        <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
+        <div class="autoGameCountdown" id="hiloStatusLine">Start a game</div>
+    </div>
+
+    <div class="heroCard">
+        <div class="panelHeader">
+            <div class="panelTitle">🎴 Hi-Low</div>
+            <div class="panelHint" id="hiloStreakText">Streak: 0</div>
+        </div>
+
+        <div class="cards" id="hiloCardDisplay">
+            <div class="card cardBack">?</div>
+        </div>
+
+        <div class="bigResult" id="hiloMultiplierText">x1.00</div>
+        <div class="subResult" id="hiloSubText">Guess whether the next card is higher or lower.</div>
+
+        <div class="hiloGuessRow">
+            <button id="hiloLowerButton" class="danger" disabled>🔻 Lower</button>
+            <button id="hiloHigherButton" class="green" disabled>🔺 Higher</button>
+        </div>
+
+        <button id="hiloCashoutButton" class="gold" disabled>Cash Out</button>
+    </div>
+    <button id="hiloForfeitButton" class="danger" disabled>Cancel Game</button>
+               
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">💰 Start Hi-Low</div>
+            <div class="panelHint">Guess correctly to grow your multiplier</div>
+        </div>
+
+        <div class="playerIdentityBox">
+            <div class="playerIdentityLabel">Detected Player</div>
+            <div class="playerIdentityName" id="hiloDetectedPlayerName">Waiting for game data...</div>
+            <div class="playerIdentityId" id="hiloDetectedPlayerId">Open in-game so the app can read your name and ID.</div>
+        </div>
+
+        <div class="row">
+            <input id="hiloBetInput" type="text" inputmode="decimal" autocomplete="off" placeholder="Bet amount, e.g. 5m" />
+            <button id="hiloStartButton" class="green">Start Game</button>
+        </div>
+
+        <div class="quickBetGrid">
+            <button class="quickBetButton" data-target="hiloBetInput" data-amount="1000000">1M</button>
+            <button class="quickBetButton" data-target="hiloBetInput" data-amount="10000000">10M</button>
+            <button class="quickBetButton" data-target="hiloBetInput" data-amount="100000000">100M</button>
+            <button class="quickBetButton" data-target="hiloBetInput" data-amount="1000000000">1B</button>
+        </div>
+
+        <div class="small">Cards range 2 through Ace. Ties count against your guess. Cash out any time after your first correct guess.</div>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">📜 Hi-Low History</div>
+            <div class="panelHint">Your recent games</div>
+        </div>
+        <div id="hiloHistoryBox">
+            <div class="emptyState">No Hi-Low games yet.</div>
+        </div>
+    </div>
+</div>
                 <div id="scratchPage" class="tabPage">
                     <div class="gameBalanceLine">
                         Balance: <span class="gameChipBalance">0 chips</span>
@@ -1822,7 +1889,11 @@ function getBankerDiscordId(gameId) {
             chips: {
                 balances: {},
                 requests: []
-            }
+            },
+            hilo: {
+    games: {},
+    history: []
+},
         };
         let pollInterval = null
             , failedPolls = 0
@@ -1854,6 +1925,8 @@ function getBankerDiscordId(gameId) {
             , dailySpinStatus = null
             , dailySpinRotation = 0
             , dailySpinBusy = false;
+            let hiloFinishedView = null;
+let hiloFinishedViewTimer = null;
         const POLL_ACTIVE_MS = 2500;
         const POLL_IDLE_MS = 9000;
         const POLL_HIDDEN_MS = 25000;
@@ -7069,6 +7142,225 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                             `;
                     }).join('');
         }
+function getMyHiloGame() {
+    return state.hilo?.games?.[String(autoUserId)] || null;
+}
+
+function hiloCardLabel(value) {
+    const labels = { 11: "J", 12: "Q", 13: "K", 14: "A" };
+    return labels[value] || String(value);
+}
+
+async function startHiloGame() {
+    const playerId = String(autoUserId || "").trim();
+    const playerName = String(autoName || "").trim();
+    const amount = parseMoneyInput($("hiloBetInput").value);
+
+    if (!playerId || !playerName) return setStatus("NO GAME DATA", 1800);
+    if (!amount || amount < 1) return setStatus("NO HI-LOW BET", 1800);
+    if (amount > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
+
+    try {
+        const json = await apiRequest("/hilo/start", {
+            method: "POST",
+            body: { playerId, playerName, amount }
+        });
+
+        if (hiloFinishedViewTimer) {
+            clearTimeout(hiloFinishedViewTimer);
+            hiloFinishedViewTimer = null;
+        }
+        hiloFinishedView = null;
+
+        state = json.state || state;
+        setStatus("HI-LOW STARTED", 1500);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
+
+async function guessHilo(direction) {
+    const game = getMyHiloGame();
+    if (!game) return;
+
+    try {
+        const json = await apiRequest("/hilo/guess", {
+            method: "POST",
+            body: { playerId: autoUserId, gameId: game.gameId, guess: direction }
+        });
+
+        if (!json.correct) {
+            setStatus("WRONG GUESS — BET LOST", 2500);
+
+            state = json.state || state;
+
+            showHiloFinishedView({
+                value: json.newValue,
+                streak: game.streak,
+                multiplier: game.multiplier,
+                betAmount: game.betAmount,
+                result: "lost",
+                payout: 0
+            });
+
+            return;
+        }
+
+        setStatus(`CORRECT! x${Number(json.multiplier || 1).toFixed(2)}`, 1500);
+        state = json.state || state;
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
+
+function showHiloFinishedView({
+    value,
+    streak,
+    multiplier,
+    betAmount,
+    result,
+    payout,
+    durationMs = 6000
+}) {
+    if (hiloFinishedViewTimer) {
+        clearTimeout(hiloFinishedViewTimer);
+    }
+
+    hiloFinishedView = {
+        value,
+        streak,
+        multiplier,
+        betAmount,
+        result,
+        payout
+    };
+
+    render();
+
+    hiloFinishedViewTimer = setTimeout(() => {
+        hiloFinishedView = null;
+        hiloFinishedViewTimer = null;
+        render();
+    }, durationMs);
+}
+
+
+async function cashoutHilo() {
+    const game = getMyHiloGame();
+    if (!game) return;
+
+    try {
+        const json = await apiRequest("/hilo/cashout", {
+            method: "POST",
+            body: { playerId: autoUserId, gameId: game.gameId }
+        });
+
+        state = json.state || state;
+        setStatus(`CASHED OUT x${Number(json.multiplier || 1).toFixed(2)}`, 2200);
+        playSlotPayoutSound();
+        showWinEffect();
+
+        showHiloFinishedView({
+            value: game.currentValue,
+            streak: game.streak,
+            multiplier: json.multiplier,
+            betAmount: game.betAmount,
+            result: "cashout",
+            payout: json.payout
+        });
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
+
+async function forfeitHilo() {
+    const game = getMyHiloGame();
+    if (!game) return;
+
+    try {
+        const json = await apiRequest("/hilo/forfeit", {
+            method: "POST",
+            body: { playerId: autoUserId }
+        });
+
+        state = json.state || state;
+        setStatus("HI-LOW GAME CANCELLED", 1800);
+
+        if (hiloFinishedViewTimer) {
+            clearTimeout(hiloFinishedViewTimer);
+            hiloFinishedViewTimer = null;
+        }
+        hiloFinishedView = null;
+
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
+
+function renderHilo() {
+    const hiloState = state.hilo || { games: {}, history: [] };
+    const liveGame = getMyHiloGame();
+    const showingFinished = !!hiloFinishedView && !liveGame;
+    const game = liveGame || (showingFinished ? hiloFinishedView : null);
+
+    const cardBox = $("hiloCardDisplay");
+    if (cardBox) {
+        cardBox.innerHTML = game
+            ? `<div class="card">${escapeHtml(hiloCardLabel(game.currentValue ?? game.value))}</div>`
+            : `<div class="card cardBack">?</div>`;
+    }
+
+    $("hiloMultiplierText").textContent = game ? `x${Number(game.multiplier || 1).toFixed(2)}` : "x1.00";
+    $("hiloStreakText").textContent = `Streak: ${game ? game.streak : 0}`;
+
+    if (showingFinished) {
+        $("hiloSubText").textContent = hiloFinishedView.result === "cashout"
+            ? `Cashed out ${shortMoney(hiloFinishedView.payout)} at x${Number(hiloFinishedView.multiplier || 1).toFixed(2)}`
+            : `Wrong guess — lost ${shortMoney(hiloFinishedView.betAmount)}`;
+        $("hiloStatusLine").textContent = hiloFinishedView.result === "cashout" ? "Cashed out" : "Bet lost";
+    } else if (liveGame) {
+        $("hiloSubText").textContent = `Bet ${shortMoney(liveGame.betAmount)} • Potential cash out ${shortMoney(Math.floor(liveGame.betAmount * (liveGame.multiplier || 1)))}`;
+        $("hiloStatusLine").textContent = "Game in progress";
+    } else {
+        $("hiloSubText").textContent = "Guess whether the next card is higher or lower.";
+        $("hiloStatusLine").textContent = "Start a game";
+    }
+
+    $("hiloHigherButton").disabled = !liveGame || liveGame.currentValue >= 14;
+    $("hiloLowerButton").disabled = !liveGame || liveGame.currentValue <= 2;
+    $("hiloCashoutButton").disabled = !liveGame || liveGame.streak < 1;
+    $("hiloForfeitButton").disabled = !liveGame;
+    $("hiloStartButton").disabled = !!liveGame || !autoUserId;
+    $("hiloBetInput").disabled = !!liveGame;
+
+    const history = (hiloState.history || [])
+        .filter(entry => String(entry.playerId) === String(autoUserId))
+        .slice(0, 10);
+
+    $("hiloHistoryBox").innerHTML = !history.length
+        ? '<div class="emptyState">No Hi-Low games yet.</div>'
+        : history.map(entry => {
+            const won = Number(entry.payout || 0) > 0;
+            return `
+                <div class="historyRow">
+                    <div>${entry.streak} correct guess${entry.streak === 1 ? "" : "es"} • ${escapeHtml(entry.result)}</div>
+                    <div class="betRight ${won ? "win" : "loss"}">
+                        ${won ? "+" : "-"}${shortMoney(won ? entry.payout : entry.betAmount)}
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    const nameBox = $("hiloDetectedPlayerName");
+    const idBox = $("hiloDetectedPlayerId");
+    if (nameBox) nameBox.textContent = autoName || "Waiting for game data...";
+    if (idBox) idBox.textContent = autoUserId
+        ? "User ID: " + autoUserId + " • locked from game data"
+        : "Open in-game so the app can read your name and ID.";
+}
 
         function renderSlots() {
             const slots = state.slots || {};
@@ -7760,6 +8052,23 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                 setStatus(String(e.message || e), 2500);
             }
         }
+        async function forfeitHilo() {
+    const game = getMyHiloGame();
+    if (!game) return;
+
+    try {
+        const json = await apiRequest("/hilo/forfeit", {
+            method: "POST",
+            body: { playerId: autoUserId }
+        });
+
+        state = json.state || state;
+        setStatus("HI-LOW GAME CANCELLED", 1800);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
 
         function render() {
             registerCasinoPlayer().catch(error => {
@@ -7775,6 +8084,7 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
             renderLottery()
             renderScratchHistory();
             renderRewardBanners();
+            renderHilo();
 
             try {
                 renderRoulette();
@@ -8452,7 +8762,8 @@ $("bjSplitButton").disabled =
                 lottery: "lotteryPage",
                 dailySpin: "dailySpinPage",
                 chips: "chipsPage",
-                userSettings: "userSettingsPage"
+                userSettings: "userSettingsPage",
+                hilo: "hiloPage",
             };
 
             const tabButtons = {
@@ -8468,7 +8779,8 @@ $("bjSplitButton").disabled =
                 lottery: "lotteryTabButton",
                 dailySpin: "dailySpinTabButton",
                 chips: "chipsTabButton",
-                userSettings: "userSettingsTabButton"
+                userSettings: "userSettingsTabButton",
+                hilo: "hiloTabButton",
             };
 
             Object.entries(pages).forEach(
@@ -8550,6 +8862,9 @@ $("bjSplitButton").disabled =
                     setTab("userSettings");
                     applyUserSettingsToUI();
                 }
+                else if (button.innerHTML.toLowerCase().includes("hi-low")) {
+    setTab("hilo")
+}
 
                 MoveIndicator(button)
             });
@@ -9330,6 +9645,11 @@ $("auditPlayerIdInput").addEventListener(
 $('bjConfirmAllButton').addEventListener('click', () => adminAction('bjConfirm'));
 $('bjStartButton').addEventListener('click', () => adminAction('bjStart'));
 $('bjResetButton').addEventListener('click', () => adminAction('bjReset'));
+$("hiloStartButton")?.addEventListener("click", startHiloGame);
+$("hiloHigherButton")?.addEventListener("click", () => guessHilo("higher"));
+$("hiloLowerButton")?.addEventListener("click", () => guessHilo("lower"));
+$("hiloCashoutButton")?.addEventListener("click", cashoutHilo);
+$("hiloForfeitButton")?.addEventListener("click", forfeitHilo);
 
 
 $('bjHitButton').addEventListener('click', () => bjPlayerAction('hit'));
