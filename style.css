@@ -5607,3 +5607,35 @@ button.danger {
     }
 
 }
+#overlay.compactMode .tabs {
+    padding: 4px 27px;
+    margin-bottom: 6px;
+}
+
+#overlay.compactMode .tabScroll {
+    width: 24px;
+}
+
+#overlay.compactMode .tabScroll.left {
+    left: 0;
+}
+
+#overlay.compactMode .tabScroll.right {
+    right: 0;
+}
+
+#overlay.compactMode .tabButton {
+    flex: 0 0 91px;
+    flex-basis: 91px;
+    padding: 8px 5px;
+    font-size: 10px;
+}
+
+#overlay.compactMode .tabIndicator {
+    top: 4px;
+    left: 27px;
+    width: 91px;
+    height: calc(100% - 8px);
+    border: 0;
+    border-radius: 10px;
+}
