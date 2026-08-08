@@ -888,7 +888,7 @@
         <div class="panelHeader">
             <div class="panelTitle">🎴 Hi-Low</div>
             <div class="panelHint" id="hiloStreakText">Streak: 0</div>
-            <div class="panelHint">Cards run 2 – 14 (Jack=11, Queen=12, King=13, Ace=14)</div>
+            <div class="panelHint">Cards run 1 – 13 (Ace=1, Jack=11, Queen=12, King=13)</div>
         </div>
 
         <div class="cards" id="hiloCardDisplay">
@@ -7174,7 +7174,7 @@ function getMyHiloGame() {
 }
 
 function hiloCardLabel(value) {
-    const names = { 11: "Jack", 12: "Queen", 13: "King", 14: "Ace" };
+    const names = { 1: "Ace", 11: "Jack", 12: "Queen", 13: "King" };
     return {
         number: value,
         name: names[value] || null
@@ -7345,9 +7345,9 @@ if (cardBox) {
         $("hiloStatusLine").textContent = "Start a game";
     }
 
-    $("hiloHigherButton").disabled = !liveGame || liveGame.currentValue >= 14;
+    $("hiloHigherButton").disabled = !liveGame || liveGame.currentValue >= 13;
     $("hiloEqualButton").disabled = !liveGame;
-    $("hiloLowerButton").disabled = !liveGame || liveGame.currentValue <= 2;
+   $("hiloLowerButton").disabled = !liveGame || liveGame.currentValue <= 1;
     $("hiloCashoutButton").disabled = !liveGame || liveGame.streak < 1;
     $("hiloStartButton").disabled = !!liveGame || !autoUserId;
     $("hiloBetInput").disabled = !!liveGame;
