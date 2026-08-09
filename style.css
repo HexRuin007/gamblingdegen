@@ -7115,4 +7115,20 @@ button.danger {
     font-weight: 800;
     line-height: 1;
 }
+.dailySpinPrizeItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.dailySpinPrizeName {
+    line-height: 1.2;
+}
+
+.dailySpinPrizeDetail {
+    line-height: 1.2;
+    text-align: right;
+    white-space: nowrap;
+}
 

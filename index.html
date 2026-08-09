@@ -6424,26 +6424,32 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
             const status = dailySpinStatus;
             const prizes = status?.prizes || state.dailySpin?.prizes || [];
 
-            if (prizeList) {
-                prizeList.innerHTML = prizes.length
-                    ? prizes.map(prize => `
-            <div class="dailySpinPrizeItem">
-                <b>${escapeHtml(prize.label || "Prize")}</b><br>
-                ${prize.type === "chips"
-                            ? `${shortMoney(prize.amount || 0)} chips`
-                            : prize.type === "item"
-                                ? `${Number(prize.quantity || 1)}x in-game item`
-                                : prize.type === "scratch_ticket"
-                                    ? `${Number(prize.amount || 1)}x scratch ticket${Number(prize.amount || 1) === 1 ? "" : "s"}`
-                                    : prize.type === "horse_free_bet"
-                                        ? `${Number(prize.amount || 1)}x free horse race bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
-                                        : prize.type === "blackjack_free_bet"
-                                            ? `${Number(prize.amount || 1)}x free blackjack bet${Number(prize.amount || 1) === 1 ? "" : "s"}`
-                                            : "No prize"}
-            </div>
-        `).join("")
-                    : '<div class="emptyState">Prize list unavailable.</div>';
+    if (prizeList) {
+    prizeList.innerHTML = prizes.length
+        ? prizes.map(prize => {
+            let detail = "";
+
+            if (prize.type === "chips") {
+                detail = `${shortMoney(prize.amount || 0)} chips`;
+            } else if (prize.type === "item") {
+                detail = `${Number(prize.quantity || 1)}x in-game item`;
             }
+
+            return `
+                <div class="dailySpinPrizeItem">
+                    <div class="dailySpinPrizeName">
+                        <b>${escapeHtml(prize.label || "Prize")}</b>
+                    </div>
+                    ${detail ? `
+                        <div class="dailySpinPrizeDetail">
+                            ${escapeHtml(detail)}
+                        </div>
+                    ` : ""}
+                </div>
+            `;
+        }).join("")
+        : '<div class="emptyState">Prize list unavailable.</div>';
+}
 
             if (!autoUserId) {
                 resultBox.textContent = "Waiting for your in-game user ID...";
