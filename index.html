@@ -3047,56 +3047,58 @@ function clearPlayerAudit() {
             }
         }
 
-        async function cashoutPlayerChips() {
-            if (!adminToken) {
-                return setStatus("BANKER LOCKED", 1800);
+       async function cashoutPlayerChips() {
+    if (!adminToken) {
+        return setStatus("BANKER LOCKED", 1800);
+    }
+
+    const playerId = String(
+        $("cashoutPlayerIdInput").value || ""
+    ).trim();
+
+    const amount = parseMoneyInput($("cashoutAmountInput").value);
+
+    if (!playerId) {
+        return setStatus("NO PLAYER ID", 1800);
+    }
+
+    if (!amount || amount < 1) {
+        return setStatus("NO CASH-OUT AMOUNT", 1800);
+    }
+
+    try {
+        const json = await apiRequest(
+            "/chips/cashout",
+            {
+                method: "POST",
+                token: adminToken,
+                body: {
+                    playerId,
+                    amount,
+                    bankerDiscordId: getBankerDiscordId(autoUserId),
+                    bankerDisplayName: autoName || "In-app banker"
+                }
             }
+        );
 
-            const playerId = String(
-                $("cashoutPlayerIdInput").value || ""
-            ).trim();
+        state = json.state || state;
 
-            const amount = parseMoneyInput($("cashoutAmountInput").value);
+        $("cashoutPlayerIdInput").value = "";
+        $("cashoutAmountInput").value = "";
 
-            if (!playerId) {
-                return setStatus("NO PLAYER ID", 1800);
-            }
+        setStatus(
+            `CASHED OUT ${shortMoney(json.amountCompleted)}`,
+            2200
+        );
 
-            if (!amount || amount < 1) {
-                return setStatus("NO CASH-OUT AMOUNT", 1800);
-            }
-
-            try {
-                const json = await apiRequest(
-                    "/chips/cashout",
-                    {
-                        method: "POST",
-                        token: adminToken,
-                        body: {
-                            playerId,
-                            amount
-                        }
-                    }
-                );
-
-                state = json.state || state;
-
-                $("cashoutPlayerIdInput").value = "";
-                $("cashoutAmountInput").value = "";
-
-                setStatus(
-                    `CASHED OUT ${shortMoney(json.amountRemoved)}`,
-                    2200
-                );
-
-                render();
-            } catch (error) {
-                setStatus(
-                    String(error.message || error),
-                    2800
-                );
-            }
-        }
+        render();
+    } catch (error) {
+        setStatus(
+            String(error.message || error),
+            2800
+        );
+    }
+}
 
 
         async function blacklistPlayer() {
@@ -3276,7 +3278,7 @@ function clearPlayerAudit() {
             }
         }
 
-  async function approveWithdrawalRequest(withdrawalRequestId) {
+async function approveWithdrawalRequest(withdrawalRequestId) {
     if (!adminToken) return setStatus("LOCKED", 1500);
 
     const request = state.chips.withdrawalRequests.find(
@@ -3294,7 +3296,9 @@ function clearPlayerAudit() {
             body: {
                 playerId: request.playerId,
                 playerName: request.playerName,
-                amount: request.amount
+                amount: request.amount,
+                bankerDiscordId: getBankerDiscordId(autoUserId),
+                bankerDisplayName: autoName || "In-app banker"
             }
         });
 
@@ -3474,52 +3478,56 @@ function clearPlayerAudit() {
             }
         }
 
-        async function loginAdmin() {
-            const pin = String(
-                $('adminPinInput').value || ''
-            ).trim();
+    async function loginAdmin() {
+    const pin = String(
+        $('adminPinInput').value || ''
+    ).trim();
 
-            if (!pin) {
-                return setStatus('NO PIN', 1500);
-            }
+    if (!pin) {
+        return setStatus('NO PIN', 1500);
+    }
 
-            try {
-                const json = await apiRequest(
-                    '/admin-login',
-                    {
-                        method: 'POST',
-                        body: { pin }
-                    }
-                );
-
-                adminToken = json.token || '';
-
-                if (!adminToken) {
-                    throw new Error(
-                        'Backend returned no banker token'
-                    );
+    try {
+        const json = await apiRequest(
+            '/admin-login',
+            {
+                method: 'POST',
+                body: {
+                    pin,
+                    bankerId: autoUserId || '',
+                    bankerName: autoName || 'Unknown banker'
                 }
-
-                setStatus('BANKER ON', 1800);
-                updateBankerUI();
-                render();
-                loadDailyCasinoProfit(true);
-            } catch (error) {
-                const message = String(
-                    error?.message || error || 'Login failed'
-                );
-
-                console.error(
-                    'Banker login failed:',
-                    message
-                );
-
-                setStatus(
-                    message.substring(0, 28),
-                    2800
-                );
             }
+        );
+
+        adminToken = json.token || '';
+
+        if (!adminToken) {
+            throw new Error(
+                'Backend returned no banker token'
+            );
         }
+
+        setStatus('BANKER ON', 1800);
+        updateBankerUI();
+        render();
+        loadDailyCasinoProfit(true);
+    } catch (error) {
+        const message = String(
+            error?.message || error || 'Login failed'
+        );
+
+        console.error(
+            'Banker login failed:',
+            message
+        );
+
+        setStatus(
+            message.substring(0, 28),
+            2800
+        );
+    }
+}
         async function adminAction(name) {
             if (!adminToken)
                 return setStatus('LOCKED', 1500);
