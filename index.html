@@ -1324,7 +1324,7 @@
                             will receive the normal starting chips when they register again.
                         </div>
                     </div>
-                    <div id="chipResetDangerZone" class="chipResetDangerZone bankerOnly">
+       <div id="chipResetDangerZone" class="chipResetDangerZone bankerOnly">
                         <div class="chipResetDangerTitle">⚠️ Reset All Casino Chips</div>
                         <div class="chipResetDangerText">
                             Only Poire can use this!
@@ -1401,6 +1401,21 @@
                         <button id="casinoConfirmAccept" class="danger" type="button">
                             Confirm
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="pinEntryBackdrop" class="casinoConfirmBackdrop">
+                <div class="casinoConfirmModal">
+                    <div id="pinEntryTitle" class="casinoConfirmTitle">Enter Your PIN</div>
+                    <div id="pinEntryText" class="casinoConfirmText">
+                        Enter your casino PIN to continue.
+                    </div>
+                    <input id="pinEntryInput" type="password" inputmode="numeric" pattern="[0-9]*"
+                        maxlength="8" placeholder="PIN" style="width:100%;text-align:center;font-size:20px;letter-spacing:6px;margin:10px 0;padding:10px;border-radius:8px;" />
+                    <div id="pinEntryError" class="small" style="color:#ff6262;min-height:16px;"></div>
+                    <div class="casinoConfirmActions">
+                        <button id="pinEntrySubmit" class="green" type="button">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -1599,6 +1614,7 @@
     "476991": "1436421554211786813",   
     "709309": "1202575097060266035"
 };
+let casinoPin = null;
 function getBankerDiscordId(gameId) {
     return BANKER_DISCORD_IDS[String(gameId)] || String(gameId || "");
 }
@@ -2570,6 +2586,58 @@ function clearPlayerAudit() {
                 throw new Error(json.error || 'Server error');
             return json
         }
+        async function hmacSha256Hex(key, message) {
+    const enc = new TextEncoder();
+    const cryptoKey = await crypto.subtle.importKey(
+        'raw', enc.encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+    );
+    const sig = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(message));
+    return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function getPinProof() {
+    if (!casinoPin) {
+        throw new Error("PIN not entered yet");
+    }
+
+    const challenge = await apiRequest('/chips/pin-challenge', {
+        method: 'POST',
+        body: { playerId: autoUserId }
+    });
+
+    if (!challenge.ok) {
+        throw new Error(challenge.error || "Could not get PIN challenge");
+    }
+
+    return await hmacSha256Hex(casinoPin, challenge.nonce);
+}
+
+async function checkPinStatus() {
+    if (!autoUserId) return null;
+
+    try {
+        const json = await apiRequest(
+            '/chips/pin-status?playerId=' + encodeURIComponent(autoUserId)
+        );
+        return json.hasPin;
+    } catch (error) {
+        console.error("Could not check PIN status:", error);
+        return null;
+    }
+}
+
+async function setupPin(pin) {
+    const json = await apiRequest('/chips/set-pin', {
+        method: 'POST',
+        body: { playerId: autoUserId, pin }
+    });
+
+    if (!json.ok) {
+        throw new Error(json.error || "Could not set PIN");
+    }
+
+    casinoPin = pin;
+}
         async function refreshState(silent) {
             try {
                 const requestStartedAt = Date.now();
@@ -2732,6 +2800,76 @@ function clearPlayerAudit() {
             });
         }
 
+        function showPinEntryModal({ isFirstTime }) {
+    return new Promise(resolve => {
+        const backdrop = $("pinEntryBackdrop");
+        const title = $("pinEntryTitle");
+        const text = $("pinEntryText");
+        const input = $("pinEntryInput");
+        const error = $("pinEntryError");
+        const submit = $("pinEntrySubmit");
+
+        title.textContent = isFirstTime ? "Set Your Casino PIN" : "Enter Your PIN";
+        text.textContent = isFirstTime
+            ? "Choose a 4-8 digit PIN. You'll need it every session to place bets. Don't share it."
+            : "Enter your PIN to unlock betting for this session.";
+        input.value = "";
+        error.textContent = "";
+
+        backdrop.classList.add("active");
+        input.focus();
+
+        const cleanup = () => {
+            backdrop.classList.remove("active");
+            submit.onclick = null;
+            input.onkeydown = null;
+        };
+
+        const attempt = async () => {
+            const pin = input.value.trim();
+
+            if (!/^\d{4,8}$/.test(pin)) {
+                error.textContent = "PIN must be 4-8 digits.";
+                return;
+            }
+
+            submit.disabled = true;
+            error.textContent = "";
+
+            try {
+                if (isFirstTime) {
+                    await setupPin(pin);
+                } else {
+                    casinoPin = pin;
+                    
+                    await getPinProof();
+                }
+
+                cleanup();
+                resolve(true);
+            } catch (err) {
+                casinoPin = null;
+                error.textContent = String(err.message || err);
+                submit.disabled = false;
+            }
+        };
+
+        submit.onclick = attempt;
+        input.onkeydown = e => {
+            if (e.key === "Enter") attempt();
+        };
+    });
+}
+
+async function ensurePinReady() {
+    if (casinoPin) return true;
+    if (!autoUserId) return false;
+
+    const hasPin = await checkPinStatus();
+    if (hasPin === null) return false;
+
+    return await showPinEntryModal({ isFirstTime: !hasPin });
+}
         async function resetIndividualCasinoPlayer() {
             if (!adminToken) {
                 throw new Error("Unlock banker controls first");
@@ -2960,92 +3098,100 @@ function clearPlayerAudit() {
             }
         }
 
-        async function requestChipWithdrawal() {
-            const playerId = String(
-                autoUserId || ""
-            ).trim();
+    async function requestChipWithdrawal() {
+    const playerId = String(
+        autoUserId || ""
+    ).trim();
 
-            const playerName = String(
-                autoName || ""
-            ).trim();
+    const playerName = String(
+        autoName || ""
+    ).trim();
 
-            const amount = parseMoneyInput(
-                $("withdrawRequestAmount")?.value || ""
+    const amount = parseMoneyInput(
+        $("withdrawRequestAmount")?.value || ""
+    );
+
+    if (!playerId || !playerName) {
+        setStatus(
+            "NO GAME DATA",
+            1800
+        );
+        return;
+    }
+
+    if (!amount || amount < 1) {
+        setStatus(
+            "NO WITHDRAWAL AMOUNT",
+            1800
+        );
+        return;
+    }
+
+    const balance =
+        getMyChipBalance();
+
+    if (amount > balance) {
+        setStatus(
+            `YOU ONLY HAVE ${shortMoney(
+                balance
+            )} CHIPS`,
+            2500
+        );
+        return;
+    }
+
+    if (!(await ensurePinReady())) {
+        setStatus("PIN REQUIRED", 2200);
+        return;
+    }
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest(
+            "/chips/withdraw-request",
+            {
+                method: "POST",
+                body: {
+                    playerId,
+                    playerName,
+                    amount,
+                    pinProof
+                }
+            }
+        );
+
+        if (json?.ok === false) {
+            throw new Error(
+                json.error ||
+                "Withdrawal request failed"
             );
-
-            if (!playerId || !playerName) {
-                setStatus(
-                    "NO GAME DATA",
-                    1800
-                );
-                return;
-            }
-
-            if (!amount || amount < 1) {
-                setStatus(
-                    "NO WITHDRAWAL AMOUNT",
-                    1800
-                );
-                return;
-            }
-
-            const balance =
-                getMyChipBalance();
-
-            if (amount > balance) {
-                setStatus(
-                    `YOU ONLY HAVE ${shortMoney(
-                        balance
-                    )} CHIPS`,
-                    2500
-                );
-                return;
-            }
-
-            try {
-                const json = await apiRequest(
-                    "/chips/withdraw-request",
-                    {
-                        method: "POST",
-                        body: {
-                            playerId,
-                            playerName,
-                            amount
-                        }
-                    }
-                );
-
-                if (json?.ok === false) {
-                    throw new Error(
-                        json.error ||
-                        "Withdrawal request failed"
-                    );
-                }
-
-                state =
-                    json?.state || state;
-
-                if ($("withdrawRequestAmount")) {
-                    $("withdrawRequestAmount").value =
-                        "";
-                }
-
-                setStatus(
-                    "WITHDRAWAL REQUESTED",
-                    2200
-                );
-
-                render();
-            } catch (error) {
-                setStatus(
-                    String(
-                        error.message ||
-                        error
-                    ),
-                    2800
-                );
-            }
         }
+
+        state =
+            json?.state || state;
+
+        if ($("withdrawRequestAmount")) {
+            $("withdrawRequestAmount").value =
+                "";
+        }
+
+        setStatus(
+            "WITHDRAWAL REQUESTED",
+            2200
+        );
+
+        render();
+    } catch (error) {
+        setStatus(
+            String(
+                error.message ||
+                error
+            ),
+            2800
+        );
+    }
+}
 
        async function cashoutPlayerChips() {
     if (!adminToken) {
@@ -3330,36 +3476,36 @@ async function approveWithdrawalRequest(withdrawalRequestId) {
     }
 }
 
-        async function submitBet() {
-            const playerName = String(autoName || '').trim()
-                , playerId = String(autoUserId || '').trim()
-                , amount = parseMoneyInput($('amountInput').value);
-            if (!playerName || !playerId) {
-                window.parent.postMessage({
-                    type: 'getData'
-                }, '*');
-                return setStatus('NO GAME DATA', 2200)
-            }
-            if (!amount || amount < 1)
-                return setStatus('NO AMOUNT', 1500);
-            if (amount > getMyChipBalance())
-                return setStatus('NOT ENOUGH CHIPS', 2200);
-            try {
-                const json = await apiRequest('/place-bet', {
-                    method: 'POST',
-                    body: {
-                        playerId,
-                        playerName,
-                        amount
-                    }
-                });
-                state = json.state || state;
-                setStatus('BET SENT', 1300);
-                render()
-            } catch (e) {
-                setStatus(String(e.message || e), 2500)
-            }
-        }
+   async function submitBet() {
+    const playerName = String(autoName || '').trim();
+    const playerId = String(autoUserId || '').trim();
+    const amount = parseMoneyInput($('amountInput').value);
+
+    if (!playerName || !playerId) {
+        window.parent.postMessage({ type: 'getData' }, '*');
+        return setStatus('NO GAME DATA', 2200);
+    }
+    if (!amount || amount < 1) return setStatus('NO AMOUNT', 1500);
+    if (amount > getMyChipBalance()) return setStatus('NOT ENOUGH CHIPS', 2200);
+
+    if (!(await ensurePinReady())) {
+        return setStatus('PIN REQUIRED', 2200);
+    }
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest('/place-bet', {
+            method: 'POST',
+            body: { playerId, playerName, amount, pinProof }
+        });
+        state = json.state || state;
+        setStatus('BET SENT', 1300);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
         function formatProfitAmount(value) {
             const amount = Math.floor(Number(value || 0));
 
@@ -3645,14 +3791,20 @@ async function approveWithdrawalRequest(withdrawalRequestId) {
 
                 amount = 10000000;
             }
+            if (!(await ensurePinReady())) {
+        return setStatus("PIN REQUIRED", 2200);
+    }
 
-            try {
+               try {
+        
+        const pinProof = await getPinProof();
                 const json = await apiRequest("/blackjack/place-bet", {
                     method: "POST",
                     body: {
                         playerId,
                         playerName,
-                        amount
+                        amount,
+                        pinProof
                     }
                 });
 
@@ -3663,38 +3815,55 @@ async function approveWithdrawalRequest(withdrawalRequestId) {
                 setStatus(String(e.message || e), 2500);
             }
         }
-        let blackjackActionVersion = 0;
+let blackjackActionVersion = 0;
 let blackjackActionPending = false;
-        async function bjPlayerAction(action) {
-            if (blackjackActionPending) {
-                return;
-            }
-            blackjackActionPending = true;
-            blackjackActionVersion += 1;
-              ['bjHitButton', 'bjStandButton', 'bjDoubleButton', 'bjSplitButton']
+async function bjPlayerAction(action) {
+    if (blackjackActionPending) {
+        return;
+    }
+    blackjackActionPending = true;
+    blackjackActionVersion += 1;
+    ['bjHitButton', 'bjStandButton', 'bjDoubleButton', 'bjSplitButton']
         .forEach(id => { const el = $(id); if (el) el.disabled = true; });
-            try {
-                const json = await apiRequest('/blackjack/' + action, {
-                    method: 'POST',
-                    body: {
-                        playerId: autoUserId
-                    }
-                });
-                blackjackActionPending +- 1;
-                state = json.state || state;
-                render()
-            } catch (e) {
-                setStatus(String(e.message || e), 2200)
-            } finally {
-                blackjackActionPending = false;
-            }
-        }
-        async function bjSplit() {
+
+    if (!(await ensurePinReady())) {
+        setStatus("PIN REQUIRED", 2200);
+        blackjackActionPending = false;
+        return;
+    }
+
     try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest('/blackjack/' + action, {
+            method: 'POST',
+            body: {
+                playerId: autoUserId,
+                pinProof
+            }
+        });
+        state = json.state || state;
+        render()
+    } catch (e) {
+        setStatus(String(e.message || e), 2200)
+    } finally {
+        blackjackActionPending = false;
+    }
+}
+async function bjSplit() {
+    if (!(await ensurePinReady())) {
+        setStatus("PIN REQUIRED", 2200);
+        return;
+    }
+
+    try {
+        const pinProof = await getPinProof();
+
         const json = await apiRequest("/blackjack/split", {
             method: "POST",
             body: {
-                playerId: autoUserId
+                playerId: autoUserId,
+                pinProof
             }
         });
 
@@ -3706,62 +3875,69 @@ let blackjackActionPending = false;
     }
 }
 
-        async function raceSubmitBet() {
-            const playerName = String(autoName || "").trim();
-            const playerId = String(autoUserId || "").trim();
-            let amount = parseMoneyInput($("raceAmountInput").value);
-            const horseId = String($("raceHorseSelect").value || "");
+    async function raceSubmitBet() {
+    const playerName = String(autoName || "").trim();
+    const playerId = String(autoUserId || "").trim();
+    let amount = parseMoneyInput($("raceAmountInput").value);
+    const horseId = String($("raceHorseSelect").value || "");
 
-            if (!playerName || !playerId) {
-                window.parent.postMessage(
-                    {
-                        type: "getData"
-                    },
-                    "*"
-                );
+    if (!playerName || !playerId) {
+        window.parent.postMessage(
+            {
+                type: "getData"
+            },
+            "*"
+        );
 
-                return setStatus("NO GAME DATA", 2200);
-            }
+        return setStatus("NO GAME DATA", 2200);
+    }
 
-            if (!horseId) {
-                return setStatus("NO HORSE", 1500);
-            }
+    if (!horseId) {
+        return setStatus("NO HORSE", 1500);
+    }
 
-            const rewards = state.rewards || {};
-            const myRewards = rewards[String(playerId)] || {};
-            const hasFreeBet = Number(myRewards.horseFreeBets || 0) > 0;
+    const rewards = state.rewards || {};
+    const myRewards = rewards[String(playerId)] || {};
+    const hasFreeBet = Number(myRewards.horseFreeBets || 0) > 0;
 
-            if (!hasFreeBet) {
-                if (!amount || amount < 1) {
-                    return setStatus("NO AMOUNT", 1500);
-                }
-
-                if (amount > getMyChipBalance()) {
-                    return setStatus("NOT ENOUGH CHIPS", 2200);
-                }
-            } else {
-
-                amount = 10000000;
-            }
-
-            try {
-                const json = await apiRequest("/racing/place-bet", {
-                    method: "POST",
-                    body: {
-                        playerId,
-                        playerName,
-                        amount,
-                        horseId
-                    }
-                });
-
-                state = json.state || state;
-                setStatus("RACE BET SENT", 1300);
-                render();
-            } catch (e) {
-                setStatus(String(e.message || e), 2500);
-            }
+    if (!hasFreeBet) {
+        if (!amount || amount < 1) {
+            return setStatus("NO AMOUNT", 1500);
         }
+
+        if (amount > getMyChipBalance()) {
+            return setStatus("NOT ENOUGH CHIPS", 2200);
+        }
+    } else {
+
+        amount = 10000000;
+    }
+
+    if (!(await ensurePinReady())) {
+        return setStatus("PIN REQUIRED", 2200);
+    }
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest("/racing/place-bet", {
+            method: "POST",
+            body: {
+                playerId,
+                playerName,
+                amount,
+                horseId,
+                pinProof
+            }
+        });
+
+        state = json.state || state;
+        setStatus("RACE BET SENT", 1300);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
         function getHorseDecimalOdds(horse) {
             const value = Number(
                 horse?.decimalOdds ??
@@ -4449,178 +4625,185 @@ let blackjackActionPending = false;
             }
         }
 
-        async function slotSpin() {
-            if (slotAnimating) return;
+   async function slotSpin() {
+    if (slotAnimating) return;
 
-            const playerId = String(autoUserId || '').trim();
-            const playerName = String(autoName || '').trim();
-            const amount =
-                parseMoneyInput($('slotBetInput').value);
+    const playerId = String(autoUserId || '').trim();
+    const playerName = String(autoName || '').trim();
+    const amount =
+        parseMoneyInput($('slotBetInput').value);
 
-            const freeSpins = Number(
-                state.slots?.freeSpins?.[playerId] || 0
+    const freeSpins = Number(
+        state.slots?.freeSpins?.[playerId] || 0
+    );
+
+    if (!playerId || !playerName) {
+        return setStatus('NO GAME DATA', 1800);
+    }
+
+    if (!freeSpins && (!amount || amount < 1)) {
+        return setStatus('NO SLOT BET', 1800);
+    }
+
+    if (!freeSpins && amount > getMyChipBalance()) {
+        return setStatus('NOT ENOUGH CHIPS', 2200);
+    }
+
+    if (!(await ensurePinReady())) {
+        return setStatus('PIN REQUIRED', 2200);
+    }
+
+    heldSlotFreeSpinDisplay =
+        Math.max(
+            0,
+            Math.floor(
+                Number(freeSpins || 0)
+            )
+        );
+
+    slotAnimating = true;
+    $('slotSpinButton').disabled = true;
+    $('slotGrid').classList.add('spinning');
+
+    const fakeTimer = setInterval(() => {
+        const fake = Array.from(
+            { length: 3 },
+            () =>
+                Array.from(
+                    { length: 5 },
+                    () => {
+                        const keys =
+                            Object.keys(SLOT_SYMBOLS);
+
+                        return keys[
+                            Math.floor(
+                                Math.random() *
+                                keys.length
+                            )
+                        ];
+                    }
+                )
+        );
+
+        buildSlotGrid(fake);
+    }, 90);
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest('/slots/spin', {
+            method: 'POST',
+            body: {
+                playerId,
+                playerName,
+                amount,
+                pinProof
+            }
+        });
+
+        state = json.state || state;
+        recordSessionSlotSpin();
+
+        await wait(1500);
+
+        clearInterval(fakeTimer);
+        $('slotGrid').classList.remove('spinning');
+
+        await animateScatterNudge(json.result);
+
+        buildSlotGrid(json.result.grid);
+
+        (json.result.winningCells || []).forEach(cell => {
+            const element = document.querySelector(
+                `.slotCell[data-row="${cell.row}"][data-col="${cell.col}"]`
             );
 
-            if (!playerId || !playerName) {
-                return setStatus('NO GAME DATA', 1800);
+            if (element) {
+                element.classList.add('winLine');
             }
+        });
 
-            if (!freeSpins && (!amount || amount < 1)) {
-                return setStatus('NO SLOT BET', 1800);
-            }
-
-            if (!freeSpins && amount > getMyChipBalance()) {
-                return setStatus('NOT ENOUGH CHIPS', 2200);
-            }
-
-            heldSlotFreeSpinDisplay =
-                Math.max(
-                    0,
-                    Math.floor(
-                        Number(freeSpins || 0)
-                    )
-                );
-
-            slotAnimating = true;
-            $('slotSpinButton').disabled = true;
-            $('slotGrid').classList.add('spinning');
-
-            const fakeTimer = setInterval(() => {
-                const fake = Array.from(
-                    { length: 3 },
-                    () =>
-                        Array.from(
-                            { length: 5 },
-                            () => {
-                                const keys =
-                                    Object.keys(SLOT_SYMBOLS);
-
-                                return keys[
-                                    Math.floor(
-                                        Math.random() *
-                                        keys.length
-                                    )
-                                ];
-                            }
-                        )
-                );
-
-                buildSlotGrid(fake);
-            }, 90);
-
-            try {
-                const json = await apiRequest('/slots/spin', {
-                    method: 'POST',
-                    body: {
-                        playerId,
-                        playerName,
-                        amount
-                    }
-                });
-
-                state = json.state || state;
-                recordSessionSlotSpin();
-
-                await wait(1500);
-
-                clearInterval(fakeTimer);
-                $('slotGrid').classList.remove('spinning');
-
-                await animateScatterNudge(json.result);
-
-                buildSlotGrid(json.result.grid);
-
-                (json.result.winningCells || []).forEach(cell => {
-                    const element = document.querySelector(
-                        `.slotCell[data-row="${cell.row}"][data-col="${cell.col}"]`
-                    );
-
-                    if (element) {
-                        element.classList.add('winLine');
-                    }
-                });
-
-                if (hasFivePearPayline(json.result)) {
-                    showFivePearGif();
-                }
-
-                $('slotResultText').textContent =
-                    json.result.payout > 0
-                        ? `Won ${shortMoney(json.result.payout)} chips!`
-                        : json.result.scatterNudgeTriggered
-                            ? 'Scatter nudge finished'
-                            : 'No win';
-
-                $('slotResultText').className =
-                    'bigResult ' +
-                    (
-                        json.result.payout > 0
-                            ? 'win'
-                            : json.result.scatterNudgeTriggered
-                                ? 'neutral'
-                                : 'loss'
-                    );
-
-                $('slotResultSub').textContent =
-                    json.result.message || 'Spin complete';
-
-
-                await wait(650);
-
-
-                heldSlotFreeSpinDisplay = null;
-                slotAnimating = false;
-
-                render();
-
-
-                await wait(100);
-
-                if (json.result.payout > 0) {
-                    playSlotPayoutSound();
-                    showWinEffect();
-                } else if (
-                    json.result.freeSpinsAwarded > 0
-                ) {
-                    showWinEffect();
-                }
-
-                if (
-                    Number(
-                        json.result.freeSpinsAwarded || 0
-                    ) > 0
-                ) {
-                    showFreeSpinUnlockPopup(
-                        json.result.freeSpinsAwarded
-                    );
-                }
-            } catch (error) {
-                clearInterval(fakeTimer);
-                $('slotGrid').classList.remove('spinning');
-
-                if (slotAutoSpinActive) {
-                    stopSlotAutoSpin(
-                        String(
-                            error.message ||
-                            error ||
-                            "AUTO SPIN STOPPED"
-                        )
-                    );
-                } else {
-                    setStatus(
-                        String(
-                            error.message ||
-                            error
-                        ),
-                        2500
-                    );
-                }
-            } finally {
-                heldSlotFreeSpinDisplay = null;
-                slotAnimating = false;
-                $('slotSpinButton').disabled = false;
-            }
+        if (hasFivePearPayline(json.result)) {
+            showFivePearGif();
         }
+
+        $('slotResultText').textContent =
+            json.result.payout > 0
+                ? `Won ${shortMoney(json.result.payout)} chips!`
+                : json.result.scatterNudgeTriggered
+                    ? 'Scatter nudge finished'
+                    : 'No win';
+
+        $('slotResultText').className =
+            'bigResult ' +
+            (
+                json.result.payout > 0
+                    ? 'win'
+                    : json.result.scatterNudgeTriggered
+                        ? 'neutral'
+                        : 'loss'
+            );
+
+        $('slotResultSub').textContent =
+            json.result.message || 'Spin complete';
+
+
+        await wait(650);
+
+
+        heldSlotFreeSpinDisplay = null;
+        slotAnimating = false;
+
+        render();
+
+
+        await wait(100);
+
+        if (json.result.payout > 0) {
+            playSlotPayoutSound();
+            showWinEffect();
+        } else if (
+            json.result.freeSpinsAwarded > 0
+        ) {
+            showWinEffect();
+        }
+
+        if (
+            Number(
+                json.result.freeSpinsAwarded || 0
+            ) > 0
+        ) {
+            showFreeSpinUnlockPopup(
+                json.result.freeSpinsAwarded
+            );
+        }
+    } catch (error) {
+        clearInterval(fakeTimer);
+        $('slotGrid').classList.remove('spinning');
+
+        if (slotAutoSpinActive) {
+            stopSlotAutoSpin(
+                String(
+                    error.message ||
+                    error ||
+                    "AUTO SPIN STOPPED"
+                )
+            );
+        } else {
+            setStatus(
+                String(
+                    error.message ||
+                    error
+                ),
+                2500
+            );
+        }
+    } finally {
+        heldSlotFreeSpinDisplay = null;
+        slotAnimating = false;
+        $('slotSpinButton').disabled = false;
+    }
+}
 
 
         function getMyMinesGame() {
@@ -4702,87 +4885,93 @@ let blackjackActionPending = false;
                 });
         }
 
-        async function startMinesGame() {
-            minesFinishedView = null;
-            minesFinishedViewUntil = 0;
+   async function startMinesGame() {
+    minesFinishedView = null;
+    minesFinishedViewUntil = 0;
 
-            render();
+    render();
 
-            const playerId =
-                String(autoUserId || '').trim();
+    const playerId =
+        String(autoUserId || '').trim();
 
-            const playerName =
-                String(autoName || 'Player').trim() || 'Player';
+    const playerName =
+        String(autoName || 'Player').trim() || 'Player';
 
-            const amount = Math.floor(
-                parseMoneyInput(
-                    $('minesBetInput').value
-                )
-            );
+    const amount = Math.floor(
+        parseMoneyInput(
+            $('minesBetInput').value
+        )
+    );
 
-            const mineCount = Math.floor(
-                Number(
-                    $('minesCountInput').value || 0
-                )
-            );
+    const mineCount = Math.floor(
+        Number(
+            $('minesCountInput').value || 0
+        )
+    );
 
-            if (!playerId) {
-                return setStatus(
-                    'NO GAME DATA',
-                    1800
-                );
+    if (!playerId) {
+        return setStatus(
+            'NO GAME DATA',
+            1800
+        );
+    }
+
+    if (!amount || amount < 1) {
+        return setStatus(
+            'NO MINES BET',
+            1800
+        );
+    }
+
+    if (amount > getMyChipBalance()) {
+        return setStatus(
+            'NOT ENOUGH CHIPS',
+            2200
+        );
+    }
+
+    if (
+        mineCount <= 0 ||
+        mineCount >= 25
+    ) {
+        return setStatus(
+            'CHOOSE 1-24 MINES',
+            2000
+        );
+    }
+
+    if (!(await ensurePinReady())) {
+        return setStatus('PIN REQUIRED', 2200);
+    }
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest(
+            '/mines/start',
+            {
+                method: 'POST',
+                body: {
+                    playerId,
+                    playerName,
+                    amount,
+                    mineCount,
+                    pinProof
+                }
             }
+        );
 
-            if (!amount || amount < 1) {
-                return setStatus(
-                    'NO MINES BET',
-                    1800
-                );
-            }
-
-            if (amount > getMyChipBalance()) {
-                return setStatus(
-                    'NOT ENOUGH CHIPS',
-                    2200
-                );
-            }
-
-            if (
-                mineCount <= 0 ||
-                mineCount >= 25
-            ) {
-                return setStatus(
-                    'CHOOSE 1-24 MINES',
-                    2000
-                );
-            }
-
-            try {
-                const json = await apiRequest(
-                    '/mines/start',
-                    {
-                        method: 'POST',
-                        body: {
-                            playerId,
-                            playerName,
-                            amount,
-                            mineCount
-                        }
-                    }
-                );
-
-                state = json.state || state;
-                console.log(state)
-                setStatus('MINES STARTED', 1500);
-                render();
-            } catch (error) {
-                setStatus(
-                    String(error.message || error),
-                    2500
-                );
-            }
-        }
-
+        state = json.state || state;
+        console.log(state)
+        setStatus('MINES STARTED', 1500);
+        render();
+    } catch (error) {
+        setStatus(
+            String(error.message || error),
+            2500
+        );
+    }
+}
         function showFinishedMinesBoard({
             minePositions = [],
             revealed = [],
@@ -4837,203 +5026,217 @@ let blackjackActionPending = false;
             minesFinishedViewTimer = null;
         }
 
-        async function revealMineTile(cell) {
-            if (minesRevealPending || minesFinishedView) {
-                return;
-            }
+ async function revealMineTile(cell) {
+    if (minesRevealPending || minesFinishedView) {
+        return;
+    }
 
-            const playerId =
-                String(autoUserId || '').trim();
+    const playerId =
+        String(autoUserId || '').trim();
 
-            const currentGame = getMyMinesGame();
+    const currentGame = getMyMinesGame();
 
-            if (!playerId) {
-                return setStatus(
-                    'NO GAME DATA',
-                    1800
-                );
-            }
+    if (!playerId) {
+        return setStatus(
+            'NO GAME DATA',
+            1800
+        );
+    }
 
-            if (!currentGame?.gameId) {
-                await refreshState(true);
+    if (!currentGame?.gameId) {
+        await refreshState(true);
 
-                const refreshedGame = getMyMinesGame();
+        const refreshedGame = getMyMinesGame();
 
-                if (!refreshedGame?.gameId) {
-                    return setStatus(
-                        'MINES GAME IS UPDATING — TRY AGAIN',
-                        2200
-                    );
-                }
-
-                return revealMineTile(cell);
-            }
-
-            if (
-                !Number.isInteger(cell) ||
-                cell < 0 ||
-                cell >= 25 ||
-                (currentGame.revealed || []).map(Number).includes(cell)
-            ) {
-                return;
-            }
-
-            minesRevealPending = true;
-            minesActionVersion += 1;
-            renderMines();
-
-            try {
-                const json = await apiRequest(
-                    '/mines/reveal',
-                    {
-                        method: 'POST',
-                        body: {
-                            playerId,
-                            gameId: currentGame.gameId,
-                            cell
-                        }
-                    }
-                );
-
-                state = json.state || state;
-                minesActionVersion += 1;
-
-                if (json.hitMine) {
-                    showFinishedMinesBoard({
-                        minePositions:
-                            json.minePositions || [],
-                        revealed:
-                            json.revealed || json.history?.revealed || [],
-                        statusText:
-                            'Mine hit — bet lost',
-                        safeReveals:
-                            json.history?.safeReveals || 0,
-                        multiplier: 0,
-                        payout: 0,
-                        durationMs: 8000
-                    });
-
-                    setStatus(
-                        'BOOM! MINE HIT',
-                        2200
-                    );
-
-                    return;
-                }
-
-                if (json.cleared) {
-                    showFinishedMinesBoard({
-                        minePositions:
-                            json.minePositions || [],
-                        revealed:
-                            json.revealed || [],
-                        statusText:
-                            `Board cleared — won ${shortMoney(
-                                json.history?.payout || 0
-                            )} chips`,
-                        safeReveals:
-                            json.history?.safeReveals || 0,
-                        multiplier:
-                            json.history?.multiplier || 0,
-                        payout:
-                            json.history?.payout || 0,
-                        durationMs: 8000
-                    });
-
-                    setStatus(
-                        'BOARD CLEARED',
-                        2200
-                    );
-
-                    playSlotPayoutSound();
-                    showWinEffect();
-                    return;
-                }
-            } catch (error) {
-
-                try {
-                    await refreshState(true);
-                } catch (_) {
-
-                }
-
-                setStatus(
-                    String(error.message || error),
-                    2500
-                );
-            } finally {
-                minesRevealPending = false;
-                minesActionVersion += 1;
-                renderMines();
-            }
+        if (!refreshedGame?.gameId) {
+            return setStatus(
+                'MINES GAME IS UPDATING — TRY AGAIN',
+                2200
+            );
         }
 
-        async function cashoutMines() {
-            if (minesRevealPending || minesFinishedView) {
-                return;
+        return revealMineTile(cell);
+    }
+
+    if (
+        !Number.isInteger(cell) ||
+        cell < 0 ||
+        cell >= 25 ||
+        (currentGame.revealed || []).map(Number).includes(cell)
+    ) {
+        return;
+    }
+
+    if (!(await ensurePinReady())) {
+        return setStatus('PIN REQUIRED', 2200);
+    }
+
+    minesRevealPending = true;
+    minesActionVersion += 1;
+    renderMines();
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest(
+            '/mines/reveal',
+            {
+                method: 'POST',
+                body: {
+                    playerId,
+                    gameId: currentGame.gameId,
+                    cell,
+                    pinProof
+                }
             }
+        );
 
-            const playerId =
-                String(autoUserId || '').trim();
+        state = json.state || state;
+        minesActionVersion += 1;
 
-            const currentGame = getMyMinesGame();
+        if (json.hitMine) {
+            showFinishedMinesBoard({
+                minePositions:
+                    json.minePositions || [],
+                revealed:
+                    json.revealed || json.history?.revealed || [],
+                statusText:
+                    'Mine hit — bet lost',
+                safeReveals:
+                    json.history?.safeReveals || 0,
+                multiplier: 0,
+                payout: 0,
+                durationMs: 8000
+            });
 
-            if (!playerId) {
-                return setStatus(
-                    'NO GAME DATA',
-                    1800
-                );
-            }
+            setStatus(
+                'BOOM! MINE HIT',
+                2200
+            );
 
-            try {
-                const json = await apiRequest(
-                    '/mines/cashout',
-                    {
-                        method: 'POST',
-                        body: {
-                            playerId,
-                            gameId: currentGame?.gameId || ''
-                        }
-                    }
-                );
-
-                state = json.state || state;
-                minesActionVersion += 1;
-
-                showFinishedMinesBoard({
-                    minePositions:
-                        json.minePositions || [],
-                    revealed:
-                        json.history?.revealed || [],
-                    statusText:
-                        `Cashed out ${shortMoney(
-                            json.payout
-                        )} chips`,
-                    safeReveals:
-                        json.history?.safeReveals || 0,
-                    multiplier:
-                        json.multiplier || 1,
-                    payout:
-                        json.payout || 0,
-                    durationMs: 8000
-                });
-
-                setStatus(
-                    `CASHED OUT X${Number(
-                        json.multiplier || 1
-                    ).toFixed(2)}`,
-                    2200
-                );
-
-                playSlotPayoutSound();
-                showWinEffect();
-            } catch (error) {
-                setStatus(
-                    String(error.message || error),
-                    2500
-                );
-            }
+            return;
         }
+
+        if (json.cleared) {
+            showFinishedMinesBoard({
+                minePositions:
+                    json.minePositions || [],
+                revealed:
+                    json.revealed || [],
+                statusText:
+                    `Board cleared — won ${shortMoney(
+                        json.history?.payout || 0
+                    )} chips`,
+                safeReveals:
+                    json.history?.safeReveals || 0,
+                multiplier:
+                    json.history?.multiplier || 0,
+                payout:
+                    json.history?.payout || 0,
+                durationMs: 8000
+            });
+
+            setStatus(
+                'BOARD CLEARED',
+                2200
+            );
+
+            playSlotPayoutSound();
+            showWinEffect();
+            return;
+        }
+    } catch (error) {
+
+        try {
+            await refreshState(true);
+        } catch (_) {
+
+        }
+
+        setStatus(
+            String(error.message || error),
+            2500
+        );
+    } finally {
+        minesRevealPending = false;
+        minesActionVersion += 1;
+        renderMines();
+    }
+}
+
+       async function cashoutMines() {
+    if (minesRevealPending || minesFinishedView) {
+        return;
+    }
+
+    const playerId =
+        String(autoUserId || '').trim();
+
+    const currentGame = getMyMinesGame();
+
+    if (!playerId) {
+        return setStatus(
+            'NO GAME DATA',
+            1800
+        );
+    }
+
+    if (!(await ensurePinReady())) {
+        return setStatus('PIN REQUIRED', 2200);
+    }
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest(
+            '/mines/cashout',
+            {
+                method: 'POST',
+                body: {
+                    playerId,
+                    gameId: currentGame?.gameId || '',
+                    pinProof
+                }
+            }
+        );
+
+        state = json.state || state;
+        minesActionVersion += 1;
+
+        showFinishedMinesBoard({
+            minePositions:
+                json.minePositions || [],
+            revealed:
+                json.history?.revealed || [],
+            statusText:
+                `Cashed out ${shortMoney(
+                    json.payout
+                )} chips`,
+            safeReveals:
+                json.history?.safeReveals || 0,
+            multiplier:
+                json.multiplier || 1,
+            payout:
+                json.payout || 0,
+            durationMs: 8000
+        });
+
+        setStatus(
+            `CASHED OUT X${Number(
+                json.multiplier || 1
+            ).toFixed(2)}`,
+            2200
+        );
+
+        playSlotPayoutSound();
+        showWinEffect();
+    } catch (error) {
+        setStatus(
+            String(error.message || error),
+            2500
+        );
+    }
+}
         const EUROPEAN_WHEEL = [
             0,
             32,
@@ -5695,7 +5898,7 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                 setStatus(error.message || "Claim failed", 2500);
             }
         }
-    async function buyScratchTickets() {
+async function buyScratchTickets() {
     const playerId = String(autoUserId || "").trim();
     const playerName = String(autoName || "").trim();
     let ticketPrice = parseMoneyInput($("scratchPriceInput").value);
@@ -5706,7 +5909,7 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
 
     const rewards = state.rewards || {};
     const myRewards = rewards[String(playerId)] || {};
-    const hasFreeBet = Number(myRewards.scratchTickets || 0) > 0;   
+    const hasFreeBet = Number(myRewards.scratchTickets || 0) > 0;
 
     if (!hasFreeBet) {
         if (!ticketPrice || ticketPrice < 1)
@@ -5722,36 +5925,43 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
         quantity = 1;
     }
 
-            if (scratchTickets.length) {
-                return setStatus("Reveal your current scratch cards first.", 2500);
+    if (scratchTickets.length) {
+        return setStatus("Reveal your current scratch cards first.", 2500);
+    }
+
+    if (!(await ensurePinReady())) {
+        return setStatus("PIN REQUIRED", 2200);
+    }
+
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest("/scratch/buy", {
+            method: "POST",
+            body: {
+                playerId,
+                playerName,
+                ticketPrice,
+                quantity,
+                pinProof
             }
+        });
 
-            try {
-                const json = await apiRequest("/scratch/buy", {
-                    method: "POST",
-                    body: {
-                        playerId,
-                        playerName,
-                        ticketPrice,
-                        quantity
-                    }
-                });
-
-                state = json.state || state;
-                scratchTickets = json.tickets || [];
-                currentScratchBatch = json.batch || null;
-                scratchSummaryShown = false;
-                buildScratchCardsGrid();
-                const buyButton = $("scratchBuyButton");
-                if (buyButton) {
-                    buyButton.disabled = true;
-                }
-
-                render();
-            } catch (e) {
-                setStatus(String(e.message || e), 2500);
-            }
+        state = json.state || state;
+        scratchTickets = json.tickets || [];
+        currentScratchBatch = json.batch || null;
+        scratchSummaryShown = false;
+        buildScratchCardsGrid();
+        const buyButton = $("scratchBuyButton");
+        if (buyButton) {
+            buyButton.disabled = true;
         }
+
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
 
 
 
@@ -5839,7 +6049,7 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                     );
                 });
 
-            startButton.addEventListener(
+           startButton.addEventListener(
                 "click",
                 async () => {
                     const playerId = String(
@@ -5874,8 +6084,16 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                         );
                         return;
                     }
+
+                    if (!(await ensurePinReady())) {
+                        setStatus("PIN REQUIRED", 2200);
+                        return;
+                    }
+
                     lastChickenBetAmount = amount;
                     try {
+                        const pinProof = await getPinProof();
+
                         const json =
                             await apiRequest(
                                 "/chicken/start",
@@ -5886,7 +6104,8 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                                         playerName,
                                         amount,
                                         risk:
-                                            selectedChickenRisk
+                                            selectedChickenRisk,
+                                        pinProof
                                     }
                                 }
                             );
@@ -5934,7 +6153,7 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                 }
             );
 
-            async function processChickenCrossQueue() {
+          async function processChickenCrossQueue() {
                 if (
                     chickenCrossProcessing ||
                     chickenGameEnded
@@ -5951,6 +6170,15 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                     chickenCrossQueue -= 1;
 
                     try {
+                        if (!(await ensurePinReady())) {
+                            setStatus("PIN REQUIRED", 2200);
+                            chickenGameEnded = true;
+                            chickenCrossQueue = 0;
+                            break;
+                        }
+
+                        const pinProof = await getPinProof();
+
                         const json =
                             await apiRequest(
                                 "/chicken/cross",
@@ -5958,7 +6186,8 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                                     method: "POST",
                                     body: {
                                         playerId:
-                                            autoUserId
+                                            autoUserId,
+                                        pinProof
                                     }
                                 }
                             );
@@ -6118,7 +6347,7 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                 }
             );
 
-            cashoutButton.addEventListener(
+         cashoutButton.addEventListener(
                 "click",
                 async () => {
                     if (
@@ -6128,7 +6357,14 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                         return;
                     }
 
+                    if (!(await ensurePinReady())) {
+                        setStatus("PIN REQUIRED", 2200);
+                        return;
+                    }
+
                     try {
+                        const pinProof = await getPinProof();
+
                         const json =
                             await apiRequest(
                                 "/chicken/cashout",
@@ -6136,7 +6372,8 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                                     method: "POST",
                                     body: {
                                         playerId:
-                                            autoUserId
+                                            autoUserId,
+                                        pinProof
                                     }
                                 }
                             );
@@ -6191,9 +6428,9 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                     }
                 }
             );
-        }
+        
 
-        if (
+              if (
             document.readyState === "loading"
         ) {
             document.addEventListener(
@@ -6204,6 +6441,8 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
         } else {
             installChickenHandlers();
         }
+
+        } 
 
         let leaderboardLoading = false;
 
@@ -6346,49 +6585,56 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
         }, 1500);
 
         async function placeRouletteBet() {
-            if (!selectedRouletteBet.betType) {
-                throw new Error(
-                    "Choose a roulette bet first"
-                );
+    if (!selectedRouletteBet.betType) {
+        throw new Error(
+            "Choose a roulette bet first"
+        );
+    }
+
+    const amount =
+        parseMoneyInput(
+            $("rouletteBetInput").value
+        );
+
+    if (!amount) {
+        throw new Error(
+            "Enter a valid roulette bet"
+        );
+    }
+
+    if (!(await ensurePinReady())) {
+        throw new Error("PIN required");
+    }
+
+    const pinProof = await getPinProof();
+
+    const json = await apiRequest(
+        "/roulette/place-bet",
+        {
+            method: "POST",
+            body: {
+                playerId: autoUserId,
+                playerName: autoName,
+                amount,
+                betType:
+                    selectedRouletteBet.betType,
+                selection:
+                    selectedRouletteBet.selection,
+                pinProof
             }
-
-            const amount =
-                parseMoneyInput(
-                    $("rouletteBetInput").value
-                );
-
-            if (!amount) {
-                throw new Error(
-                    "Enter a valid roulette bet"
-                );
-            }
-
-            const json = await apiRequest(
-                "/roulette/place-bet",
-                {
-                    method: "POST",
-                    body: {
-                        playerId: autoUserId,
-                        playerName: autoName,
-                        amount,
-                        betType:
-                            selectedRouletteBet.betType,
-                        selection:
-                            selectedRouletteBet.selection
-                    }
-                }
-            );
-
-            if (!json.ok) {
-                throw new Error(
-                    json.error ||
-                    "Could not place roulette bet"
-                );
-            }
-
-            state = json.state || state;
-            render();
         }
+    );
+
+    if (!json.ok) {
+        throw new Error(
+            json.error ||
+            "Could not place roulette bet"
+        );
+    }
+
+    state = json.state || state;
+    render();
+}
 
         async function clearMyRouletteBets() {
             const json = await apiRequest(
@@ -6566,46 +6812,54 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
             setStatus(`Gave ${amount} extra daily spin(s) to ${playerId}`, 3500);
         }
 
-        async function spinDailyWheel() {
-            if (dailySpinBusy || !autoUserId || !autoName) return;
+    async function spinDailyWheel() {
+    if (dailySpinBusy || !autoUserId || !autoName) return;
 
-            dailySpinBusy = true;
-            renderDailySpin();
+    if (!(await ensurePinReady())) {
+        setStatus("PIN REQUIRED", 2200);
+        return;
+    }
 
-            try {
-                const wheel = $("dailySpinWheel");
-                dailySpinRotation += 1440 + Math.floor(Math.random() * 360);
-                if (wheel) wheel.style.transform = `rotate(${dailySpinRotation}deg)`;
+    dailySpinBusy = true;
+    renderDailySpin();
 
-                const json = await apiRequest("/daily-spin/spin", {
-                    method: "POST",
-                    body: {
-                        playerId: autoUserId,
-                        playerName: autoName
-                    }
-                });
+    try {
+        const wheel = $("dailySpinWheel");
+        dailySpinRotation += 1440 + Math.floor(Math.random() * 360);
+        if (wheel) wheel.style.transform = `rotate(${dailySpinRotation}deg)`;
 
-                if (!json.ok) throw new Error(json.error || "Could not use daily spin");
+        const pinProof = await getPinProof();
 
-                await new Promise(resolve => setTimeout(resolve, 4200));
-
-                state = json.state || state;
-                dailySpinStatus = json.status;
-                render();
-                renderDailySpin();
-
-                if (json.result?.prizeType !== "nothing") {
-                    showWinCelebration?.();
-                }
-            } catch (error) {
-                console.error(error);
-                setStatus(error.message, 4000);
-                await loadDailySpinStatus();
-            } finally {
-                dailySpinBusy = false;
-                renderDailySpin();
+        const json = await apiRequest("/daily-spin/spin", {
+            method: "POST",
+            body: {
+                playerId: autoUserId,
+                playerName: autoName,
+                pinProof
             }
+        });
+
+        if (!json.ok) throw new Error(json.error || "Could not use daily spin");
+
+        await new Promise(resolve => setTimeout(resolve, 4200));
+
+        state = json.state || state;
+        dailySpinStatus = json.status;
+        render();
+        renderDailySpin();
+
+        if (json.result?.prizeType !== "nothing") {
+            showWinCelebration?.();
         }
+    } catch (error) {
+        console.error(error);
+        setStatus(error.message, 4000);
+        await loadDailySpinStatus();
+    } finally {
+        dailySpinBusy = false;
+        renderDailySpin();
+    }
+}
 
         function renderDealGame() {
             const dealState = state.deal || {};
@@ -6804,283 +7058,304 @@ let delta = ((targetAngle - currentAngle) % 360 + 360) % 360;
                     '<div class="emptyState">No deal games yet.</div>';
         }
 
-        async function startDealGame() {
-            if (selectedDealCase == null) {
-                throw new Error("Choose your case first");
-            }
+ async function startDealGame() {
+    if (selectedDealCase == null) {
+        throw new Error("Choose your case first");
+    }
 
-            const amount = parseMoneyInput(
-                $("dealBetInput").value
+    const amount = parseMoneyInput(
+        $("dealBetInput").value
+    );
+
+    if (!amount) {
+        throw new Error("Enter a valid bet");
+    }
+
+    if (!(await ensurePinReady())) {
+        throw new Error("PIN required");
+    }
+
+    const pinProof = await getPinProof();
+
+    const json = await apiRequest(
+        "/deal/start",
+        {
+            method: "POST",
+            body: {
+                playerId: autoUserId,
+                playerName: autoName,
+                amount,
+                chosenCase: selectedDealCase,
+                pinProof
+            }
+        }
+    );
+
+    if (!json.ok) {
+        throw new Error(
+            json.error || "Could not start game"
+        );
+    }
+
+    state = json.state || state;
+    render();
+}
+
+   async function openDealCase(caseIndex) {
+    const currentGameBeforeOpen =
+        state.deal?.games?.[
+        String(autoUserId)
+        ] || null;
+
+    const previousOpenedCases = [
+        ...(
+            currentGameBeforeOpen?.openedCases || []
+        )
+    ];
+
+    const previousOpenedValues = {
+        ...(
+            currentGameBeforeOpen?.openedValues || {}
+        )
+    };
+
+    const previousChosenCase =
+        currentGameBeforeOpen?.chosenCase;
+
+    const previousBetAmount =
+        currentGameBeforeOpen?.betAmount || 0;
+
+    if (!(await ensurePinReady())) {
+        throw new Error("PIN required");
+    }
+
+    const pinProof = await getPinProof();
+
+    const json = await apiRequest(
+        "/deal/open-case",
+        {
+            method: "POST",
+            body: {
+                playerId: autoUserId,
+                caseIndex,
+                pinProof
+            }
+        }
+    );
+
+    if (!json.ok) {
+        throw new Error(
+            json.error || "Could not open case"
+        );
+    }
+
+    state = json.state || state;
+
+    if (json.finished) {
+        selectedDealCase = null;
+
+        dealFinishedView = {
+            chosenCase:
+                json.history?.chosenCase ??
+                previousChosenCase ??
+                0,
+            chosenValue:
+                Number(
+                    json.chosenValue || 0
+                ),
+            openedCases: Array.from(
+                new Set([
+                    ...previousOpenedCases,
+                    ...(json.history?.openedCases || []),
+                    json.openedCase
+                ])
+            ).filter(
+                value =>
+                    Number.isInteger(value)
+            ),
+            openedValues: {
+                ...previousOpenedValues,
+                [json.openedCase]:
+                    json.openedValue
+            },
+            currentOffer: 0,
+            casesToOpen: 0,
+            betAmount:
+                json.history?.betAmount ||
+                previousBetAmount
+        };
+
+        dealFinishedViewUntil =
+            Date.now() + 8000;
+
+        if (dealFinishedViewTimer) {
+            clearTimeout(
+                dealFinishedViewTimer
             );
-
-            if (!amount) {
-                throw new Error("Enter a valid bet");
-            }
-
-            const json = await apiRequest(
-                "/deal/start",
-                {
-                    method: "POST",
-                    body: {
-                        playerId: autoUserId,
-                        playerName: autoName,
-                        amount,
-                        chosenCase: selectedDealCase
-                    }
-                }
-            );
-
-            if (!json.ok) {
-                throw new Error(
-                    json.error || "Could not start game"
-                );
-            }
-
-            state = json.state || state;
-            render();
         }
 
-        async function openDealCase(caseIndex) {
-            const currentGameBeforeOpen =
-                state.deal?.games?.[
-                String(autoUserId)
-                ] || null;
+        dealFinishedViewTimer =
+            setTimeout(() => {
+                dealFinishedView = null;
+                dealFinishedViewUntil = 0;
+                dealFinishedViewTimer = null;
+                render();
+            }, 8000);
 
-            const previousOpenedCases = [
-                ...(
-                    currentGameBeforeOpen?.openedCases || []
-                )
-            ];
+        showWinEffect();
 
-            const previousOpenedValues = {
-                ...(
-                    currentGameBeforeOpen?.openedValues || {}
-                )
-            };
+        setStatus(
+            `Your case contained ${shortMoney(
+                json.chosenValue || 0
+            )} chips`,
+            7000
+        );
+    } else if (json.offer > 0) {
+        setStatus(
+            `Banker offer: ${shortMoney(json.offer)}`,
+            3500
+        );
+    }
 
-            const previousChosenCase =
-                currentGameBeforeOpen?.chosenCase;
+    render();
+}
 
-            const previousBetAmount =
-                currentGameBeforeOpen?.betAmount || 0;
+   async function answerDealOffer(accept) {
+    const currentGameBeforeAnswer =
+        state.deal?.games?.[
+        String(autoUserId)
+        ] || null;
 
-            const json = await apiRequest(
-                "/deal/open-case",
-                {
-                    method: "POST",
-                    body: {
-                        playerId: autoUserId,
-                        caseIndex
-                    }
-                }
-            );
+    if (!(await ensurePinReady())) {
+        throw new Error("PIN required");
+    }
 
-            if (!json.ok) {
-                throw new Error(
-                    json.error || "Could not open case"
-                );
+    const pinProof = await getPinProof();
+
+    const json = await apiRequest(
+        accept
+            ? "/deal/accept"
+            : "/deal/reject",
+        {
+            method: "POST",
+            body: {
+                playerId: autoUserId,
+                pinProof
             }
-
-            state = json.state || state;
-
-            if (json.finished) {
-                selectedDealCase = null;
-
-                dealFinishedView = {
-                    chosenCase:
-                        json.history?.chosenCase ??
-                        previousChosenCase ??
-                        0,
-                    chosenValue:
-                        Number(
-                            json.chosenValue || 0
-                        ),
-                    openedCases: Array.from(
-                        new Set([
-                            ...previousOpenedCases,
-                            ...(json.history?.openedCases || []),
-                            json.openedCase
-                        ])
-                    ).filter(
-                        value =>
-                            Number.isInteger(value)
-                    ),
-                    openedValues: {
-                        ...previousOpenedValues,
-                        [json.openedCase]:
-                            json.openedValue
-                    },
-                    currentOffer: 0,
-                    casesToOpen: 0,
-                    betAmount:
-                        json.history?.betAmount ||
-                        previousBetAmount
-                };
-
-                dealFinishedViewUntil =
-                    Date.now() + 8000;
-
-                if (dealFinishedViewTimer) {
-                    clearTimeout(
-                        dealFinishedViewTimer
-                    );
-                }
-
-                dealFinishedViewTimer =
-                    setTimeout(() => {
-                        dealFinishedView = null;
-                        dealFinishedViewUntil = 0;
-                        dealFinishedViewTimer = null;
-                        render();
-                    }, 8000);
-
-                showWinEffect();
-
-                setStatus(
-                    `Your case contained ${shortMoney(
-                        json.chosenValue || 0
-                    )} chips`,
-                    7000
-                );
-            } else if (json.offer > 0) {
-                setStatus(
-                    `Banker offer: ${shortMoney(json.offer)}`,
-                    3500
-                );
-            }
-
-            render();
         }
+    );
 
-        async function answerDealOffer(accept) {
-            const currentGameBeforeAnswer =
-                state.deal?.games?.[
-                String(autoUserId)
-                ] || null;
+    if (!json.ok) {
+        throw new Error(
+            json.error || "Could not answer offer"
+        );
+    }
 
-            const json = await apiRequest(
-                accept
-                    ? "/deal/accept"
-                    : "/deal/reject",
-                {
-                    method: "POST",
-                    body: {
-                        playerId: autoUserId
-                    }
-                }
-            );
+    state = json.state || state;
 
-            if (!json.ok) {
-                throw new Error(
-                    json.error || "Could not answer offer"
-                );
+    if (accept) {
+        selectedDealCase = null;
+
+        const allCaseValues = Array.isArray(
+            json.allCaseValues
+        )
+            ? json.allCaseValues
+            : [];
+
+        const openedValues = {};
+
+        allCaseValues.forEach(
+            (value, index) => {
+                openedValues[index] =
+                    Number(value || 0);
             }
+        );
 
-            state = json.state || state;
-
-            if (accept) {
-                selectedDealCase = null;
-
-                const allCaseValues = Array.isArray(
-                    json.allCaseValues
-                )
-                    ? json.allCaseValues
-                    : [];
-
-                const openedValues = {};
-
-                allCaseValues.forEach(
-                    (value, index) => {
-                        openedValues[index] =
-                            Number(value || 0);
-                    }
-                );
-
-                const chosenCase =
-                    Number.isInteger(json.chosenCase)
-                        ? json.chosenCase
-                        : (
-                            currentGameBeforeAnswer?.chosenCase ??
-                            json.history?.chosenCase ??
-                            0
-                        );
-
-                const chosenValue = Number(
-                    json.chosenValue ??
-                    allCaseValues[chosenCase] ??
-                    json.history?.chosenValue ??
+        const chosenCase =
+            Number.isInteger(json.chosenCase)
+                ? json.chosenCase
+                : (
+                    currentGameBeforeAnswer?.chosenCase ??
+                    json.history?.chosenCase ??
                     0
                 );
 
-                const acceptedOffer = Number(
-                    json.payout || 0
-                );
+        const chosenValue = Number(
+            json.chosenValue ??
+            allCaseValues[chosenCase] ??
+            json.history?.chosenValue ??
+            0
+        );
 
-                dealFinishedView = {
-                    chosenCase,
-                    chosenValue,
-                    acceptedOffer,
-                    acceptedDeal: true,
-                    openedCases: Array.from(
-                        {
-                            length:
-                                Number(
-                                    state.deal?.caseCount ||
-                                    allCaseValues.length ||
-                                    16
-                                )
-                        },
-                        (_, index) => index
-                    ),
-                    openedValues,
-                    currentOffer: 0,
-                    casesToOpen: 0,
-                    betAmount:
-                        json.history?.betAmount ||
-                        currentGameBeforeAnswer?.betAmount ||
-                        0
-                };
+        const acceptedOffer = Number(
+            json.payout || 0
+        );
 
-                dealFinishedViewUntil =
-                    Date.now() + 8000;
+        dealFinishedView = {
+            chosenCase,
+            chosenValue,
+            acceptedOffer,
+            acceptedDeal: true,
+            openedCases: Array.from(
+                {
+                    length:
+                        Number(
+                            state.deal?.caseCount ||
+                            allCaseValues.length ||
+                            16
+                        )
+                },
+                (_, index) => index
+            ),
+            openedValues,
+            currentOffer: 0,
+            casesToOpen: 0,
+            betAmount:
+                json.history?.betAmount ||
+                currentGameBeforeAnswer?.betAmount ||
+                0
+        };
 
-                if (dealFinishedViewTimer) {
-                    clearTimeout(
-                        dealFinishedViewTimer
-                    );
-                }
+        dealFinishedViewUntil =
+            Date.now() + 8000;
 
-                dealFinishedViewTimer =
-                    setTimeout(() => {
-                        dealFinishedView = null;
-                        dealFinishedViewUntil = 0;
-                        dealFinishedViewTimer = null;
-                        render();
-                    }, 8000);
-
-                const difference =
-                    acceptedOffer - chosenValue;
-
-                showWinEffect();
-
-                setStatus(
-                    difference >= 0
-                        ? `Great deal: ${shortMoney(
-                            acceptedOffer
-                        )} accepted, ${shortMoney(
-                            difference
-                        )} more than your case`
-                        : `Deal accepted: ${shortMoney(
-                            acceptedOffer
-                        )}; your case held ${shortMoney(
-                            chosenValue
-                        )}`,
-                    7000
-                );
-            }
-
-            render();
+        if (dealFinishedViewTimer) {
+            clearTimeout(
+                dealFinishedViewTimer
+            );
         }
+
+        dealFinishedViewTimer =
+            setTimeout(() => {
+                dealFinishedView = null;
+                dealFinishedViewUntil = 0;
+                dealFinishedViewTimer = null;
+                render();
+            }, 8000);
+
+        const difference =
+            acceptedOffer - chosenValue;
+
+        showWinEffect();
+
+        setStatus(
+            difference >= 0
+                ? `Great deal: ${shortMoney(
+                    acceptedOffer
+                )} accepted, ${shortMoney(
+                    difference
+                )} more than your case`
+                : `Deal accepted: ${shortMoney(
+                    acceptedOffer
+                )}; your case held ${shortMoney(
+                    chosenValue
+                )}`,
+            7000
+        );
+    }
+
+    render();
+}
 
         function renderMines() {
             const minesState =
@@ -7220,10 +7495,16 @@ async function startHiloGame() {
     if (!amount || amount < 1) return setStatus("NO HI-LOW BET", 1800);
     if (amount > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
 
+    if (!(await ensurePinReady())) {
+        return setStatus("PIN REQUIRED", 2200);
+    }
+
     try {
+        const pinProof = await getPinProof();
+
         const json = await apiRequest("/hilo/start", {
             method: "POST",
-            body: { playerId, playerName, amount }
+            body: { playerId, playerName, amount, pinProof }
         });
 
         if (hiloFinishedViewTimer) {
@@ -7244,10 +7525,16 @@ async function guessHilo(direction) {
     const game = getMyHiloGame();
     if (!game) return;
 
+    if (!(await ensurePinReady())) {
+        return setStatus("PIN REQUIRED", 2200);
+    }
+
     try {
+        const pinProof = await getPinProof();
+
         const json = await apiRequest("/hilo/guess", {
             method: "POST",
-            body: { playerId: autoUserId, gameId: game.gameId, guess: direction }
+            body: { playerId: autoUserId, gameId: game.gameId, guess: direction, pinProof }
         });
 
         if (!json.correct) {
@@ -7311,10 +7598,16 @@ async function cashoutHilo() {
     const game = getMyHiloGame();
     if (!game) return;
 
+    if (!(await ensurePinReady())) {
+        return setStatus("PIN REQUIRED", 2200);
+    }
+
     try {
+        const pinProof = await getPinProof();
+
         const json = await apiRequest("/hilo/cashout", {
             method: "POST",
-            body: { playerId: autoUserId, gameId: game.gameId }
+            body: { playerId: autoUserId, gameId: game.gameId, pinProof }
         });
 
         state = json.state || state;
@@ -8098,30 +8391,38 @@ function bindHiloStyleControls() {
             }
         }
 
-        async function buyLotteryTickets() {
-            const playerId = String(autoUserId || "").trim();
-            const playerName = String(autoName || "").trim();
-            const quantity = Math.floor(Number($("lotteryQuantityInput").value || 1));
+      async function buyLotteryTickets() {
+    const playerId = String(autoUserId || "").trim();
+    const playerName = String(autoName || "").trim();
+    const quantity = Math.floor(Number($("lotteryQuantityInput").value || 1));
 
-            if (!playerId || !playerName) return setStatus("NO GAME DATA", 1800);
-            if (!quantity || quantity < 1 || quantity > 1000) return setStatus("CHOOSE 1-1000 TICKETS", 2000);
+    if (!playerId || !playerName) return setStatus("NO GAME DATA", 1800);
+    if (!quantity || quantity < 1 || quantity > 1000) return setStatus("CHOOSE 1-1000 TICKETS", 2000);
 
-            const totalCost = quantity * 100000000;
-            if (totalCost > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
+    const totalCost = quantity * 100000000;
+    if (totalCost > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
 
-            try {
-                const json = await apiRequest("/lottery/buy-tickets", {
-                    method: "POST",
-                    body: { playerId, playerName, quantity }
-                });
+    if (!(await ensurePinReady())) {
+        return setStatus("PIN REQUIRED", 2200);
+    }
 
-                state = json.state || state;
-                setStatus(`BOUGHT ${quantity} LOTTERY TICKET(S)`, 2200);
-                render();
-            } catch (e) {
-                setStatus(String(e.message || e), 2500);
-            }
-        }
+    try {
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest("/lottery/buy-tickets", {
+            method: "POST",
+            body: { playerId, playerName, quantity, pinProof }
+        });
+
+        state = json.state || state;
+        setStatus(`BOUGHT ${quantity} LOTTERY TICKET(S)`, 2200);
+        render();
+    } catch (e) {
+        setStatus(String(e.message || e), 2500);
+    }
+}
+  
+
         async function forfeitHilo() {
     const game = getMyHiloGame();
     if (!game) return;
@@ -9358,65 +9659,69 @@ $("bjSplitButton").disabled =
             return null;
         }
 
-        function applyGameData(data) {
-            if (!data) return false;
+ function applyGameData(data) {
+    if (!data) return false;
 
-            let changed = false;
+    let changed = false;
 
-            const rawId =
-                data.user_id ??
-                data.userId ??
-                data.userid ??
-                data.player_id ??
-                data.playerId ??
-                data.id;
+    const rawId =
+        data.user_id ??
+        data.userId ??
+        data.userid ??
+        data.player_id ??
+        data.playerId ??
+        data.id;
 
-            if (
-                rawId !== undefined &&
-                rawId !== null
-            ) {
-                const nextId = String(rawId).trim();
+    if (
+        rawId !== undefined &&
+        rawId !== null
+    ) {
+        const nextId = String(rawId).trim();
 
-                if (
-                    nextId &&
-                    autoUserId !== nextId
-                ) {
-                    autoUserId = nextId;
-                    changed = true;
-                }
-            }
-
-            const rawName =
-                data.name ??
-                data.username ??
-                data.player_name ??
-                data.playerName ??
-                data.displayName;
-
-            if (
-                rawName !== undefined &&
-                rawName !== null
-            ) {
-                const nextName =
-                    String(rawName).trim();
-
-                if (
-                    nextName &&
-                    autoName !== nextName
-                ) {
-                    autoName = nextName;
-                    changed = true;
-                }
-            }
-
-            if (changed) {
-                updateBankerUI();
-                updateDetectedPlayerDisplay();
-                render();
-            }
-
-            return changed;
+        if (
+            nextId &&
+            autoUserId !== nextId
+        ) {
+            autoUserId = nextId;
+            changed = true;
         }
+    }
+
+    const rawName =
+        data.name ??
+        data.username ??
+        data.player_name ??
+        data.playerName ??
+        data.displayName;
+
+    if (
+        rawName !== undefined &&
+        rawName !== null
+    ) {
+        const nextName =
+            String(rawName).trim();
+
+        if (
+            nextName &&
+            autoName !== nextName
+        ) {
+            autoName = nextName;
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        updateBankerUI();
+        updateDetectedPlayerDisplay();
+        render();
+
+        if (!casinoPin) {
+            ensurePinReady().catch(err => console.error("PIN setup failed:", err));
+        }
+    }
+
+    return changed;
+}
 
         function requestGameData() {
             try {
@@ -9849,7 +10154,8 @@ $('bjSplitButton').addEventListener('click', () => bjPlayerAction('split'));
             setInterval(renderLottery, 1000);
             render()
         });
-    </script>
+        
+     </script>
 
     <script>
         (() => {
