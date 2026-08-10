@@ -1254,7 +1254,19 @@
                             placeholder="Amount of chips to cash out" />
                         <button id="cashoutChipsButton" class="danger">Cash Out Chips</button>
 
-
+                        <div class="panelHeader" style="margin-top:12px;">
+                            <div class="panelTitle">🔐 Reset Player PIN</div>
+                            <div class="panelHint">PIN only • does not wipe casino data</div>
+                        </div>
+                        <input id="resetPinPlayerIdInput" type="text" placeholder="Player ID" />
+                        <button id="resetPlayerPinButton" class="danger" type="button">
+                            Reset Player PIN
+                        </button>
+                        <div class="chipRequestStatus">
+                            This removes only the player's current PIN. Their balance, winnings, statistics,
+                            requests and active games are not affected. The player will be asked to create a new
+                            PIN the next time they use the casino.
+                        </div>
 
                         <div class="playerAuditPanel" id="blacklistManager">
                             <div class="panelHeader">
@@ -2946,6 +2958,65 @@ async function ensurePinReady() {
 
             render();
             await refreshState(true);
+        }
+
+        async function resetPlayerPin() {
+            if (!adminToken) {
+                throw new Error("Unlock banker controls first");
+            }
+
+            const playerId = String(
+                $("resetPinPlayerIdInput")?.value || ""
+            ).trim();
+
+            if (!playerId) {
+                throw new Error("Enter the player ID whose PIN should be reset");
+            }
+
+            const playerName =
+                state?.chips?.playerNames?.[playerId] ||
+                state?.playerNames?.[playerId] ||
+                "Player";
+
+            const confirmed = await showCasinoConfirm({
+                title: "🔐 Reset Player PIN",
+                message:
+                    `Reset the PIN for ${playerName} (${playerId})? This will only remove their PIN. Their casino balance, statistics, requests, winnings and active games will remain untouched.`,
+                confirmText: "Yes, Reset PIN",
+                cancelText: "Cancel"
+            });
+
+            if (!confirmed) return;
+
+            setStatus(`Resetting PIN for ${playerId}...`, 0);
+
+            const json = await apiRequest(
+                "/chips/reset-pin",
+                {
+                    method: "POST",
+                    token: adminToken,
+                    body: {
+                        requesterId: autoUserId,
+                        playerId
+                    }
+                }
+            );
+
+            if (!json.ok) {
+                throw new Error(json.error || "PIN reset failed");
+            }
+
+            $("resetPinPlayerIdInput").value = "";
+
+            // If the banker is resetting their own PIN, discard the cached
+            // client-side PIN so the next protected action asks for a PIN again.
+            if (String(playerId) === String(autoUserId)) {
+                casinoPin = null;
+            }
+
+            state = json.state || state;
+            setStatus(`PIN reset for ${playerId}`, 3000);
+            render();
         }
 
         async function resetAllCasinoChips() {
@@ -10048,6 +10119,37 @@ $("bjSplitButton").disabled =
                     }
                 );
             }
+
+            const resetPlayerPinButton =
+                $("resetPlayerPinButton");
+
+            if (resetPlayerPinButton) {
+                resetPlayerPinButton.addEventListener(
+                    "click",
+                    () => {
+                        resetPlayerPin().catch(error => {
+                            setStatus(
+                                error.message || "PIN reset failed",
+                                4000
+                            );
+                        });
+                    }
+                );
+            }
+
+            $("resetPinPlayerIdInput")?.addEventListener(
+                "keydown",
+                event => {
+                    if (event.key === "Enter") {
+                        resetPlayerPin().catch(error => {
+                            setStatus(
+                                error.message || "PIN reset failed",
+                                4000
+                            );
+                        });
+                    }
+                }
+            );
 
             const resetAllChipsButton =
                 $("resetAllChipsButton");
