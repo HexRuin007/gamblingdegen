@@ -9669,7 +9669,7 @@ $("bjSplitButton").disabled =
             showRoundResultPopup(type, round, mine);
         }
 
-       function showRoundResultPopup(type, round, mine) {
+  function showRoundResultPopup(type, round, mine) {
     const popup = $("roundResultPopup");
     const title = $("roundResultTitle");
     const body = $("roundResultBody");
@@ -9686,11 +9686,11 @@ $("bjSplitButton").disabled =
 
     close.style.display = banker ? "" : "none";
 
+   
     if (banker) {
         title.textContent = "All Round Results";
 
         body.innerHTML = round.results.map(r => {
-
             const profit = type === "blackjack"
                 ? (r.hands || []).reduce(
                     (sum, hand) => sum + Number(hand.profit || 0),
@@ -9704,7 +9704,6 @@ $("bjSplitButton").disabled =
                         ${escapeHtml(r.playerName)}<br>
 
                         <span class="small">
-
                             ${
                                 type === "blackjack"
                                     ? (r.hands || []).map((hand, i) => `
@@ -9712,15 +9711,25 @@ $("bjSplitButton").disabled =
                                         • ${shortMoney(hand.amount)}
                                         • ${escapeHtml(hand.status)}
                                     `).join("<br>")
+
                                     : type === "racing"
                                         ? `Horse ${escapeHtml(r.horseName || "")}`
-                                        : `Bet ${shortMoney(r.amount)}${r.multiplier !== undefined ? ` • x${r.multiplier}` : ""}`
-                            }
 
+                                        : `
+                                            Bet ${shortMoney(r.amount)}
+                                            ${r.multiplier !== undefined
+                                                ? ` • x${r.multiplier}`
+                                                : ""}
+                                        `
+                            }
                         </span>
                     </span>
 
-                    <b class="${profit > 0 ? "win" : profit < 0 ? "loss" : "neutral"}">
+                    <b class="${profit > 0
+                        ? "win"
+                        : profit < 0
+                            ? "loss"
+                            : "neutral"}">
                         ${profit >= 0 ? "+" : ""}${shortMoney(profit)}
                     </b>
                 </div>
@@ -9728,55 +9737,162 @@ $("bjSplitButton").disabled =
         }).join("");
     }
 
-    if (!mine) {
+  
+    const myResults = type === "roulette"
+        ? (round.results || []).filter(
+            r => String(r.playerId) === String(autoUserId)
+        )
+        : (mine ? [mine] : []);
+
+    if (!myResults.length) {
         popup.classList.add("hidden");
         return;
     }
 
-    const profit = type === "blackjack"
-        ? (mine.hands || []).reduce(
-            (sum, hand) => sum + Number(hand.profit || 0),
-            0
-        )
-        : Number(mine.profit || 0);
+   
+    const totalProfit = myResults.reduce((sum, result) => {
+        if (type === "blackjack") {
+            return sum + (result.hands || []).reduce(
+                (handSum, hand) =>
+                    handSum + Number(hand.profit || 0),
+                0
+            );
+        }
 
-    const won = profit > 0;
+        return sum + Number(result.profit || 0);
+    }, 0);
+
+    const totalBet = myResults.reduce(
+        (sum, result) =>
+            sum + Number(result.amount || 0),
+        0
+    );
+
+    const totalPayout = myResults.reduce(
+        (sum, result) =>
+            sum + Number(result.payout || 0),
+        0
+    );
+
+    const won = totalProfit > 0;
 
     title.textContent =
         won
             ? "You Won!"
-            : profit < 0
+            : totalProfit < 0
                 ? "You Lost"
                 : "Break Even";
 
-    body.innerHTML = `
-        <div class="bigResult ${won ? "win" : profit < 0 ? "loss" : "neutral"}">
-            ${profit >= 0 ? "+" : ""}${shortMoney(profit)}
-        </div>
+  
+    if (type === "roulette") {
+        body.innerHTML = `
+            <div class="bigResult ${won
+                ? "win"
+                : totalProfit < 0
+                    ? "loss"
+                    : "neutral"}">
+                ${totalProfit >= 0 ? "+" : ""}${shortMoney(totalProfit)}
+            </div>
 
-        <div class="subResult">
+            <div class="subResult">
+                <div style="margin-bottom:10px;">
+                    <b>${myResults.length}</b>
+                    roulette bet${myResults.length === 1 ? "" : "s"}
+                    • Total staked:
+                    <b>${shortMoney(totalBet)}</b>
+                </div>
 
-            ${
-                type === "blackjack"
-                    ? (mine.hands || []).map((hand, i) => `
-                        <b>Hand ${i + 1}</b><br>
-                        Bet ${shortMoney(hand.amount)}<br>
-                        Result ${escapeHtml(hand.status)}<br>
-                        Payout ${shortMoney(hand.payout || 0)}
-                    `).join("<br><br>")
-                    : type === "racing"
-                        ? `Horse ${escapeHtml(mine.horseName || "")}<br>
-                           Bet ${shortMoney(mine.amount)}<br>
-                           Payout ${shortMoney(mine.payout || 0)}`
-                        : `
-                            Bet ${shortMoney(mine.amount)}
-                            ${mine.multiplier !== undefined ? ` • Multiplier x${mine.multiplier}` : ""}<br>
-                            Payout ${shortMoney(mine.payout || 0)}
-                        `
-            }
+                <div class="roulettePopupBets">
+                    ${myResults.map((result, index) => {
+                        const betProfit =
+                            Number(result.profit || 0);
 
-        </div>
-    `;
+                        const betWon =
+                            betProfit > 0;
+
+                        return `
+                            <div class="roundResultLine">
+                                <span>
+                                    <b>Bet ${index + 1}</b><br>
+
+                                    <span class="small">
+                                        ${
+                                            result.betType === "straight"
+                                                ? `Number ${escapeHtml(String(result.selection))}`
+                                                : escapeHtml(
+                                                    rouletteBetLabel(result)
+                                                )
+                                        }
+
+                                        • Bet ${shortMoney(result.amount)}
+                                        ${
+                                            result.multiplier !== undefined
+                                                ? ` • x${result.multiplier}`
+                                                : ""
+                                        }
+                                        <br>
+                                        Payout ${shortMoney(result.payout || 0)}
+                                    </span>
+                                </span>
+
+                                <b class="${betWon
+                                    ? "win"
+                                    : betProfit < 0
+                                        ? "loss"
+                                        : "neutral"}">
+                                    ${betProfit >= 0 ? "+" : ""}${shortMoney(betProfit)}
+                                </b>
+                            </div>
+                        `;
+                    }).join("")}
+                </div>
+
+                <div style="margin-top:10px;">
+                    Total payout:
+                    <b>${shortMoney(totalPayout)}</b>
+                </div>
+            </div>
+        `;
+    } else {
+       
+        const profit = totalProfit;
+
+        body.innerHTML = `
+            <div class="bigResult ${won
+                ? "win"
+                : profit < 0
+                    ? "loss"
+                    : "neutral"}">
+                ${profit >= 0 ? "+" : ""}${shortMoney(profit)}
+            </div>
+
+            <div class="subResult">
+                ${
+                    type === "blackjack"
+                        ? (myResults[0].hands || []).map((hand, i) => `
+                            <b>Hand ${i + 1}</b><br>
+                            Bet ${shortMoney(hand.amount)}<br>
+                            Result ${escapeHtml(hand.status)}<br>
+                            Payout ${shortMoney(hand.payout || 0)}
+                        `).join("<br><br>")
+
+                        : type === "racing"
+                            ? `Horse ${escapeHtml(myResults[0].horseName || "")}<br>
+                               Bet ${shortMoney(myResults[0].amount)}<br>
+                               Payout ${shortMoney(myResults[0].payout || 0)}`
+
+                            : `
+                                Bet ${shortMoney(myResults[0].amount)}
+                                ${myResults[0].multiplier !== undefined
+                                    ? ` • Multiplier x${myResults[0].multiplier}`
+                                    : ""}
+                                <br>
+                                Payout ${shortMoney(myResults[0].payout || 0)}
+                            `
+                }
+            </div>
+        `;
+    }
 
     if (won) {
         showWinEffect();
@@ -9784,7 +9900,7 @@ $("bjSplitButton").disabled =
 
     roundPopupTimer = setTimeout(() => {
         popup.classList.add("hidden");
-    }, 5000);
+    }, 8000);
 }
 
         function hideRoundResultPopup() {
