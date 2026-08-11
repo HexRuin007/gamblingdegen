@@ -10025,9 +10025,7 @@ $("bjSplitButton").disabled =
         updateDetectedPlayerDisplay();
         render();
 
-        if (!casinoPin) {
-            ensurePinReady().catch(err => console.error("PIN setup failed:", err));
-        }
+       
     }
 
     return changed;
