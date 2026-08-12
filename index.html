@@ -11197,22 +11197,41 @@
             } catch (e) { }
         }
 
-        function updateresizeHandlePosition() {
-            const handle = $("resizeHandle");
-            const overlay = $("overlay");
+ function updateresizeHandlePosition() {
+    const handle = $("resizeHandle");
+    const overlay = $("overlay");
 
-            if (!handle || !overlay) return;
+    if (!handle || !overlay) return;
 
+ 
+    if (document.body.classList.contains("userappHidden")) {
+        handle.style.display = "none";
+        handle.style.pointerEvents = "none";
+        return;
+    }
 
-            const rect = overlay.getBoundingClientRect();
+    const rect = overlay.getBoundingClientRect();
 
+   
+    if (
+        !Number.isFinite(rect.width) ||
+        !Number.isFinite(rect.height) ||
+        rect.width <= 0 ||
+        rect.height <= 0
+    ) {
+        handle.style.display = "none";
+        handle.style.pointerEvents = "none";
+        return;
+    }
 
-            handle.style.position = "fixed";
-            handle.style.left = (rect.right - 22 + 2) + "px";
-            handle.style.top = (rect.bottom - 22 + 2) + "px";
-            handle.style.right = "auto";
-            handle.style.bottom = "auto";
-        }
+    handle.style.display = "block";
+    handle.style.pointerEvents = "auto";
+    handle.style.position = "fixed";
+    handle.style.left = (rect.right - 20) + "px";
+    handle.style.top = (rect.bottom - 20) + "px";
+    handle.style.right = "auto";
+    handle.style.bottom = "auto";
+}
         function syncOverlayContentHeight() {
             const content = $('overlayContent');
 
@@ -12947,26 +12966,40 @@
                 }
             }
 
-            function hideCasinoUserapp() {
-                closeFirstLoginGuide();
-                document.body.classList.add("userappHidden");
-            }
+           function hideCasinoUserapp() {
+    closeFirstLoginGuide();
 
-            function showCasinoUserapp() {
-                document.body.classList.remove("userappHidden");
+    document.body.classList.add("userappHidden");
 
-                if (typeof pokeCasinoPolling === "function") {
-                    pokeCasinoPolling();
-                }
+    const handle = $("resizeHandle");
+    if (handle) {
+        handle.style.display = "none";
+        handle.style.pointerEvents = "none";
+    }
+}
 
-                if (typeof render === "function") {
-                    try {
-                        render();
-                    } catch (error) {
-                        console.warn("Could not refresh casino after unhide:", error);
-                    }
-                }
-            }
+        function showCasinoUserapp() {
+    document.body.classList.remove("userappHidden");
+
+    requestAnimationFrame(() => {
+        updateresizeHandlePosition();
+    });
+
+    if (typeof pokeCasinoPolling === "function") {
+        pokeCasinoPolling();
+    }
+
+    if (typeof render === "function") {
+        try {
+            render();
+        } catch (error) {
+            console.warn(
+                "Could not refresh casino after unhide:",
+                error
+            );
+        }
+    }
+}
 
             function addHelpButtonsToPages() {
                 document.querySelectorAll(".tabPage").forEach(page => {
