@@ -80,6 +80,14 @@
                             multiplier. Cash out before the chicken is hit.</span></div>
                     <div class="firstLoginGameCard"><b>🎫 Scratch Cards</b><span>Buy a scratch card and reveal the
                             winning symbols.</span></div>
+                    <div class="firstLoginGameCard"><b>📈 HiLo</b><span>Guess whether the next card will be higher or
+                            lower than the current card. Keep guessing to increase your multiplier, or cash out before
+                            you lose.</span></div>
+                    <div class="firstLoginGameCard"><b>🔵 Plinko</b><span>Choose your bet and drop a ball through the
+                            pegs. Where the ball lands determines your multiplier and payout.</span></div>
+                    <div class="firstLoginGameCard"><b>🎟️ Lottery</b><span>Buy lottery tickets for 100M chips each. You
+                            can buy as many tickets as you want, and the more tickets you own, the higher your chance of
+                            winning. The lottery is drawn once every week.</span></div>
                     <div class="firstLoginGameCard"><b>🎁 Daily Spin</b><span>Use your available daily spins for a
                             chance to win free bets,items, or nothing.</span></div>
                     <div class="firstLoginGameCard"><b>🎁 Daily Spin Free Bets</b><span>Free bets won from Daily Spins
@@ -149,7 +157,7 @@
                         <button id="rouletteTabButton" class="tabButton">🎯 Roulette</button>
                         <button id="chickenTabButton" class="tabButton">🐔 Chicken</button>
                         <button id="hiloTabButton" class="tabButton">🎴 Hi-Low</button>
-                        <button id="plinkoTabButton" class="tabButton">🎯 Plinko</button>
+                        <button id="plinkoTabButton" class="tabButton">🔵 Plinko</button>
                         <button id="scratchTabButton" class="tabButton">🎫 Scratch</button>
                         <button id="lotteryTabButton" class="tabButton">🎟️ Lottery</button>
                         <button id="dailySpinTabButton" class="tabButton">🎁 Daily Spin</button>
@@ -945,245 +953,196 @@
                         </div>
                     </div>
                 </div>
-             
-           <div id="plinkoPage" class="tabPage">
 
-    <div class="gameMetaRow">
-        <div class="gameBalanceLine">
-            Balance:
-            <span class="gameChipBalance">0 chips</span>
-        </div>
+                <div id="plinkoPage" class="tabPage">
 
-        <div id="plinkoActiveBallsText" class="autoGameCountdown">
-            No balls dropping
-        </div>
-    </div>
+                    <div class="gameMetaRow">
+                        <div class="gameBalanceLine">
+                            Balance:
+                            <span class="gameChipBalance">0 chips</span>
+                        </div>
 
-    <div class="heroCard plinkoHero">
+                        <div id="plinkoActiveBallsText" class="autoGameCountdown">
+                            No balls dropping
+                        </div>
+                    </div>
 
-        <div class="panelHeader">
-            <div>
-                <div class="panelTitle">🎯 Plinko</div>
-                <div class="panelHint">
-                    Drop as many balls as you want
+                    <div class="heroCard plinkoHero">
+
+                        <div class="panelHeader">
+                            <div>
+                                <div class="panelTitle">🎯 Plinko</div>
+                                <div class="panelHint">
+                                    Drop as many balls as you want
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="plinkoBoard" class="plinkoBoard">
+
+                            <div class="plinkoPegLayer" id="plinkoPegLayer"></div>
+
+                            <div id="plinkoBallLayer" class="plinkoBallLayer"></div>
+
+                            <div id="plinkoSlots" class="plinkoSlots"></div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="panel">
+
+                        <div class="panelHeader">
+                            <div class="panelTitle">
+                                🎯 Drop a Ball
+                            </div>
+
+                            <div class="panelHint">
+                                One bet per ball
+                            </div>
+                        </div>
+
+
+                        <div class="playerIdentityBox">
+
+                            <div class="playerIdentityLabel">
+                                Detected Player
+                            </div>
+
+                            <div class="playerIdentityName" id="plinkoDetectedPlayerName">
+                                Waiting for game data...
+                            </div>
+
+                            <div class="playerIdentityId" id="plinkoDetectedPlayerId">
+                                Waiting for Transport Tycoon game data...
+                            </div>
+
+                        </div>
+
+
+                        <div class="plinkoBetRow">
+
+                            <input id="plinkoBetAmount" type="text" inputmode="decimal" autocomplete="off"
+                                placeholder="Bet per ball, e.g. 30m" />
+
+                            <button id="plinkoDropButton" class="green plinkoDropButton" type="button">
+                                🎯 DROP BALL
+                            </button>
+
+                        </div>
+
+                        <button id="plinkoAutoPlayButton" type="button">
+                            ▶ AUTO PLAY
+                        </button>
+
+                        <div id="plinkoAutoPlayStatus" class="small">
+                            Auto Play is off
+                        </div>
+
+                        <div class="small">
+                            Autoplay drops one ball at the interval selected in Settings.
+                        </div>
+
+
+                        <div class="quickBetGrid">
+
+                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="1000000">
+                                1M
+                            </button>
+
+                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="10000000">
+                                10M
+                            </button>
+
+                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="100000000">
+                                100M
+                            </button>
+
+                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="1000000000">
+                                1B
+                            </button>
+
+                        </div>
+
+
+                        <div id="plinkoStatus" class="small">
+                            Enter your bet and drop a ball.
+                        </div>
+
+
+                        <!-- Clear win/loss result -->
+                        <div id="plinkoLastResult" class="plinkoLastResult">
+
+                            <div class="plinkoLastResultIcon">
+                                🎯
+                            </div>
+
+                            <div class="plinkoLastResultContent">
+
+                                <div id="plinkoLastResultTitle" class="plinkoLastResultTitle">
+                                    Ready
+                                </div>
+
+                                <div id="plinkoLastResultAmount" class="plinkoLastResultAmount">
+                                    Drop a ball to play
+                                </div>
+
+                                <div id="plinkoLastResultDetail" class="plinkoLastResultDetail"></div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="panel">
+
+                        <div class="panelHeader">
+
+                            <div class="panelTitle">
+                                📊 Plinko Payouts
+                            </div>
+
+                            <div class="panelHint">
+                                Based on current bet
+                            </div>
+
+                        </div>
+
+                        <div id="plinkoPaytable" class="plinkoPaytable"></div>
+
+                    </div>
+
+
+                    <div class="panel">
+
+                        <div class="panelHeader">
+
+                            <div class="panelTitle">
+                                🧾 Recent Drops
+                            </div>
+
+                            <div class="panelHint">
+                                Your last 20 balls
+                            </div>
+
+                        </div>
+
+                        <div id="plinkoHistory" class="plinkoHistory">
+
+                            <div class="emptyState">
+                                No balls dropped yet.
+                            </div>
+
+                        </div>
+
+                    </div>
+
                 </div>
-            </div>
-        </div>
-
-        <div id="plinkoBoard" class="plinkoBoard">
-
-            <div
-                class="plinkoPegLayer"
-                id="plinkoPegLayer"
-            ></div>
-
-            <div
-                id="plinkoBallLayer"
-                class="plinkoBallLayer"
-            ></div>
-
-            <div
-                id="plinkoSlots"
-                class="plinkoSlots"
-            ></div>
-
-        </div>
-
-    </div>
 
 
-    <div class="panel">
-
-        <div class="panelHeader">
-            <div class="panelTitle">
-                🎯 Drop a Ball
-            </div>
-
-            <div class="panelHint">
-                One bet per ball
-            </div>
-        </div>
-
-
-        <div class="playerIdentityBox">
-
-            <div class="playerIdentityLabel">
-                Detected Player
-            </div>
-
-            <div
-                class="playerIdentityName"
-                id="plinkoDetectedPlayerName"
-            >
-                Waiting for game data...
-            </div>
-
-            <div
-                class="playerIdentityId"
-                id="plinkoDetectedPlayerId"
-            >
-                Waiting for Transport Tycoon game data...
-            </div>
-
-        </div>
-
-
-        <div class="plinkoBetRow">
-
-            <input
-                id="plinkoBetAmount"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="Bet per ball"
-            />
-
-            <button
-                id="plinkoDropButton"
-                class="green plinkoDropButton"
-                type="button"
-            >
-                🎯 DROP BALL
-            </button>
-
-        </div>
-
-
-        <div class="quickBetGrid">
-
-            <button
-                class="quickBetButton"
-                data-target="plinkoBetAmount"
-                data-amount="1000000"
-            >
-                1M
-            </button>
-
-            <button
-                class="quickBetButton"
-                data-target="plinkoBetAmount"
-                data-amount="10000000"
-            >
-                10M
-            </button>
-
-            <button
-                class="quickBetButton"
-                data-target="plinkoBetAmount"
-                data-amount="100000000"
-            >
-                100M
-            </button>
-
-            <button
-                class="quickBetButton"
-                data-target="plinkoBetAmount"
-                data-amount="1000000000"
-            >
-                1B
-            </button>
-
-        </div>
-
-
-        <div
-            id="plinkoStatus"
-            class="small"
-        >
-            Enter your bet and drop a ball.
-        </div>
-
-
-        <!-- Clear win/loss result -->
-        <div
-            id="plinkoLastResult"
-            class="plinkoLastResult"
-        >
-
-            <div class="plinkoLastResultIcon">
-                🎯
-            </div>
-
-            <div class="plinkoLastResultContent">
-
-                <div
-                    id="plinkoLastResultTitle"
-                    class="plinkoLastResultTitle"
-                >
-                    Ready
-                </div>
-
-                <div
-                    id="plinkoLastResultAmount"
-                    class="plinkoLastResultAmount"
-                >
-                    Drop a ball to play
-                </div>
-
-                <div
-                    id="plinkoLastResultDetail"
-                    class="plinkoLastResultDetail"
-                ></div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <div class="panel">
-
-        <div class="panelHeader">
-
-            <div class="panelTitle">
-                📊 Plinko Payouts
-            </div>
-
-            <div class="panelHint">
-                Based on current bet
-            </div>
-
-        </div>
-
-        <div
-            id="plinkoPaytable"
-            class="plinkoPaytable"
-        ></div>
-
-    </div>
-
-
-    <div class="panel">
-
-        <div class="panelHeader">
-
-            <div class="panelTitle">
-                🧾 Recent Drops
-            </div>
-
-            <div class="panelHint">
-                Your last 20 balls
-            </div>
-
-        </div>
-
-        <div
-            id="plinkoHistory"
-            class="plinkoHistory"
-        >
-
-            <div class="emptyState">
-                No balls dropped yet.
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-           
                 <div id="scratchPage" class="tabPage">
                     <div class="gameMetaRow">
                         <div class="gameBalanceLine">
@@ -1677,7 +1636,8 @@
                             <div class="panelHint">Banker only</div>
                         </div>
                         <input id="dailySpinGrantPlayerId" type="text" inputmode="numeric" placeholder="Player ID" />
-                        <input id="dailySpinGrantAmount" type="number" min="1" max="1000" value="1" placeholder="Number of extra spins" />
+                        <input id="dailySpinGrantAmount" type="number" min="1" max="1000" value="1"
+                            placeholder="Number of extra spins" />
                         <button id="dailySpinGrantButton" class="green">Give Extra Spins</button>
                         <div id="dailySpinGrantStatus" class="small"></div>
                     </div>
@@ -1687,7 +1647,8 @@
                             <div class="panelHint">Server selected</div>
                         </div>
                         <div id="dailySpinPrizeList" class="dailySpinPrizeList"></div>
-                        <div class="small">Chip prizes are credited instantly. In-Game items will be delivered when a Banker is online, We get notified on Discord if you win in game Items</div>
+                        <div class="small">Chip prizes are credited instantly. In-Game items will be delivered when a
+                            Banker is online, We get notified on Discord if you win in game Items</div>
                     </div>
                 </div>
 
@@ -1704,7 +1665,8 @@
                             <div class="settingsOption">
                                 <div class="settingsOptionText">
                                     <div class="settingsOptionTitle">Compact Game View</div>
-                                    <div class="settingsOptionHint">Shows only the tabs, active game and essential controls.</div>
+                                    <div class="settingsOptionHint">Shows only the tabs, active game and essential
+                                        controls.</div>
                                 </div>
                                 <label class="settingsToggle">
                                     <input id="settingCompactMode" type="checkbox" />
@@ -1718,13 +1680,15 @@
                                 </div>
                                 <div class="settingsRangeControl">
                                     <span id="opacityValue">78%</span>
-                                    <input id="opacityInput" type="range" min="5" max="100" value="78" aria-label="Whole UI transparency" />
+                                    <input id="opacityInput" type="range" min="5" max="100" value="78"
+                                        aria-label="Whole UI transparency" />
                                 </div>
                             </div>
                             <div class="settingsOption">
                                 <div class="settingsOptionText">
                                     <div class="settingsOptionTitle">Casino Sounds</div>
-                                    <div class="settingsOptionHint">Enables slot payout sounds and free-spin bonus sounds.</div>
+                                    <div class="settingsOptionHint">Enables slot payout sounds and free-spin bonus
+                                        sounds.</div>
                                 </div>
                                 <label class="settingsToggle">
                                     <input id="settingSoundsEnabled" type="checkbox" checked />
@@ -1741,15 +1705,31 @@
                                     <span class="settingsToggleSlider"></span>
                                 </label>
                             </div>
+                            <div class="settingsOption settingsOptionRange">
+                                <div class="settingsOptionText">
+                                    <div class="settingsOptionTitle">Plinko Auto Play Speed</div>
+                                    <div class="settingsOptionHint">Choose how often Plinko drops another ball while
+                                        Auto Play is running.</div>
+                                </div>
+                                <div class="settingsRangeControl">
+                                    <span id="plinkoAutoIntervalValue">5.0s</span>
+                                    <input id="plinkoAutoIntervalInput" type="range" min="1000" max="30000" step="500"
+                                        value="5000" aria-label="Plinko Auto Play interval" />
+                                </div>
+                            </div>
+
                             <div class="settingsOption">
                                 <div class="settingsOptionText">
                                     <div class="settingsOptionTitle">Hi-Low Card Display</div>
-                                    <div class="settingsOptionHint">Show cards as plain numbers, or as Jack/Queen/King/Ace.</div>
+                                    <div class="settingsOptionHint">Show cards as plain numbers, or as
+                                        Jack/Queen/King/Ace.</div>
                                 </div>
                             </div>
                             <div class="quickBetGrid" style="grid-template-columns: 1fr 1fr; margin-top: -6px;">
-                                <button id="hiloStyleNumbersButton" class="quickBetButton" type="button">Numbers</button>
-                                <button id="hiloStyleNamesButton" class="quickBetButton" type="button">Card Names</button>
+                                <button id="hiloStyleNumbersButton" class="quickBetButton"
+                                    type="button">Numbers</button>
+                                <button id="hiloStyleNamesButton" class="quickBetButton" type="button">Card
+                                    Names</button>
                             </div>
                             <div class="settingsOption">
                                 <div class="settingsOptionText">
@@ -1762,7 +1742,8 @@
                                 </label>
                             </div>
                         </div>
-                        <div class="settingsSavedNote">Jelly Beans Requested to disable this, 'Confetti is like snow blocking my screen' Blah Blah Blah</div>
+                        <div class="settingsSavedNote">Jelly Beans Requested to disable this, 'Confetti is like snow
+                            blocking my screen' Blah Blah Blah</div>
                         <div class="panel" style="margin-top:14px;">
                             <div class="panelHeader">
                                 <div class="panelTitle">🔄 Reload App</div>
@@ -1860,7 +1841,8 @@
             confetti: true,
             media: true,
             compactMode: false,
-            hiloCardStyle: "numbers"
+            hiloCardStyle: "numbers",
+            plinkoAutoIntervalMs: 5000
         };
 
         let userSettings = loadUserSettings();
@@ -1897,7 +1879,11 @@
                     hiloCardStyle:
                         saved.hiloCardStyle === "names" || saved.hiloCardStyle === "numbers"
                             ? saved.hiloCardStyle
-                            : DEFAULT_USER_SETTINGS.hiloCardStyle
+                            : DEFAULT_USER_SETTINGS.hiloCardStyle,
+                    plinkoAutoIntervalMs:
+                        Number.isFinite(Number(saved.plinkoAutoIntervalMs))
+                            ? Math.max(1000, Math.min(30000, Math.round(Number(saved.plinkoAutoIntervalMs) / 500) * 500))
+                            : DEFAULT_USER_SETTINGS.plinkoAutoIntervalMs
                 };
             } catch (error) {
                 console.error("Could not load casino user settings:", error);
@@ -2064,6 +2050,21 @@
             if (mediaToggle) mediaToggle.checked = userSettings.media;
             if (compactToggle) compactToggle.checked = userSettings.compactMode;
 
+            const plinkoIntervalInput = document.getElementById("plinkoAutoIntervalInput");
+            const plinkoIntervalValue = document.getElementById("plinkoAutoIntervalValue");
+            const plinkoIntervalMs = Math.max(
+                1000,
+                Math.min(30000, Number(userSettings.plinkoAutoIntervalMs) || DEFAULT_USER_SETTINGS.plinkoAutoIntervalMs)
+            );
+
+            if (plinkoIntervalInput) {
+                plinkoIntervalInput.value = String(plinkoIntervalMs);
+            }
+
+            if (plinkoIntervalValue) {
+                plinkoIntervalValue.textContent = `${(plinkoIntervalMs / 1000).toFixed(1)}s`;
+            }
+
             const numbersButton = document.getElementById("hiloStyleNumbersButton");
             const namesButton = document.getElementById("hiloStyleNamesButton");
 
@@ -2105,6 +2106,29 @@
                     applyUserSettingsToUI();
                 });
             });
+
+            const plinkoIntervalInput = document.getElementById("plinkoAutoIntervalInput");
+            if (plinkoIntervalInput && plinkoIntervalInput.dataset.settingsBound !== "true") {
+                plinkoIntervalInput.dataset.settingsBound = "true";
+                plinkoIntervalInput.addEventListener("input", () => {
+                    const value = Math.max(
+                        1000,
+                        Math.min(30000, Math.round(Number(plinkoIntervalInput.value || 2000) / 500) * 500)
+                    );
+
+                    userSettings.plinkoAutoIntervalMs = value;
+                    saveUserSettings();
+
+                    const valueLabel = document.getElementById("plinkoAutoIntervalValue");
+                    if (valueLabel) {
+                        valueLabel.textContent = `${(value / 1000).toFixed(1)}s`;
+                    }
+
+                    if (typeof schedulePlinkoAutoDrop === "function" && plinkoAutoPlayActive) {
+                        schedulePlinkoAutoDrop();
+                    }
+                });
+            }
 
             bindHiloStyleControls();
             applyUserSettingsToUI();
@@ -2976,74 +3000,76 @@
 
         let plinkoBusy = 0;
         let plinkoBallSequence = 0;
+        let plinkoAutoPlayActive = false;
+        let plinkoAutoPlayTimer = null;
 
-    function buildPlinkoBoard() {
-    const pegLayer = $("plinkoPegLayer");
-    const slots = $("plinkoSlots");
+        function buildPlinkoBoard() {
+            const pegLayer = $("plinkoPegLayer");
+            const slots = $("plinkoSlots");
 
-    if (!pegLayer || !slots) return;
+            if (!pegLayer || !slots) return;
 
-    if (pegLayer.dataset.built === "true") {
-        return;
-    }
+            if (pegLayer.dataset.built === "true") {
+                return;
+            }
 
-    pegLayer.innerHTML = "";
-    slots.innerHTML = "";
+            pegLayer.innerHTML = "";
+            slots.innerHTML = "";
 
-    const rows = 11;
-    const bottomPegCount = PLINKO_MULTIPLIERS.length + 1; 
-    const pegSpacing = 100 / (bottomPegCount + 1);
+            const rows = 11;
+            const bottomPegCount = PLINKO_MULTIPLIERS.length + 1;
+            const pegSpacing = 100 / (bottomPegCount + 1);
 
-    for (let row = 0; row < rows; row++) {
-        const pegCount = row + 2; 
-        const y = 8 + row * 7.4;
+            for (let row = 0; row < rows; row++) {
+                const pegCount = row + 2;
+                const y = 8 + row * 7.4;
 
-        
-        const rowWidth = (pegCount - 1) * pegSpacing;
-        const startX = 50 - rowWidth / 2;
 
-        for (let col = 0; col < pegCount; col++) {
-            const x = startX + col * pegSpacing;
+                const rowWidth = (pegCount - 1) * pegSpacing;
+                const startX = 50 - rowWidth / 2;
 
-            const peg = document.createElement("div");
-            peg.className = "plinkoPeg";
-            peg.style.left = `${x}%`;
-            peg.style.top = `${y}%`;
-            pegLayer.appendChild(peg);
+                for (let col = 0; col < pegCount; col++) {
+                    const x = startX + col * pegSpacing;
+
+                    const peg = document.createElement("div");
+                    peg.className = "plinkoPeg";
+                    peg.style.left = `${x}%`;
+                    peg.style.top = `${y}%`;
+                    pegLayer.appendChild(peg);
+                }
+            }
+
+            PLINKO_MULTIPLIERS.forEach(
+                multiplier => {
+
+                    const slot =
+                        document.createElement("div");
+
+                    slot.className =
+                        "plinkoSlot " +
+                        (
+                            multiplier > 1
+                                ? "positive"
+                                : multiplier === 1
+                                    ? "neutral"
+                                    : "negative"
+                        );
+
+                    slot.textContent =
+                        `${multiplier}×`;
+
+                    slots.appendChild(slot);
+                }
+            );
+
+            slots.dataset.built = "true";
+            pegLayer.dataset.built = "true";
         }
-    }
 
-    PLINKO_MULTIPLIERS.forEach(
-        multiplier => {
 
-            const slot =
-                document.createElement("div");
-
-            slot.className =
-                "plinkoSlot " +
-                (
-                    multiplier > 1
-                        ? "positive"
-                        : multiplier === 1
-                            ? "neutral"
-                            : "negative"
-                );
-
-            slot.textContent =
-                `${multiplier}×`;
-
-            slots.appendChild(slot);
+        function renderPlinkoPaytable() {
+            updatePlinkoPaytable();
         }
-    );
-
-    slots.dataset.built = "true";
-    pegLayer.dataset.built = "true";
-}
-
-
- function renderPlinkoPaytable() {
-    updatePlinkoPaytable();
-}
 
 
         function renderPlinkoHistory(history) {
@@ -3131,12 +3157,12 @@
         }
 
 
-       function animatePlinkoBall(
-    slotIndex,
-    multiplier,
-    ballId,
-    onComplete
-) {
+        function animatePlinkoBall(
+            slotIndex,
+            multiplier,
+            ballId,
+            onComplete
+        ) {
 
             const board =
                 $("plinkoBoard");
@@ -3153,19 +3179,19 @@
                 return;
             }
 
-           const ball =
-    document.createElement("div");
+            const ball =
+                document.createElement("div");
 
-ball.className =
-    "plinkoBall";
+            ball.className =
+                "plinkoBall";
 
-ball.dataset.ballId =
-    String(ballId);
+            ball.dataset.ballId =
+                String(ballId);
 
 
-const ballColour = getRandomPlinkoColour();
+            const ballColour = getRandomPlinkoColour();
 
-ball.style.background = `
+            ball.style.background = `
     radial-gradient(
         circle at 30% 26%,
         #ffffff 0%,
@@ -3175,18 +3201,18 @@ ball.style.background = `
     )
 `;
 
-ball.style.boxShadow = `
+            ball.style.boxShadow = `
     0 3px 9px rgba(0, 0, 0, .7),
     0 0 12px ${ballColour.glow},
     inset 0 -2px 2px rgba(0, 0, 0, .25)
 `;
 
-ball.style.setProperty(
-    '--plinko-ball-glow',
-    ballColour.glow
-);
+            ball.style.setProperty(
+                '--plinko-ball-glow',
+                ballColour.glow
+            );
 
-layer.appendChild(ball);
+            layer.appendChild(ball);
 
             const boardWidth =
                 board.clientWidth;
@@ -3287,36 +3313,36 @@ layer.appendChild(ball);
                     return;
                 }
 
-     if (index >= points.length) {
-    ball.classList.toggle(
-        "win",
-        multiplier >= 1
-    );
+                if (index >= points.length) {
+                    ball.classList.toggle(
+                        "win",
+                        multiplier >= 1
+                    );
 
-    ball.classList.toggle(
-        "loss",
-        multiplier < 1
-    );
+                    ball.classList.toggle(
+                        "loss",
+                        multiplier < 1
+                    );
 
- 
-    if (typeof onComplete === "function") {
-        onComplete();
-    }
 
-    setTimeout(() => {
-        ball.remove();
+                    if (typeof onComplete === "function") {
+                        onComplete();
+                    }
 
-        plinkoBusy =
-            Math.max(
-                0,
-                plinkoBusy - 1
-            );
+                    setTimeout(() => {
+                        ball.remove();
 
-        renderPlinkoActiveCount();
-    }, 700);
+                        plinkoBusy =
+                            Math.max(
+                                0,
+                                plinkoBusy - 1
+                            );
 
-    return;
-}
+                        renderPlinkoActiveCount();
+                    }, 700);
+
+                    return;
+                }
 
                 const point =
                     points[index++];
@@ -3359,6 +3385,151 @@ layer.appendChild(ball);
         }
 
 
+        function getPlinkoAutoIntervalMs() {
+            return Math.max(
+                1000,
+                Math.min(
+                    30000,
+                    Number(userSettings.plinkoAutoIntervalMs) || DEFAULT_USER_SETTINGS.plinkoAutoIntervalMs
+                )
+            );
+        }
+
+        function updatePlinkoAutoPlayButton() {
+            const button = $("plinkoAutoPlayButton");
+            const status = $("plinkoAutoPlayStatus");
+
+            if (button) {
+                button.classList.toggle("active", plinkoAutoPlayActive);
+                button.textContent = plinkoAutoPlayActive
+                    ? "■ STOP AUTO PLAY"
+                    : "▶ AUTO PLAY";
+            }
+
+            if (status) {
+                status.textContent = plinkoAutoPlayActive
+                    ? `Auto Play is ON • drops every ${(getPlinkoAutoIntervalMs() / 1000).toFixed(1)}s`
+                    : "Auto Play is off";
+            }
+        }
+
+        function stopPlinkoAutoPlay(message = "") {
+            plinkoAutoPlayActive = false;
+
+            if (plinkoAutoPlayTimer) {
+                clearTimeout(plinkoAutoPlayTimer);
+                plinkoAutoPlayTimer = null;
+            }
+
+            updatePlinkoAutoPlayButton();
+
+            if (message) {
+                setStatus(message, 2500);
+            }
+        }
+
+        function schedulePlinkoAutoDrop() {
+            if (plinkoAutoPlayTimer) {
+                clearTimeout(plinkoAutoPlayTimer);
+                plinkoAutoPlayTimer = null;
+            }
+
+            if (!plinkoAutoPlayActive) {
+                updatePlinkoAutoPlayButton();
+                return;
+            }
+
+            plinkoAutoPlayTimer = setTimeout(async () => {
+                plinkoAutoPlayTimer = null;
+
+                if (!plinkoAutoPlayActive) return;
+
+                const playerId = String(autoUserId || "").trim();
+                const playerName = String(autoName || "").trim();
+                const amount = Math.floor(
+                    parseMoneyInput($("plinkoBetAmount")?.value || "")
+                );
+
+                if (!playerId || !playerName) {
+                    stopPlinkoAutoPlay("AUTO PLAY STOPPED: NO GAME DATA");
+                    return;
+                }
+
+                if (!amount || amount < 1) {
+                    stopPlinkoAutoPlay("AUTO PLAY STOPPED: ENTER A PLINKO BET");
+                    return;
+                }
+
+                if (amount > getMyChipBalance()) {
+                    stopPlinkoAutoPlay("AUTO PLAY STOPPED: NOT ENOUGH CHIPS");
+                    return;
+                }
+
+                const started = await dropPlinkoBall();
+
+                if (!plinkoAutoPlayActive) return;
+
+                if (!started) {
+                    stopPlinkoAutoPlay("AUTO PLAY STOPPED");
+                    return;
+                }
+
+                schedulePlinkoAutoDrop();
+            }, getPlinkoAutoIntervalMs());
+
+            updatePlinkoAutoPlayButton();
+        }
+
+        function togglePlinkoAutoPlay() {
+            if (plinkoAutoPlayActive) {
+                stopPlinkoAutoPlay("PLINKO AUTO PLAY STOPPED");
+                return;
+            }
+
+            const playerId = String(autoUserId || "").trim();
+            const playerName = String(autoName || "").trim();
+            const amount = Math.floor(
+                parseMoneyInput($("plinkoBetAmount")?.value || "")
+            );
+
+            if (!playerId || !playerName) {
+                setStatus("NO GAME DATA", 2200);
+                return;
+            }
+
+            if (!amount || amount < 1) {
+                setStatus("ENTER A VALID PLINKO BET", 2200);
+                return;
+            }
+
+            if (amount > getMyChipBalance()) {
+                setStatus("NOT ENOUGH CHIPS", 2200);
+                return;
+            }
+
+            plinkoAutoPlayActive = true;
+            updatePlinkoAutoPlayButton();
+
+            setStatus(
+                `PLINKO AUTO PLAY STARTED • EVERY ${(getPlinkoAutoIntervalMs() / 1000).toFixed(1)}s`,
+                1800
+            );
+
+            const started = dropPlinkoBall();
+
+            Promise.resolve(started).then(ok => {
+                if (!plinkoAutoPlayActive) return;
+
+                if (!ok) {
+                    stopPlinkoAutoPlay("AUTO PLAY STOPPED");
+                    return;
+                }
+
+                schedulePlinkoAutoDrop();
+            });
+        }
+
+
         async function dropPlinkoBall() {
 
             const playerId =
@@ -3395,7 +3566,7 @@ layer.appendChild(ball);
                     2200
                 );
 
-                return;
+                return false;
             }
 
             if (!amount || amount < 1) {
@@ -3405,7 +3576,7 @@ layer.appendChild(ball);
                     2200
                 );
 
-                return;
+                return false;
             }
 
             if (
@@ -3418,7 +3589,7 @@ layer.appendChild(ball);
                     2200
                 );
 
-                return;
+                return false;
             }
 
             if (
@@ -3429,7 +3600,7 @@ layer.appendChild(ball);
                     2200
                 );
 
-                return;
+                return false;
             }
 
             const button =
@@ -3490,41 +3661,43 @@ layer.appendChild(ball);
                     );
 
 
-    state =
-    json.state || state;
+                state =
+                    json.state || state;
 
-const completedHistory =
-    json.state?.plinko?.history ||
-    state.plinko?.history ||
-    [];
+                const completedHistory =
+                    json.state?.plinko?.history ||
+                    state.plinko?.history ||
+                    [];
 
-animatePlinkoBall(
-    slotIndex,
-    multiplier,
-    plinkoBallSequence,
-    () => {
-        showPlinkoResult(
-            result,
-            amount
-        );
-        renderPlinkoHistory(
-            completedHistory
-        );
-        render();
-        const payout =
-            Number(
-                result.payout || 0
-            );
-        const profit =
-            payout - amount;
-        if ($("plinkoStatus")) {
-            $("plinkoStatus").textContent =
-                `${multiplier.toFixed(2)}× • ` +
-                `Payout ${shortMoney(payout)} • ` +
-                `${profit >= 0 ? "+" : ""}${shortMoney(profit)}`;
-        }
-    }
-);
+                animatePlinkoBall(
+                    slotIndex,
+                    multiplier,
+                    plinkoBallSequence,
+                    () => {
+                        showPlinkoResult(
+                            result,
+                            amount
+                        );
+                        renderPlinkoHistory(
+                            completedHistory
+                        );
+                        render();
+                        const payout =
+                            Number(
+                                result.payout || 0
+                            );
+                        const profit =
+                            payout - amount;
+                        if ($("plinkoStatus")) {
+                            $("plinkoStatus").textContent =
+                                `${multiplier.toFixed(2)}× • ` +
+                                `Payout ${shortMoney(payout)} • ` +
+                                `${profit >= 0 ? "+" : ""}${shortMoney(profit)}`;
+                        }
+                    }
+                );
+
+                return true;
 
             } catch (error) {
 
@@ -3545,6 +3718,8 @@ animatePlinkoBall(
                     ),
                     3000
                 );
+
+                return false;
             }
         }
 
@@ -3594,54 +3769,69 @@ animatePlinkoBall(
         }
 
 
-       function bindPlinkoControls() {
+        function bindPlinkoControls() {
 
-    const button =
-        $("plinkoDropButton");
+            const button =
+                $("plinkoDropButton");
 
-    if (
-        !button ||
-        button.dataset.bound === "true"
-    ) {
-        return;
-    }
+            if (
+                !button ||
+                button.dataset.bound === "true"
+            ) {
+                return;
+            }
 
-    button.dataset.bound =
-        "true";
+            button.dataset.bound =
+                "true";
 
-    button.addEventListener(
-        "click",
-        () => {
-            dropPlinkoBall();
+            button.addEventListener(
+                "click",
+                () => {
+                    dropPlinkoBall();
+                }
+            );
+
+
+
+            const autoPlayButton = $("plinkoAutoPlayButton");
+            if (
+                autoPlayButton &&
+                autoPlayButton.dataset.bound !== "true"
+            ) {
+                autoPlayButton.dataset.bound = "true";
+                autoPlayButton.addEventListener(
+                    "click",
+                    togglePlinkoAutoPlay
+                );
+            }
+
+            updatePlinkoAutoPlayButton();
+
+
+            const betInput =
+                $("plinkoBetAmount");
+
+            if (
+                betInput &&
+                betInput.dataset.paytableBound !== "true"
+            ) {
+                betInput.dataset.paytableBound =
+                    "true";
+
+                betInput.addEventListener(
+                    "input",
+                    updatePlinkoPaytable
+                );
+
+                betInput.addEventListener(
+                    "change",
+                    updatePlinkoPaytable
+                );
+            }
+
+
+            renderPlinko();
         }
-    );
-
-
-  
-    const betInput =
-        $("plinkoBetAmount");
-
-    if (
-        betInput &&
-        betInput.dataset.paytableBound !== "true"
-    ) {
-        betInput.dataset.paytableBound =
-            "true";
-
-        betInput.addEventListener(
-            "input",
-            updatePlinkoPaytable
-        );
-
-        betInput.addEventListener(
-            "change",
-            updatePlinkoPaytable
-        );
-    }
-
-
-    renderPlinko();
-}
 
         function pokeCasinoPolling() {
             markCasinoUserActivity();
@@ -9599,103 +9789,103 @@ animatePlinkoBall(
         }
         function showPlinkoResult(result, betAmount) {
 
-    const box =
-        $("plinkoLastResult");
+            const box =
+                $("plinkoLastResult");
 
-    const title =
-        $("plinkoLastResultTitle");
+            const title =
+                $("plinkoLastResultTitle");
 
-    const amount =
-        $("plinkoLastResultAmount");
+            const amount =
+                $("plinkoLastResultAmount");
 
-    const detail =
-        $("plinkoLastResultDetail");
+            const detail =
+                $("plinkoLastResultDetail");
 
-    if (
-        !box ||
-        !title ||
-        !amount ||
-        !detail
-    ) {
-        return;
-    }
+            if (
+                !box ||
+                !title ||
+                !amount ||
+                !detail
+            ) {
+                return;
+            }
 
-    const multiplier =
-        Number(
-            result?.multiplier || 0
-        );
+            const multiplier =
+                Number(
+                    result?.multiplier || 0
+                );
 
-    const payout =
-        Number(
-            result?.payout || 0
-        );
+            const payout =
+                Number(
+                    result?.payout || 0
+                );
 
-    const bet =
-        Number(
-            result?.betAmount ||
-            betAmount ||
-            0
-        );
+            const bet =
+                Number(
+                    result?.betAmount ||
+                    betAmount ||
+                    0
+                );
 
-    const profit =
-        payout - bet;
+            const profit =
+                payout - bet;
 
-    box.classList.remove(
-        "win",
-        "loss",
-        "neutral",
-        "pop"
-    );
+            box.classList.remove(
+                "win",
+                "loss",
+                "neutral",
+                "pop"
+            );
 
-    void box.offsetWidth;
+            void box.offsetWidth;
 
-    box.classList.add("pop");
+            box.classList.add("pop");
 
-    if (profit > 0) {
+            if (profit > 0) {
 
-        box.classList.add("win");
+                box.classList.add("win");
 
-        title.textContent =
-            "🎉 YOU WON";
+                title.textContent =
+                    "🎉 YOU WON";
 
-        amount.textContent =
-            `+${shortMoney(profit)} PROFIT`;
+                amount.textContent =
+                    `+${shortMoney(profit)} PROFIT`;
 
-        detail.textContent =
-            `${multiplier.toFixed(2)}× • ` +
-            `Bet ${shortMoney(bet)} • ` +
-            `Payout ${shortMoney(payout)}`;
+                detail.textContent =
+                    `${multiplier.toFixed(2)}× • ` +
+                    `Bet ${shortMoney(bet)} • ` +
+                    `Payout ${shortMoney(payout)}`;
 
-    } else if (profit < 0) {
+            } else if (profit < 0) {
 
-        box.classList.add("loss");
+                box.classList.add("loss");
 
-        title.textContent =
-            "BALL DROPPED";
+                title.textContent =
+                    "BALL DROPPED";
 
-        amount.textContent =
-            `${shortMoney(profit)} LOSS`;
+                amount.textContent =
+                    `${shortMoney(profit)} LOSS`;
 
-        detail.textContent =
-            `${multiplier.toFixed(2)}× • ` +
-            `Bet ${shortMoney(bet)} • ` +
-            `Payout ${shortMoney(payout)}`;
+                detail.textContent =
+                    `${multiplier.toFixed(2)}× • ` +
+                    `Bet ${shortMoney(bet)} • ` +
+                    `Payout ${shortMoney(payout)}`;
 
-    } else {
+            } else {
 
-        box.classList.add("neutral");
+                box.classList.add("neutral");
 
-        title.textContent =
-            "BET RETURNED";
+                title.textContent =
+                    "BET RETURNED";
 
-        amount.textContent =
-            "0 PROFIT";
+                amount.textContent =
+                    "0 PROFIT";
 
-        detail.textContent =
-            `${multiplier.toFixed(2)}× • ` +
-            `${shortMoney(bet)} returned`;
-    }
-}
+                detail.textContent =
+                    `${multiplier.toFixed(2)}× • ` +
+                    `${shortMoney(bet)} returned`;
+            }
+        }
 
         function render() {
             registerCasinoPlayer().catch(error => {
@@ -10131,38 +10321,38 @@ animatePlinkoBall(
             }
             updateBankerUI()
         }
-       function setBetAmount(inputId, amount) {
-    const input = $(inputId);
+        function setBetAmount(inputId, amount) {
+            const input = $(inputId);
 
-    if (!input) return;
+            if (!input) return;
 
-    input.value = String(amount);
+            input.value = String(amount);
 
-    document
-        .querySelectorAll(
-            `.quickBetButton[data-target="${inputId}"]`
-        )
-        .forEach(
-            b =>
-                b.classList.toggle(
-                    'selected',
-                    Number(b.dataset.amount) === Number(amount)
+            document
+                .querySelectorAll(
+                    `.quickBetButton[data-target="${inputId}"]`
                 )
-        );
+                .forEach(
+                    b =>
+                        b.classList.toggle(
+                            'selected',
+                            Number(b.dataset.amount) === Number(amount)
+                        )
+                );
 
- 
-    input.dispatchEvent(
-        new Event("input", {
-            bubbles: true
-        })
-    );
 
-    input.dispatchEvent(
-        new Event("change", {
-            bubbles: true
-        })
-    );
-}
+            input.dispatchEvent(
+                new Event("input", {
+                    bubbles: true
+                })
+            );
+
+            input.dispatchEvent(
+                new Event("change", {
+                    bubbles: true
+                })
+            );
+        }
         function applyOpacity(v) {
             const percentage = Math.max(5, Math.min(100, Number(v) || 78));
             const opacity = percentage / 100;
@@ -10301,27 +10491,27 @@ animatePlinkoBall(
                     $('overlay').style.width = s.width + 'px';
                 if (s.height !== undefined)
                     $('overlay').style.height = s.height + 'px';
-               
+
                 updateresizeHandlePosition();
             } catch (e) { }
         }
 
-function updateresizeHandlePosition() {
-    const handle = $("resizeHandle");
-    const overlay = $("overlay");
+        function updateresizeHandlePosition() {
+            const handle = $("resizeHandle");
+            const overlay = $("overlay");
 
-    if (!handle || !overlay) return;
+            if (!handle || !overlay) return;
 
-   
-    const rect = overlay.getBoundingClientRect();
-    
-   
-    handle.style.position = "fixed";
-    handle.style.left = (rect.right - 22 + 2) + "px";
-    handle.style.top = (rect.bottom - 22 + 2) + "px";
-    handle.style.right = "auto";
-    handle.style.bottom = "auto";
-}
+
+            const rect = overlay.getBoundingClientRect();
+
+
+            handle.style.position = "fixed";
+            handle.style.left = (rect.right - 22 + 2) + "px";
+            handle.style.top = (rect.bottom - 22 + 2) + "px";
+            handle.style.right = "auto";
+            handle.style.bottom = "auto";
+        }
         function syncOverlayContentHeight() {
             const content = $('overlayContent');
 
@@ -10334,10 +10524,10 @@ function updateresizeHandlePosition() {
             const overlay = $('overlay')
                 , header = $('dragHeader')
                 , handle = $('resizeHandle');
-            
-       
+
+
             updateresizeHandlePosition();
-            
+
             let dragging = false
                 , resizing = false
                 , startX = 0
@@ -10418,84 +10608,84 @@ function updateresizeHandlePosition() {
             );
             updateBankerUI();
         }
-    function setTab(tab) {
+        function setTab(tab) {
 
-    const overlayContent =
-        document.getElementById("overlayContent");
+            const overlayContent =
+                document.getElementById("overlayContent");
 
-  
-    if (overlayContent) {
-        overlayContent.scrollTop = 0;
-    }
 
-    const pages = {
-        wheel: "wheelPage",
-        blackjack: "blackjackPage",
-        racing: "racingPage",
-        slots: "slotsPage",
-        mines: "minesPage",
-        deal: "dealPage",
-        roulette: "roulettePage",
-        chicken: "chickenPage",
-        scratch: "scratchPage",
-        lottery: "lotteryPage",
-        dailySpin: "dailySpinPage",
-        chips: "chipsPage",
-        plinko: "plinkoPage",
-        userSettings: "userSettingsPage",
-        hilo: "hiloPage",
-    };
+            if (overlayContent) {
+                overlayContent.scrollTop = 0;
+            }
 
-    const tabButtons = {
-        wheel: "wheelTabButton",
-        blackjack: "blackjackTabButton",
-        racing: "racingTabButton",
-        slots: "slotsTabButton",
-        mines: "MinesTabButton",
-        deal: "dealTabButton",
-        roulette: "rouletteTabButton",
-        chicken: "chickenTabButton",
-        plinko: "plinkoTabButton",
-        scratch: "scratchTabButton",
-        lottery: "lotteryTabButton",
-        dailySpin: "dailySpinTabButton",
-        chips: "chipsTabButton",
-        userSettings: "userSettingsTabButton",
-        hilo: "hiloTabButton",
-    };
+            const pages = {
+                wheel: "wheelPage",
+                blackjack: "blackjackPage",
+                racing: "racingPage",
+                slots: "slotsPage",
+                mines: "minesPage",
+                deal: "dealPage",
+                roulette: "roulettePage",
+                chicken: "chickenPage",
+                scratch: "scratchPage",
+                lottery: "lotteryPage",
+                dailySpin: "dailySpinPage",
+                chips: "chipsPage",
+                plinko: "plinkoPage",
+                userSettings: "userSettingsPage",
+                hilo: "hiloPage",
+            };
 
-    Object.entries(pages).forEach(([name, id]) => {
-        $(id)?.classList.toggle("active", tab === name);
-    });
+            const tabButtons = {
+                wheel: "wheelTabButton",
+                blackjack: "blackjackTabButton",
+                racing: "racingTabButton",
+                slots: "slotsTabButton",
+                mines: "MinesTabButton",
+                deal: "dealTabButton",
+                roulette: "rouletteTabButton",
+                chicken: "chickenTabButton",
+                plinko: "plinkoTabButton",
+                scratch: "scratchTabButton",
+                lottery: "lotteryTabButton",
+                dailySpin: "dailySpinTabButton",
+                chips: "chipsTabButton",
+                userSettings: "userSettingsTabButton",
+                hilo: "hiloTabButton",
+            };
 
-    Object.entries(tabButtons).forEach(([name, id]) => {
-        $(id)?.classList.toggle("active", tab === name);
-    });
+            Object.entries(pages).forEach(([name, id]) => {
+                $(id)?.classList.toggle("active", tab === name);
+            });
 
-    if (tab === "chicken") {
-        requestAnimationFrame(() =>
-            positionChicken(chickenLastRenderedStep, false)
-        );
-    }
+            Object.entries(tabButtons).forEach(([name, id]) => {
+                $(id)?.classList.toggle("active", tab === name);
+            });
 
-  
-    requestAnimationFrame(() => {
-        const activeButton =
-            document.querySelector(".tabButton.active");
+            if (tab === "chicken") {
+                requestAnimationFrame(() =>
+                    positionChicken(chickenLastRenderedStep, false)
+                );
+            }
 
-        if (activeButton) {
-            positionTabIndicator(activeButton);
+
+            requestAnimationFrame(() => {
+                const activeButton =
+                    document.querySelector(".tabButton.active");
+
+                if (activeButton) {
+                    positionTabIndicator(activeButton);
+                }
+
+                if (typeof updateArrows === "function") {
+                    updateArrows();
+                }
+
+                if (typeof syncOverlayContentHeight === "function") {
+                    syncOverlayContentHeight();
+                }
+            });
         }
-
-        if (typeof updateArrows === "function") {
-            updateArrows();
-        }
-
-        if (typeof syncOverlayContentHeight === "function") {
-            syncOverlayContentHeight();
-        }
-    });
-}
 
         const buttons = document.querySelectorAll(".tabButton");
         const indicator = document.querySelector(".tabIndicator");
@@ -10586,32 +10776,32 @@ function updateresizeHandlePosition() {
                 `translateX(${left}px)`;
         }
 
- function MoveIndicator(button) {
-    if (!button || !indicator || !scroller) return;
+        function MoveIndicator(button) {
+            if (!button || !indicator || !scroller) return;
 
-  
 
-    const buttonLeft = button.offsetLeft;
-    const buttonWidth = button.offsetWidth;
 
-    const targetScroll =
-        buttonLeft -
-        (scroller.clientWidth - buttonWidth) / 2;
+            const buttonLeft = button.offsetLeft;
+            const buttonWidth = button.offsetWidth;
 
-    scroller.scrollTo({
-        left: Math.max(0, targetScroll),
-        behavior: "smooth"
-    });
+            const targetScroll =
+                buttonLeft -
+                (scroller.clientWidth - buttonWidth) / 2;
 
-    requestAnimationFrame(() => {
-        positionTabIndicator(button);
-    });
+            scroller.scrollTo({
+                left: Math.max(0, targetScroll),
+                behavior: "smooth"
+            });
 
-    setTimeout(() => {
-        positionTabIndicator(button);
-        updateArrows();
-    }, 220);
-}
+            requestAnimationFrame(() => {
+                positionTabIndicator(button);
+            });
+
+            setTimeout(() => {
+                positionTabIndicator(button);
+                updateArrows();
+            }, 220);
+        }
         let shownResultIds = new Set();
         let roundPopupTimer = null;
 
@@ -10688,48 +10878,48 @@ function updateresizeHandlePosition() {
             };
         }
         function updatePlinkoPaytable() {
-    const box = $("plinkoPaytable");
-    const input = $("plinkoBetAmount");
+            const box = $("plinkoPaytable");
+            const input = $("plinkoBetAmount");
 
-    if (!box) return;
+            if (!box) return;
 
-    const amount = Math.floor(
-        parseMoneyInput(
-            input?.value || ""
-        )
-    );
+            const amount = Math.floor(
+                parseMoneyInput(
+                    input?.value || ""
+                )
+            );
 
-    box.innerHTML = PLINKO_MULTIPLIERS
-        .map(multiplier => {
+            box.innerHTML = PLINKO_MULTIPLIERS
+                .map(multiplier => {
 
-            const payout =
-                amount > 0
-                    ? Math.floor(
-                        amount * multiplier
-                    )
-                    : 0;
+                    const payout =
+                        amount > 0
+                            ? Math.floor(
+                                amount * multiplier
+                            )
+                            : 0;
 
-            const payoutText =
-                amount > 0
-                    ? shortMoney(payout)
-                    : "—";
+                    const payoutText =
+                        amount > 0
+                            ? shortMoney(payout)
+                            : "—";
 
-            const className =
-                multiplier > 1
-                    ? "positive"
-                    : multiplier === 1
-                        ? "neutral"
-                        : "negative";
+                    const className =
+                        multiplier > 1
+                            ? "positive"
+                            : multiplier === 1
+                                ? "neutral"
+                                : "negative";
 
-            return `
+                    return `
                 <div class="plinkoPaytableItem ${className}">
                     <strong>${multiplier.toFixed(2)}×</strong>
                     <span>${payoutText}</span>
                 </div>
             `;
-        })
-        .join("");
-}
+                })
+                .join("");
+        }
 
         function renderRewardBanner(elementId, count, label) {
             const el = $(elementId);
@@ -11276,51 +11466,51 @@ function updateresizeHandlePosition() {
             }
         }
         function getRandomPlinkoColour() {
-    const colours = [
-        {
-            main: '#ff4d6d',
-            dark: '#a4133c',
-            glow: 'rgba(255, 77, 109, .55)'
-        },
-        {
-            main: '#4dabf7',
-            dark: '#1864ab',
-            glow: 'rgba(77, 171, 247, .55)'
-        },
-        {
-            main: '#51cf66',
-            dark: '#2b8a3e',
-            glow: 'rgba(81, 207, 102, .55)'
-        },
-        {
-            main: '#cc5de8',
-            dark: '#862e9c',
-            glow: 'rgba(204, 93, 232, .55)'
-        },
-        {
-            main: '#ff922b',
-            dark: '#d9480f',
-            glow: 'rgba(255, 146, 43, .55)'
-        },
-        {
-            main: '#22b8cf',
-            dark: '#0b7285',
-            glow: 'rgba(34, 184, 207, .55)'
-        },
-        {
-            main: '#ffd43b',
-            dark: '#e67700',
-            glow: 'rgba(255, 212, 59, .55)'
-        },
-        {
-            main: '#f06595',
-            dark: '#c2255c',
-            glow: 'rgba(240, 101, 149, .55)'
-        }
-    ];
+            const colours = [
+                {
+                    main: '#ff4d6d',
+                    dark: '#a4133c',
+                    glow: 'rgba(255, 77, 109, .55)'
+                },
+                {
+                    main: '#4dabf7',
+                    dark: '#1864ab',
+                    glow: 'rgba(77, 171, 247, .55)'
+                },
+                {
+                    main: '#51cf66',
+                    dark: '#2b8a3e',
+                    glow: 'rgba(81, 207, 102, .55)'
+                },
+                {
+                    main: '#cc5de8',
+                    dark: '#862e9c',
+                    glow: 'rgba(204, 93, 232, .55)'
+                },
+                {
+                    main: '#ff922b',
+                    dark: '#d9480f',
+                    glow: 'rgba(255, 146, 43, .55)'
+                },
+                {
+                    main: '#22b8cf',
+                    dark: '#0b7285',
+                    glow: 'rgba(34, 184, 207, .55)'
+                },
+                {
+                    main: '#ffd43b',
+                    dark: '#e67700',
+                    glow: 'rgba(255, 212, 59, .55)'
+                },
+                {
+                    main: '#f06595',
+                    dark: '#c2255c',
+                    glow: 'rgba(240, 101, 149, .55)'
+                }
+            ];
 
-    return colours[Math.floor(Math.random() * colours.length)];
-}
+            return colours[Math.floor(Math.random() * colours.length)];
+        }
 
         function scrollTabs(direction) {
             if (!scroller) return;
