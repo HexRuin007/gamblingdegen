@@ -1534,7 +1534,7 @@ button:disabled {
 .casinoConfirmBackdrop {
     position: fixed;
     inset: 0;
-    z-index: 100000;
+    z-index: 210000;
     display: none;
     align-items: center;
     justify-content: center;
@@ -2420,7 +2420,6 @@ button:disabled {
     filter: none;
 }
 
-/* Final selected case */
 .dealCase.finalChosen {
     color: #fff;
 
@@ -3155,19 +3154,32 @@ button:disabled {
 
 #resizeHandle {
     position: absolute;
+    right: 1px;
+    bottom: 1px;
+    left: auto;
+    top: auto;
     width: 22px;
     height: 22px;
-    right: 2px;
-    bottom: 2px;
+
+    display: block;
+    visibility: visible;
+    opacity: 0.9;
+
     cursor: nwse-resize;
-    opacity: 0.72;
-    z-index: 10001;
-    background: linear-gradient(135deg,
-            transparent 0%,
-            transparent 45%,
-            rgba(232, 179, 77, 0.55) 46%,
-            rgba(232, 179, 77, 0.55) 55%,
-            transparent 56%);
+    pointer-events: auto;
+
+    z-index: 999999;
+
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        transparent 42%,
+        rgba(232, 179, 77, 0.95) 43%,
+        rgba(232, 179, 77, 0.95) 55%,
+        transparent 56%
+    );
+
+    box-sizing: border-box;
 }
 
 .settingsOptions {
@@ -4785,7 +4797,7 @@ button.danger {
     color: #c6d9d0;
 }
 
-/* The nested panel becomes the physical baize table. */
+
 #blackjackPage>.heroCard>.panel {
     position: relative;
     z-index: 1;
@@ -4876,7 +4888,7 @@ button.danger {
     color: #fbe7a5;
 }
 
-/* A grid lets the local player see every hand after a split at once. */
+
 #blackjackPage #bjPlayerCards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
@@ -7156,4 +7168,587 @@ button.danger {
     text-align: right;
     white-space: nowrap;
 }
+.plinkoHero {
+    padding: 14px 12px 16px;
+    position: relative;
+    overflow: hidden;
+}
 
+.plinkoHero::after {
+    content: "";
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    width: 140%;
+    height: 90%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(232, 179, 77, .10), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.plinkoBoard {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 430px;
+    margin-top: 10px;
+    border-radius: 18px;
+    overflow: hidden;
+
+    background:
+        radial-gradient(circle at 50% 0%, rgba(232, 179, 77, .14), transparent 46%),
+        radial-gradient(circle at 15% 90%, rgba(143, 191, 91, .08), transparent 40%),
+        linear-gradient(180deg, #0e1c12 0%, #081109 55%, #050a06 100%);
+
+    border: 1px solid var(--rail);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .03),
+        inset 0 0 40px rgba(0, 0, 0, .5),
+        inset 0 2px 0 rgba(255, 255, 255, .05),
+        0 16px 36px rgba(0, 0, 0, .38);
+}
+
+.plinkoBoard::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(90deg,
+            rgba(255, 255, 255, .012) 0,
+            rgba(255, 255, 255, .012) 1px,
+            transparent 1px,
+            transparent 34px);
+    opacity: .6;
+}
+
+.plinkoPegLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+
+.plinkoPeg {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+
+    background:
+        radial-gradient(circle at 32% 28%, #fff8de, #f6c86a 42%, #a9711b 82%, #6f4c12 100%);
+
+    box-shadow:
+        0 2px 5px rgba(0, 0, 0, .7),
+        0 0 8px rgba(232, 179, 77, .35),
+        inset 0 -1px 1px rgba(0, 0, 0, .35);
+
+    transition: box-shadow .12s ease, transform .12s ease;
+}
+
+.plinkoBallLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.plinkoBall {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+
+    background:
+        radial-gradient(circle at 30% 26%, #ffffff, #ffe27a 30%, #f0b23c 62%, #a9711b 100%);
+
+    box-shadow:
+        0 3px 9px rgba(0, 0, 0, .7),
+        0 0 12px rgba(255, 216, 90, .5),
+        inset 0 -2px 2px rgba(0, 0, 0, .25);
+
+    will-change: left, top;
+}
+
+.plinkoBall::after {
+    background: radial-gradient(
+        circle,
+        var(--plinko-ball-glow, rgba(255, 216, 90, .35)),
+        transparent 70%
+    );
+}
+
+.plinkoBall.win {
+    box-shadow:
+        0 0 18px rgba(110, 231, 124, .85),
+        0 3px 9px rgba(0, 0, 0, .7);
+}
+
+.plinkoBall.win::after {
+    background: radial-gradient(circle, rgba(110, 231, 124, .45), transparent 70%);
+}
+
+.plinkoBall.loss {
+    box-shadow:
+        0 0 18px rgba(255, 90, 90, .7),
+        0 3px 9px rgba(0, 0, 0, .7);
+}
+
+.plinkoBall.loss::after {
+    background: radial-gradient(circle, rgba(255, 90, 90, .35), transparent 70%);
+}
+
+.plinkoSlots {
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    bottom: 9px;
+    height: 50px;
+
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    gap: 3px;
+
+    z-index: 3;
+}
+
+.plinkoSlot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+
+    border-radius: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: -.2px;
+
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, .05), rgba(0, 0, 0, .25)),
+        linear-gradient(180deg, rgba(232, 179, 77, .18), rgba(232, 179, 77, .05));
+
+    border: 1px solid rgba(232, 179, 77, .28);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .07),
+        inset 0 -6px 8px rgba(0, 0, 0, .28);
+
+    overflow: hidden;
+}
+
+.plinkoSlot::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: currentColor;
+    opacity: .55;
+}
+
+.plinkoSlot.positive {
+    color: #8df0a1;
+    border-color: rgba(110, 231, 124, .32);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .07),
+        inset 0 -6px 8px rgba(0, 0, 0, .28),
+        0 0 10px rgba(110, 231, 124, .12);
+}
+
+.plinkoSlot.neutral {
+    color: #ffd85a;
+}
+
+.plinkoSlot.negative {
+    color: #ff8d8d;
+    border-color: rgba(255, 107, 107, .28);
+}
+
+.plinkoBetRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1.3fr;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.plinkoDropButton {
+    min-height: 44px;
+    font-weight: 900;
+    letter-spacing: .3px;
+    background: linear-gradient(180deg, var(--pear-bright), var(--pear-deep));
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .18),
+        0 6px 14px rgba(76, 122, 48, .28);
+}
+
+.plinkoDropButton:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.plinkoPaytable {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 9px;
+}
+
+.plinkoPaytableItem span {
+    display: block;
+    margin-top: 3px;
+
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+
+    color: var(--text);
+}
+
+.plinkoPaytableItem:hover {
+    border-color: rgba(232, 179, 77, .45);
+    background: linear-gradient(180deg, rgba(232, 179, 77, .16), rgba(232, 179, 77, .03));
+}
+
+.plinkoPaytableItem strong {
+    display: block;
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--gold-bright);
+}
+
+.plinkoHistory {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.plinkoHistoryRow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    overflow: hidden;
+
+    background: linear-gradient(90deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01));
+    border: 1px solid var(--rail-soft);
+    font-size: 11px;
+}
+
+.plinkoHistoryRow::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+}
+
+.plinkoHistoryRow:has(.plinkoHistoryProfit.win)::before {
+    background: var(--win);
+    box-shadow: 0 0 8px rgba(110, 231, 124, .5);
+}
+
+.plinkoHistoryRow:has(.plinkoHistoryProfit.loss)::before {
+    background: var(--loss);
+}
+
+.plinkoHistoryMultiplier {
+    font-family: var(--font-mono);
+    font-weight: 900;
+    color: var(--gold-bright);
+}
+
+.plinkoHistoryProfit {
+    font-family: var(--font-mono);
+    font-weight: 900;
+}
+
+.plinkoHistoryProfit.win {
+    color: var(--win);
+    text-shadow: 0 0 8px rgba(110, 231, 124, .3);
+}
+
+.plinkoHistoryProfit.loss {
+    color: #ff8d8d;
+}
+
+@media (max-width: 420px) {
+    .plinkoBoard {
+        height: 390px;
+    }
+
+    .plinkoSlot {
+        font-size: 8px;
+    }
+
+    .plinkoPaytableItem {
+        font-size: 8px;
+    }
+
+    .plinkoPaytableItem strong {
+        font-size: 9px;
+    }
+}
+.plinkoLastResult {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-top: 10px;
+    padding: 12px 14px;
+
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid var(--rail-soft);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.plinkoLastResult.win {
+    background: rgba(110, 231, 124, 0.10);
+    border-color: rgba(110, 231, 124, 0.45);
+}
+
+.plinkoLastResult.loss {
+    background: rgba(255, 90, 90, 0.08);
+    border-color: rgba(255, 90, 90, 0.35);
+}
+
+.plinkoLastResult.neutral {
+    background: rgba(232, 179, 77, 0.08);
+    border-color: rgba(232, 179, 77, 0.35);
+}
+
+.plinkoLastResult.pop {
+    animation: plinkoResultPop 0.3s ease;
+}
+
+@keyframes plinkoResultPop {
+    0% {
+        transform: scale(0.96);
+    }
+
+    60% {
+        transform: scale(1.025);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.plinkoLastResultIcon {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(232, 179, 77, 0.12);
+
+    font-size: 20px;
+}
+
+.plinkoLastResultContent {
+    min-width: 0;
+    flex: 1;
+}
+
+.plinkoLastResultTitle {
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+
+    color: var(--text-soft);
+}
+
+.plinkoLastResult.win
+.plinkoLastResultTitle {
+    color: var(--win);
+}
+
+.plinkoLastResultAmount {
+    margin-top: 2px;
+
+    font-family: var(--font-mono);
+    font-size: 17px;
+    font-weight: 900;
+
+    color: var(--text);
+}
+
+.plinkoLastResult.win .plinkoLastResultAmount {
+    color: var(--win);
+}
+
+.plinkoLastResult.loss .plinkoLastResultAmount {
+    color: #ff8d8d;
+}
+
+.plinkoLastResultDetail {
+    margin-top: 2px;
+
+    font-size: 10px;
+    color: var(--text-soft);
+}
+
+
+#overlay {
+    position: fixed !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#overlayContent {
+    position: relative !important;
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    scroll-behavior: auto !important;
+}
+
+#overlayContent > #mainCasinoBody {
+    position: relative !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+
+#overlayContent > #mainCasinoBody > .tabs {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 5000 !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 44px !important;
+    background: rgba(232, 179, 77, 0.06) !important;
+    flex-shrink: 0 !important;
+}
+
+
+#mainCasinoBody > .tabPage {
+    position: static !important;
+    display: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    transform: none !important;
+}
+
+#mainCasinoBody > .tabPage.active {
+    display: block !important;
+}
+
+
+#mainCasinoBody > .tabPage > * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+
+#dailySpinPage,
+#userSettingsPage,
+#lotteryPage,
+#chipsPage,
+#scratchPage {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    transform: none !important;
+}
+
+
+#overlay > #resizeHandle {
+    position: absolute !important;
+    right: 1px !important;
+    bottom: 1px !important;
+    left: auto !important;
+    top: auto !important;
+    width: 22px !important;
+    height: 22px !important;
+    z-index: 12001 !important;
+    display: block !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+body.userappHidden #overlay > #resizeHandle {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+}
+
+#overlay.compactMode {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+#overlay.compactMode #overlayContent {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    position: relative !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+}
+
+#overlay.compactMode #mainCasinoBody {
+    position: relative !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+}
+
+#overlay.compactMode .tabs {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 5000 !important;
+}
+
+#overlay.compactMode #resizeHandle {
+    right: 1px !important;
+    bottom: 1px !important;
+    left: auto !important;
+    top: auto !important;
+    width: 19px !important;
+    height: 19px !important;
+    z-index: 12001 !important;
+}
