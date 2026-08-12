@@ -10157,110 +10157,131 @@
                         }).join("");
             }
         }
-        async function unregisterCasinoPlayer() {
-            if (!adminToken) {
-                return setStatus(
-                    "BANKER LOCKED",
-                    1800
-                );
-            }
+  async function unregisterCasinoPlayer() {
+    if (!adminToken) {
+        return setStatus(
+            "BANKER LOCKED",
+            1800
+        );
+    }
 
-            const playerId = String(
-                $("unregisterPlayerIdInput")?.value || ""
-            ).trim();
+    const playerId = String(
+        $("unregisterPlayerIdInput")?.value || ""
+    ).trim();
 
-            const playerName = String(
-                $("unregisterPlayerNameInput")?.value || ""
-            ).trim();
+    const playerName = String(
+        $("unregisterPlayerNameInput")?.value || ""
+    ).trim();
 
-            const reason = String(
-                $("unregisterPlayerReasonInput")?.value || ""
-            ).trim();
+    const reason = String(
+        $("unregisterPlayerReasonInput")?.value || ""
+    ).trim();
 
-            if (!playerId) {
-                return setStatus(
-                    "ENTER PLAYER ID",
-                    1800
-                );
-            }
+    if (!playerId) {
+        return setStatus(
+            "ENTER PLAYER ID",
+            1800
+        );
+    }
 
-            const confirmed =
-                await showCasinoConfirm({
-                    title: "🚪 Unregister Player",
-                    message:
-                        `This will force player ${playerId} to register again with a new banker registration code.\n\n` +
-                        "Their casino balance and history will NOT be wiped, but their current PIN will be removed.",
-                    confirmText:
-                        "Yes, Unregister",
-                    cancelText:
-                        "Cancel"
-                });
+    const confirmed = await showCasinoConfirm({
+        title: "🚪 Unregister Player",
+        message:
+            `This will force player ${playerId} to register again with a new banker registration code.\n\n` +
+            "Their casino balance and history will NOT be wiped, but their current PIN will be removed.",
+        confirmText:
+            "Yes, Unregister",
+        cancelText:
+            "Cancel"
+    });
 
-            if (!confirmed) {
-                return;
-            }
+    if (!confirmed) {
+        return;
+    }
 
-            try {
-                setStatus(
-                    "UNREGISTERING PLAYER...",
-                    0
-                );
+    try {
+        setStatus(
+            "UNREGISTERING PLAYER...",
+            0
+        );
 
-                const json = await apiRequest(
-                    "/chips/unregister-player",
-                    {
-                        method: "POST",
-                        token: adminToken,
-                        body: {
-                            playerId,
-                            playerName,
-                            reason,
-                            bankerId:
-                                autoUserId || "",
-                            bankerName:
-                                autoName ||
-                                "Unknown banker"
-                        }
-                    }
-                );
-
-                if (!json.ok) {
-                    throw new Error(
-                        json.error ||
-                        "Could not unregister player"
-                    );
+        const json = await apiRequest(
+            "/chips/unregister-player",
+            {
+                method: "POST",
+                token: adminToken,
+                body: {
+                    playerId,
+                    playerName,
+                    reason,
+                    bankerId:
+                        autoUserId || "",
+                    bankerName:
+                        autoName ||
+                        "Unknown banker"
                 }
-
-                state =
-                    json.state ||
-                    state;
-
-                $("unregisterPlayerIdInput").value =
-                    "";
-
-                $("unregisterPlayerNameInput").value =
-                    "";
-
-                $("unregisterPlayerReasonInput").value =
-                    "";
-
-                setStatus(
-                    "PLAYER UNREGISTERED",
-                    3000
-                );
-
-                render();
-
-            } catch (error) {
-                setStatus(
-                    String(
-                        error.message ||
-                        error
-                    ),
-                    3000
-                );
             }
+        );
+
+        if (!json.ok) {
+            throw new Error(
+                json.error ||
+                "Could not unregister player"
+            );
         }
+
+        state =
+            json.state ||
+            state;
+
+      
+        if (
+            String(autoUserId || "").trim() ===
+            playerId
+        ) {
+            lastRegisteredCasinoPlayerId = "";
+
+            authCode = "";
+
+            hideCasinoRegistrationModal();
+
+         
+            setTimeout(() => {
+                registerCasinoPlayer().catch(error => {
+                    console.error(
+                        "Re-registration check failed:",
+                        error
+                    );
+                });
+            }, 100);
+        }
+
+        $("unregisterPlayerIdInput").value =
+            "";
+
+        $("unregisterPlayerNameInput").value =
+            "";
+
+        $("unregisterPlayerReasonInput").value =
+            "";
+
+        setStatus(
+            "PLAYER UNREGISTERED",
+            3000
+        );
+
+        render();
+
+    } catch (error) {
+        setStatus(
+            String(
+                error.message ||
+                error
+            ),
+            3000
+        );
+    }
+}
         function renderLottery() {
             let lottery = state.lottery || {
                 ticketPrice: 100000000,
