@@ -3094,71 +3094,134 @@
 
             casinoPin = pin;
         }
-        async function refreshState(silent) {
-            try {
-                const requestStartedAt = Date.now();
-                const requestStartedMinesVersion = minesActionVersion;
-                const requestStartedBjVersion = blackjackActionVersion;
-                const requestStartedChickenVersion = chickenActionVersion;
-                const stateQuery = autoUserId
-                    ? '?playerId=' + encodeURIComponent(autoUserId)
-                    : '';
+   async function refreshState(silent) {
+    try {
+        const requestStartedAt = Date.now();
+        const requestStartedMinesVersion = minesActionVersion;
+        const requestStartedBjVersion = blackjackActionVersion;
+        const requestStartedChickenVersion = chickenActionVersion;
 
-                const json = await apiRequest('/state' + stateQuery, {
-                    token: adminToken || undefined
-                });
-                const requestFinishedAt = Date.now();
+        const stateQuery = autoUserId
+            ? '?playerId=' + encodeURIComponent(autoUserId)
+            : '';
 
-                const minesVersionAtRequest =
-                    requestStartedMinesVersion;
-                const currentBlackjackState = state.blackjack;
-                const currentChickenState = state.chicken;
+        const json = await apiRequest('/state' + stateQuery, {
+            token: adminToken || undefined
+        });
 
+        const requestFinishedAt = Date.now();
 
-                const currentMinesState = state.mines;
-                state = json.state || state;
+        const minesVersionAtRequest =
+            requestStartedMinesVersion;
 
+        const currentBlackjackState =
+            state.blackjack;
 
-                if (
-                    minesVersionAtRequest !== minesActionVersion &&
-                    currentMinesState
-                ) {
-                    state.mines = currentMinesState;
-                }
-                if (requestStartedBjVersion !== blackjackActionVersion && currentBlackjackState) {
-                    state.blackjack = currentBlackjackState;
-                }
-                if (
-                    requestStartedChickenVersion !== chickenActionVersion &&
-                    currentChickenState
-                ) {
-                    state.chicken = currentChickenState;
-                }
+        const currentChickenState =
+            state.chicken;
 
-                if (Number(json.serverTime)) {
-                    const estimatedNetworkDelay =
-                        (requestFinishedAt - requestStartedAt) / 2;
+        const currentMinesState =
+            state.mines;
 
-                    window.casinoServerClockOffset =
-                        Number(json.serverTime) +
-                        estimatedNetworkDelay -
-                        requestFinishedAt;
-                }
-                failedPolls = 0;
-                setStatus('Connected');
-                const active = state.wheel?.activeSpin;
-                if (active && active.spinId && active.spinId !== lastSeenSpinId) {
-                    lastSeenSpinId = active.spinId;
-                    playSpin(active)
-                }
-                render()
-            } catch (err) {
-                failedPolls++;
-                lastPollError = String(err.message || err);
-                if (!silent || failedPolls >= 3)
-                    setStatus(lastPollError.substring(0, 28))
-            }
+        state = json.state || state;
+
+        // Check whether the current player needs to register again.
+        const currentPlayerId =
+            String(autoUserId || "").trim();
+
+        if (
+            currentPlayerId &&
+            state.registrationRequired === true
+        ) {
+            lastRegisteredCasinoPlayerId = "";
+            authCode = "";
+
+            showCasinoRegistrationModal(
+                currentPlayerId,
+                String(autoName || "").trim()
+            );
         }
+
+        if (
+            minesVersionAtRequest !== minesActionVersion &&
+            currentMinesState
+        ) {
+            state.mines =
+                currentMinesState;
+        }
+
+        if (
+            requestStartedBjVersion !==
+                blackjackActionVersion &&
+            currentBlackjackState
+        ) {
+            state.blackjack =
+                currentBlackjackState;
+        }
+
+        if (
+            requestStartedChickenVersion !==
+                chickenActionVersion &&
+            currentChickenState
+        ) {
+            state.chicken =
+                currentChickenState;
+        }
+
+        if (Number(json.serverTime)) {
+            const estimatedNetworkDelay =
+                (requestFinishedAt -
+                    requestStartedAt) / 2;
+
+            window.casinoServerClockOffset =
+                Number(json.serverTime) +
+                estimatedNetworkDelay -
+                requestFinishedAt;
+        }
+
+        failedPolls = 0;
+
+        setStatus(
+            'Connected'
+        );
+
+        const active =
+            state.wheel?.activeSpin;
+
+        if (
+            active &&
+            active.spinId &&
+            active.spinId !== lastSeenSpinId
+        ) {
+            lastSeenSpinId =
+                active.spinId;
+
+            playSpin(active);
+        }
+
+        render();
+
+    } catch (err) {
+        failedPolls++;
+
+        lastPollError =
+            String(
+                err.message || err
+            );
+
+        if (
+            !silent ||
+            failedPolls >= 3
+        ) {
+            setStatus(
+                lastPollError.substring(
+                    0,
+                    28
+                )
+            );
+        }
+    }
+}
         function scheduleNextCasinoPoll() {
             if (pollTimeoutHandle) {
                 clearTimeout(pollTimeoutHandle);
