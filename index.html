@@ -1101,38 +1101,52 @@
                                 data-amount="50">50</button>
                         </div>
 
-                        <div class="small">
-                            Each ticket costs 100,000,000 chips. The more tickets you hold, the higher your chance of
-                            winning the entire jackpot. One winner is drawn every week.
-                        </div>
-                    </div>
+                <div class="small">
+                Each ticket costs 100,000,000 chips. The more tickets you hold, the higher your chance of
+                winning the entire jackpot. One winner is drawn every week.
+            </div>
+        </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🧾 Ticket Holders</div>
-                            <div class="panelHint">This round</div>
-                        </div>
+        <div class="panel">
+            <div class="panelHeader">
+                <div class="panelTitle">🧾 Ticket Holders</div>
+                <div class="panelHint">This round</div>
+            </div>
 
-                        <div id="lotteryEntriesBox">
-                            <div class="emptyState">
-                                No tickets sold yet this round.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">📜 Past Draws</div>
-                            <div class="panelHint">Recent winners</div>
-                        </div>
-
-                        <div id="lotteryHistoryBox">
-                            <div class="emptyState">
-                                No draws yet.
-                            </div>
-                        </div>
-                    </div>
+            <div id="lotteryEntriesBox">
+                <div class="emptyState">
+                    No tickets sold yet this round.
                 </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panelHeader">
+                <div class="panelTitle">📜 Past Draws</div>
+                <div class="panelHint">Recent winners</div>
+            </div>
+
+            <div id="lotteryHistoryBox">
+                <div class="emptyState">
+                    No draws yet.
+                </div>
+            </div>
+        </div>
+
+        <div class="panel bankerOnly" id="lotteryRespinPanel">
+            <div class="panelHeader">
+                <div class="panelTitle">🔄 Respin Last Draw</div>
+                <div class="panelHint">Banker only</div>
+            </div>
+            <div class="small">
+                Redraws the most recent lottery winner from the same ticket pool and pot.
+            </div>
+            <button id="lotteryRespinButton" class="danger" type="button">
+                Respin Last Draw
+            </button>
+            <div id="lotteryRespinStatus" class="small" style="margin-top:8px;"></div>
+        </div>
+    </div>
 
                 <div id="chipsPage" class="tabPage">
 
@@ -3008,8 +3022,7 @@ async function ensurePinReady() {
 
             $("resetPinPlayerIdInput").value = "";
 
-            // If the banker is resetting their own PIN, discard the cached
-            // client-side PIN so the next protected action asks for a PIN again.
+           
             if (String(playerId) === String(autoUserId)) {
                 casinoPin = null;
             }
@@ -3018,6 +3031,56 @@ async function ensurePinReady() {
             setStatus(`PIN reset for ${playerId}`, 3000);
             render();
         }
+        async function respinLottery() {
+    if (!adminToken) {
+        throw new Error("Unlock banker controls first");
+    }
+
+    const last = (state.lottery?.history || [])[0];
+
+    const confirmMessage = last
+        ? `Respin the last lottery draw? ${escapeHtml(last.winnerName || "The winner")} will lose the ${shortMoney(last.pot || 0)} chip prize, and a new winner will be drawn from the remaining entrants for the same pot.`
+        : "Respin the last lottery draw?";
+
+    const confirmed = await showCasinoConfirm({
+        title: "🔄 Respin Lottery Draw",
+        message: confirmMessage,
+        confirmText: "Yes, Respin",
+        cancelText: "Cancel"
+    });
+
+    if (!confirmed) return;
+
+    setStatus("Respinning lottery...", 0);
+
+    const json = await apiRequest("/lottery/respin", {
+        method: "POST",
+        token: adminToken,
+        body: {}
+    });
+
+    if (!json.ok) {
+        throw new Error(json.error || "Respin failed");
+    }
+
+    state = json.state || state;
+
+    const statusBox = $("lotteryRespinStatus");
+    if (statusBox) {
+        statusBox.textContent = json.respin?.winnerName
+            ? `New winner: ${json.respin.winnerName} (${shortMoney(json.respin.pot || 0)} chips)`
+            : "Respin complete — no eligible winner found.";
+    }
+
+    setStatus(
+        json.respin?.winnerName
+            ? `LOTTERY RESPUN: ${json.respin.winnerName} won ${shortMoney(json.respin.pot || 0)}`
+            : "LOTTERY RESPUN",
+        5000
+    );
+
+    render();
+}
 
         async function resetAllCasinoChips() {
             if (String(autoUserId) !== "229051") {
@@ -8045,108 +8108,120 @@ function bindHiloStyleControls() {
     }
 }
 
-        function positionChicken(step, animate = false) {
-            const road = $("chickenRoad");
-            const chicken = $("chickenCharacter");
+   function positionChicken(step, animate = false) {
+    const road = $("chickenRoad");
+    const chicken = $("chickenCharacter");
 
-            if (!road || !chicken) return;
+    if (!road || !chicken) return;
 
-            const maxSteps = Number(
-                state.chicken?.maxSteps || 12
-            );
+    const chickenPageVisible =
+        document.getElementById("chickenPage")?.classList.contains("active");
 
+    const maxSteps = Number(
+        state.chicken?.maxSteps || 12
+    );
 
-            const numericStep = Math.max(
-                0,
-                Math.min(
-                    maxSteps,
-                    Number(step || 0)
-                )
-            );
+    const numericStep = Math.max(
+        0,
+        Math.min(
+            maxSteps,
+            Number(step || 0)
+        )
+    );
 
-            const firstLane = getChickenLane(1);
+    const firstLane = getChickenLane(1);
 
-            
-            if (!road.clientWidth || !firstLane || !firstLane.offsetWidth) {
-                chicken.classList.remove("positioned");
-                return;
-            }
+    if (!road.clientWidth || !firstLane || !firstLane.offsetWidth) {
+        chicken.classList.remove("positioned");
+        return;
+    }
 
-            let left = 2;
-            let focusLane = null;
+    let left = 2;
+    let focusLane = null;
 
-            if (numericStep === 0) {
+    if (numericStep === 0) {
 
-                const firstLane =
-                    getChickenLane(1);
+        const firstLane =
+            getChickenLane(1);
 
-                if (firstLane) {
-                    left =
-                        firstLane.offsetLeft -
-                        chicken.offsetWidth -
-                        4;
-                    focusLane = firstLane;
-                }
-            } else if (numericStep < maxSteps) {
+        if (firstLane) {
+            left =
+                firstLane.offsetLeft -
+                chicken.offsetWidth -
+                4;
 
-                const nextLane =
-                    getChickenLane(
-                        numericStep + 1
-                    );
-
-                if (nextLane) {
-                    left =
-                        nextLane.offsetLeft +
-                        (
-                            nextLane.offsetWidth -
-                            chicken.offsetWidth
-                        ) / 2;
-                    focusLane = nextLane;
-                }
-            } else {
-
-                const finalLane =
-                    getChickenLane(maxSteps);
-
-                if (finalLane) {
-                    left =
-                        finalLane.offsetLeft +
-                        finalLane.offsetWidth +
-                        4;
-                    focusLane = finalLane;
-                }
-            }
-
-            chicken.style.left =
-                `${Math.max(2, left)}px`;
-
-            chicken.style.top =
-                `${(
-                    road.clientHeight -
-                    chicken.offsetHeight
-                ) / 2
-                }px`;
-
-            chicken.classList.add("positioned");
-
-            if (animate) {
-                chicken.classList.remove(
-                    "hopping"
-                );
-
-                void chicken.offsetWidth;
-
-                chicken.classList.add(
-                    "hopping"
-                );
-            }
-
-            focusLane?.scrollIntoView({
-                behavior: "smooth",
-                block: "nearest",
-                inline: "center"
-            });
+            focusLane = firstLane;
         }
+
+    } else if (numericStep < maxSteps) {
+
+        const nextLane =
+            getChickenLane(
+                numericStep + 1
+            );
+
+        if (nextLane) {
+            left =
+                nextLane.offsetLeft +
+                (
+                    nextLane.offsetWidth -
+                    chicken.offsetWidth
+                ) / 2;
+
+            focusLane = nextLane;
+        }
+
+    } else {
+
+        const finalLane =
+            getChickenLane(maxSteps);
+
+        if (finalLane) {
+            left =
+                finalLane.offsetLeft +
+                finalLane.offsetWidth +
+                4;
+
+            focusLane = finalLane;
+        }
+    }
+
+    chicken.style.left =
+        `${Math.max(2, left)}px`;
+
+    chicken.style.top =
+        `${(
+            road.clientHeight -
+            chicken.offsetHeight
+        ) / 2}px`;
+
+    chicken.classList.add("positioned");
+
+    if (animate) {
+        chicken.classList.remove(
+            "hopping"
+        );
+
+        void chicken.offsetWidth;
+
+        chicken.classList.add(
+            "hopping"
+        );
+    }
+
+ 
+    if (
+        chickenPageVisible &&
+        animate &&
+        focusLane
+    ) {
+        focusLane.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+            inline: "center"
+        });
+    }
+}
 
         function driveCarDownLane(
             step,
@@ -9219,15 +9294,13 @@ $("bjSplitButton").disabled =
             handle.style.left = (rect.right - 10) + 'px';
             handle.style.top = (rect.bottom - 10) + 'px';
         }
-        function syncOverlayContentHeight() {
-            const overlay = $('overlay');
-            const content = $('overlayContent');
+       function syncOverlayContentHeight() {
+    const content = $('overlayContent');
 
-            if (!overlay || !content) return;
+    if (!content) return;
 
-            content.style.height =
-                overlay.clientHeight + 'px';
-        }
+    content.style.height = '';
+}
 
         function setupDragResize() {
             const overlay = $('overlay')
@@ -10290,6 +10363,25 @@ $("bjSplitButton").disabled =
                 e.stopPropagation()
             }
             );
+            const lotteryRespinButton = $("lotteryRespinButton");
+
+if (lotteryRespinButton) {
+    lotteryRespinButton.addEventListener(
+        "click",
+        () => {
+            respinLottery().catch(error => {
+                const statusBox = $("lotteryRespinStatus");
+                if (statusBox) {
+                    statusBox.textContent = String(error.message || error);
+                }
+                setStatus(
+                    String(error.message || error),
+                    4000
+                );
+            });
+        }
+    );
+}
             window.addEventListener('resize', positionSettingsPanel);
             $('opacityInput').addEventListener('input', function () {
                 applyOpacity(this.value)
