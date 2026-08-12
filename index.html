@@ -34,82 +34,88 @@
     <button id="showUserappButton" type="button" title="Show Pearadise Casino"
         aria-label="Show Pearadise Casino">🍐<span id="showUserappBadge" class="showUserappBadge"
             aria-hidden="true"></span></button>
-
     <div id="welcomeSplash">
-        <img src="./pearadise-welcome.png" alt="Welcome to Peardise Casino and Resort" />
+        ...
     </div>
+
 
 
     <div id="firstLoginGuide" class="firstLoginGuideBackdrop" role="dialog" aria-modal="true"
         aria-labelledby="firstLoginGuideTitle">
+
+        ...
+
+    </div>
+
+
+   
+    <div id="casinoRegistrationGuide" class="firstLoginGuideBackdrop" style="display:none;" role="dialog"
+        aria-modal="true" aria-labelledby="casinoRegistrationGuideTitle">
+
         <div class="firstLoginGuideModal">
+
             <div class="firstLoginGuideHeader">
-                <div id="firstLoginGuideTitle" class="firstLoginGuideTitle">Welcome to Pearadise Casino & Resort</div>
-                <div class="firstLoginGuideIntro">Here is everything you need to know before placing your first bet.
+                <div id="casinoRegistrationGuideTitle" class="firstLoginGuideTitle">
+                    🔐 Casino Registration
+                </div>
+
+                <div class="firstLoginGuideIntro">
+                    Banker authorisation is required before
+                    you can enter the casino.
                 </div>
             </div>
+
 
             <div class="firstLoginGuideBody">
+
                 <div class="firstLoginGuideImportant">
-                    <strong>Chips and cashouts:</strong><br>
-                    You can buy chips using in-game money at a rate of <strong>$1 = 1 chip</strong>. Purchased chips and
-                    chips won through games can be cashed out. Chips won from the <strong>Daily Spin can also be cashed
-                        out</strong>.<br><br>
-                    A banker may grant you free chips so you can play. Once you receive any chips marked as <strong>free
-                        from a banker</strong>, you will not be allowed to cash out your chip balance unless your casino
-                    account is wiped and you start again. This restriction only applies to banker-granted free chips,
-                    not Daily Spin winnings.
+                    <strong>Registration required</strong><br><br>
+
+                    You need a one-time registration code
+                    from a banker before you can create
+                    your casino account.
+
+                    <br><br>
+
+                    Ask a banker for your registration code
+                    and enter it below.
                 </div>
 
-                <div class="firstLoginGameGrid">
-                    <div class="firstLoginGameCard"><b>🎡 Wheel</b><span>Choose your bet and place it before the
-                            countdown ends. The wheel multiplier decides your payout.</span></div>
-                    <div class="firstLoginGameCard"><b>🃏 Blackjack</b><span>Try to reach 21 without going over. Beat
-                            the dealer's hand to win.</span></div>
-                    <div class="firstLoginGameCard"><b>🐎 Horse Racing</b><span>Pick a horse and place your bet. Each
-                            horse has displayed odds that determine its payout.</span></div>
-                    <div class="firstLoginGameCard"><b>🎰 Slots</b><span>Select a bet and spin. Matching symbols on
-                            paylines award payouts, and scatters can unlock free spins.</span></div>
-                    <div class="firstLoginGameCard"><b>💣 Mines</b><span>Choose your bet and mine count, then reveal
-                            safe tiles. Each safe tile increases the cashout value.</span></div>
-                    <div class="firstLoginGameCard"><b>💼 Deal or No Deal</b><span>Choose your case, open the others,
-                            and decide whether to accept the banker's offers or keep playing.</span></div>
-                    <div class="firstLoginGameCard"><b>🎯 Roulette</b><span>Bet on a number, colour, range, or other
-                            option before the wheel spins.</span></div>
-                    <div class="firstLoginGameCard"><b>🐔 Chicken</b><span>Move the chicken across lanes to increase the
-                            multiplier. Cash out before the chicken is hit.</span></div>
-                    <div class="firstLoginGameCard"><b>🎫 Scratch Cards</b><span>Buy a scratch card and reveal the
-                            winning symbols.</span></div>
-                    <div class="firstLoginGameCard"><b>📈 HiLo</b><span>Guess whether the next card will be higher or
-                            lower than the current card. Keep guessing to increase your multiplier, or cash out before
-                            you lose.</span></div>
-                    <div class="firstLoginGameCard"><b>🔵 Plinko</b><span>Choose your bet and drop a ball through the
-                            pegs. Where the ball lands determines your multiplier and payout.</span></div>
-                    <div class="firstLoginGameCard"><b>🎟️ Lottery</b><span>Buy lottery tickets for 100M chips each. You
-                            can buy as many tickets as you want, and the more tickets you own, the higher your chance of
-                            winning. The lottery is drawn once every week.</span></div>
-                    <div class="firstLoginGameCard"><b>🎁 Daily Spin</b><span>Use your available daily spins for a
-                            chance to win free bets,items, or nothing.</span></div>
-                    <div class="firstLoginGameCard"><b>🎁 Daily Spin Free Bets</b><span>Free bets won from Daily Spins
-                            are capped at 10m and Auto Used whenever you place a bet on that game.No Matter if you input
-                            100m, it will still only be a 10m Bet</span></div>
 
-                    <div class="firstLoginGameCard"><b>🪙 Chips</b><span>View your balance, buy or request chips,
-                            request a cashout, and check the status of requests.</span></div>
-                    <div class="firstLoginGameCard"><b>⚙️ Settings</b><span>Adjust the app's settings, including sound,
-                            notifications, and display options.</span></div>
-                    <div class="firstLoginGameCard"><b>💰 Banker</b><span>You can contact Une_Poire, Nunu or CrackAddict
-                            for any issues/resets, They also get notified on Discord, so don't message them for chip
-                            requests or winnings.</span></div>
-                    <div class="firstLoginGameCard"><b>💬 Free Chips Requests</b><span>Any free chip request that keeps
-                            your balance under 100m, will be auto approved.</span></div>
+                <div style="margin-top:20px;">
+
+                    <input id="casinoRegistrationCode" type="text" maxlength="8" autocomplete="off" spellcheck="false"
+                        placeholder="Enter 8-character code" style="
+                        width:100%;
+                        box-sizing:border-box;
+                        padding:14px;
+                        font-size:18px;
+                        text-align:center;
+                        text-transform:uppercase;
+                        letter-spacing:3px;
+                    " />
 
                 </div>
+
+
+                <div id="casinoRegistrationStatus" style="
+                    min-height:24px;
+                    margin-top:12px;
+                    text-align:center;
+                ">
+                </div>
+
             </div>
+
 
             <div class="firstLoginGuideFooter">
-                <button id="firstLoginGuideClose" type="button">I Understand — Enter the Casino</button>
+
+                <button id="casinoRegistrationSubmit" type="button">
+                    Register Casino Account
+                </button>
+
             </div>
+
         </div>
     </div>
 
@@ -1071,7 +1077,7 @@
                         </div>
 
 
-                        <!-- Clear win/loss result -->
+              
                         <div id="plinkoLastResult" class="plinkoLastResult">
 
                             <div class="plinkoLastResultIcon">
@@ -1425,98 +1431,235 @@
                             Your position will appear here.
                         </div>
                     </div>
-
                     <div class="panel bankerOnly">
                         <div class="panelHeader">
                             <div class="panelTitle">🔐 Banker Login</div>
                             <div class="panelHint">Chip controls</div>
                         </div>
+
                         <input id="adminPinInput" type="password" placeholder="Banker PIN" />
-                        <button id="loginAdminButton" class="gold">Unlock Banker</button>
+
+                        <button id="loginAdminButton" class="gold" type="button">
+                            Unlock Banker
+                        </button>
                     </div>
 
-                    <div class="panel bankerOnly" id="chipBankerControls" style="display:none;">
+                    <div class="panel" id="chipBankerControls" style="display:none !important;">
+
+                        <div class="panelHeader" style="margin-top:12px;">
+                            <div class="panelTitle">🔑 Registration Code</div>
+                            <div class="panelHint">New casino account</div>
+                        </div>
+
+                        <button id="generateRegistrationCodeButton" class="gold" type="button">
+                            Generate Registration Code
+                        </button>
+
+                        <div id="generatedRegistrationCode" class="registrationCodeDisplay" style="
+            display:none;
+            margin-top:12px;
+            padding:16px;
+            text-align:center;
+            border-radius:10px;
+        ">
+
+                            <div style="
+                font-size:11px;
+                opacity:.7;
+                margin-bottom:6px;
+            ">
+                                REGISTRATION CODE
+                            </div>
+
+                            <div id="registrationCodeValue" style="
+                font-size:30px;
+                font-weight:800;
+                letter-spacing:5px;
+                user-select:text;
+            ">
+                                --------
+                            </div>
+
+                            <button id="copyRegistrationCodeButton" type="button" style="margin-top:12px;">
+                                📋 Copy Code
+                            </button>
+                        </div>
+
+                        <div id="registrationCodeExpiry" class="small" style="
+            margin-top:6px;
+            text-align:center;
+            min-height:18px;
+        ">
+                        </div>
+
+                        <div id="registrationCodeStatus" class="small" style="
+            margin-top:6px;
+            text-align:center;
+            min-height:18px;
+        ">
+                        </div>
+
+
+                        <div class="panelHeader" style="margin-top:18px;">
+                            <div class="panelTitle">🚪 Unregister Player</div>
+                            <div class="panelHint">Force re-registration</div>
+                        </div>
+
+                        <input id="unregisterPlayerIdInput" type="text" placeholder="Player ID" />
+
+                        <input id="unregisterPlayerNameInput" type="text" placeholder="Player name (optional)" />
+
+                        <input id="unregisterPlayerReasonInput" type="text" maxlength="240"
+                            placeholder="Reason (optional)" />
+
+                        <button id="unregisterPlayerButton" class="danger" type="button">
+                            Unregister Player
+                        </button>
+
+                        <div class="chipRequestStatus">
+                            This does not wipe the player's casino data.
+                            They will need a new banker registration code
+                            before they can use the casino again.
+                        </div>
+
+
                         <div class="panelHeader">
                             <div class="panelTitle">🪙 Give Chips</div>
                             <div class="panelHint">Server balance</div>
                         </div>
+
                         <input id="grantChipPlayerId" type="text" placeholder="Player ID" />
+
                         <input id="grantChipPlayerName" type="text" placeholder="Player name (optional)" />
+
                         <input id="grantChipAmount" type="number" min="1" step="1" placeholder="Chips to give" />
+
                         <select id="grantChipType" aria-label="How the chips were supplied">
-                            <option value="paid">Paid chips — player paid for them</option>
-                            <option value="free">Free chips — banker gave them free</option>
+
+                            <option value="paid">
+                                Paid chips — player paid for them
+                            </option>
+
+                            <option value="free">
+                                Free chips — banker gave them free
+                            </option>
                         </select>
-                        <button id="grantChipsButton" class="gold">Give Chips</button>
+
+                        <button id="grantChipsButton" class="gold" type="button">
+                            Give Chips
+                        </button>
+
 
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">📥 Chip Requests</div>
                             <div class="panelHint">Approve or reject</div>
                         </div>
+
                         <div id="chipRequestsBox">
-                            <div class="emptyState">No chip requests.</div>
+                            <div class="emptyState">
+                                No chip requests.
+                            </div>
                         </div>
+
+
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">💵 Withdrawal Requests</div>
                             <div class="panelHint">Approve or deny</div>
                         </div>
+
                         <div id="withdrawalRequestsBox">
-                            <div class="emptyState">No withdrawal requests.</div>
+                            <div class="emptyState">
+                                No withdrawal requests.
+                            </div>
                         </div>
+
 
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">💵 Cash Out Player</div>
                             <div class="panelHint">Remove paid chips</div>
                         </div>
+
                         <input id="cashoutPlayerIdInput" type="text" placeholder="Player ID" />
+
                         <input id="cashoutAmountInput" type="number" min="1" step="1"
                             placeholder="Amount of chips to cash out" />
-                        <button id="cashoutChipsButton" class="danger">Cash Out Chips</button>
+
+                        <button id="cashoutChipsButton" class="danger" type="button">
+                            Cash Out Chips
+                        </button>
+
 
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">🔐 Reset Player PIN</div>
-                            <div class="panelHint">PIN only • does not wipe casino data</div>
+                            <div class="panelHint">
+                                PIN only • does not wipe casino data
+                            </div>
                         </div>
+
                         <input id="resetPinPlayerIdInput" type="text" placeholder="Player ID" />
+
                         <button id="resetPlayerPinButton" class="danger" type="button">
                             Reset Player PIN
                         </button>
+
                         <div class="chipRequestStatus">
-                            This removes only the player's current PIN. Their balance, winnings, statistics,
-                            requests and active games are not affected. The player will be asked to create a new
-                            PIN the next time they use the casino.
+                            This removes only the player's current PIN.
+                            Their balance, winnings, statistics, requests
+                            and active games are not affected. The player
+                            will be asked to create a new PIN the next time
+                            they use the casino.
                         </div>
 
+
                         <div class="playerAuditPanel" id="blacklistManager">
+
                             <div class="panelHeader">
                                 <div>
                                     <div class="panelTitle">🚫 App Blacklist</div>
-                                    <div class="panelHint">Block a player from the casino</div>
+                                    <div class="panelHint">
+                                        Block a player from the casino
+                                    </div>
                                 </div>
                             </div>
 
                             <input id="blacklistPlayerIdInput" type="text" placeholder="Player ID" />
+
                             <input id="blacklistPlayerNameInput" type="text" placeholder="Player name (optional)" />
+
                             <input id="blacklistReasonInput" type="text" maxlength="240"
                                 placeholder="Reason (optional)" />
+
                             <button id="blacklistPlayerButton" class="danger" type="button">
                                 Blacklist Player
                             </button>
 
                             <div class="panelHeader" style="margin-top:12px;">
-                                <div class="panelTitle">Blacklisted Players</div>
-                                <div class="panelHint">Remove to restore access</div>
+                                <div class="panelTitle">
+                                    Blacklisted Players
+                                </div>
+                                <div class="panelHint">
+                                    Remove to restore access
+                                </div>
                             </div>
+
                             <div id="blacklistPlayersBox">
-                                <div class="emptyState">No blacklisted players.</div>
+                                <div class="emptyState">
+                                    No blacklisted players.
+                                </div>
                             </div>
                         </div>
 
+
                         <div class="playerAuditPanel">
+
                             <div class="panelHeader playerAuditHeader">
                                 <div>
-                                    <div class="panelTitle">🕵️ Player Gambling Audit</div>
-                                    <div class="panelHint">Latest 20 wins and losses</div>
+                                    <div class="panelTitle">
+                                        🕵️ Player Gambling Audit
+                                    </div>
+                                    <div class="panelHint">
+                                        Latest 20 wins and losses
+                                    </div>
                                 </div>
 
                                 <button id="clearPlayerAuditButton" class="playerAuditClearButton" type="button"
@@ -1527,6 +1670,7 @@
 
                             <div class="row">
                                 <input id="auditPlayerIdInput" type="text" placeholder="Player ID to inspect" />
+
                                 <button id="loadPlayerAuditButton" type="button">
                                     Check Player
                                 </button>
@@ -1539,80 +1683,135 @@
                             </div>
                         </div>
 
+
                         <div class="panelHeader" style="margin-top:12px;">
-                            <div class="panelTitle">♻️ Reset Individual Player</div>
-                            <div class="panelHint">Clear one casino account</div>
+                            <div class="panelTitle">
+                                ♻️ Reset Individual Player
+                            </div>
+                            <div class="panelHint">
+                                Clear one casino account
+                            </div>
                         </div>
+
                         <input id="resetPlayerIdInput" type="text" placeholder="Player ID to reset" />
-                        <input id="resetPlayerConfirmation" type="text" placeholder='Type RESET PLAYER' />
+
+                        <input id="resetPlayerConfirmation" type="text" placeholder="Type RESET PLAYER" />
+
                         <button id="resetPlayerButton" class="danger" type="button">
                             Reset Player
                         </button>
+
                         <div class="chipRequestStatus">
-                            Clears only that player's casino balance, statistics, requests, spins and active games. They
-                            will receive the normal starting chips when they register again.
+                            Clears only that player's casino balance,
+                            statistics, requests, spins and active games.
+                            They will receive the normal starting chips
+                            when they register again.
                         </div>
+
+
+                        <div id="chipResetDangerZone" class="chipResetDangerZone">
+
+                            <div class="chipResetDangerTitle">
+                                ⚠️ Reset All Casino Chips
+                            </div>
+
+                            <div class="chipResetDangerText">
+                                Only Poire can use this!
+                            </div>
+
+                            <input id="resetAllChipsConfirmation" type="text" placeholder="Type RESET ALL CHIPS" />
+
+                            <button id="resetAllChipsButton" class="danger" type="button">
+                                Reset All Chips
+                            </button>
+                        </div>
+
                     </div>
-                    <div id="chipResetDangerZone" class="chipResetDangerZone bankerOnly">
-                        <div class="chipResetDangerTitle">⚠️ Reset All Casino Chips</div>
-                        <div class="chipResetDangerText">
-                            Only Poire can use this!
+
+
+                </div>
+
+                <div id="dailyProfitPanel" class="dailyProfitPanel" style="display:none !important;">
+
+                    <div class="dailyProfitHeader">
+                        <div>
+                            <div class="panelTitle">
+                                📈 Total House Profit
+                            </div>
+                            <div class="panelHint">
+                                Banker only • UTC day
+                            </div>
                         </div>
-                        <input id="resetAllChipsConfirmation" type="text" placeholder='Type RESET ALL CHIPS' />
-                        <button id="resetAllChipsButton" class="danger" type="button">
-                            Reset All Chips
+
+                        <button id="refreshDailyProfit" type="button">
+                            Refresh
                         </button>
                     </div>
 
-                    <div id="dailyProfitPanel" class="dailyProfitPanel bankerOnly" style="display:none;">
-                        <div class="dailyProfitHeader">
-                            <div>
-                                <div class="panelTitle">📈 Total House Profit</div>
-                                <div class="panelHint">Banker only • UTC day</div>
-                            </div>
-                            <button id="refreshDailyProfit" type="button">Refresh</button>
+                    <div class="dailyProfitTotal">
+                        <span>All chip house profit</span>
+                        <strong id="dailyProfitValue">
+                            Loading...
+                        </strong>
+                    </div>
+
+                    <div class="dailyProfitSplit">
+
+                        <div class="dailyProfitSplitCard">
+                            <span>Real / paid-chip profit</span>
+                            <strong id="dailyRealProfitValue">
+                                0
+                            </strong>
                         </div>
 
-                        <div class="dailyProfitTotal">
-                            <span>All chip house profit</span>
-                            <strong id="dailyProfitValue">Loading...</strong>
+                        <div class="dailyProfitSplitCard">
+                            <span>Promo-chip profit</span>
+                            <strong id="dailyPromoProfitValue">
+                                0
+                            </strong>
                         </div>
 
-                        <div class="dailyProfitSplit">
-                            <div class="dailyProfitSplitCard">
-                                <span>Real / paid-chip profit</span>
-                                <strong id="dailyRealProfitValue">0</strong>
-                            </div>
-                            <div class="dailyProfitSplitCard">
-                                <span>Promo-chip profit</span>
-                                <strong id="dailyPromoProfitValue">0</strong>
-                            </div>
+                    </div>
+
+                    <div class="dailyProfitStats">
+
+                        <div class="dailyProfitStat">
+                            Total Bets
+                            <strong id="dailyBetsValue">
+                                0
+                            </strong>
                         </div>
 
-                        <div class="dailyProfitStats">
-                            <div class="dailyProfitStat">
-                                Total Bets
-                                <strong id="dailyBetsValue">0</strong>
-                            </div>
-                            <div class="dailyProfitStat">
-                                Payouts
-                                <strong id="dailyPayoutsValue">0</strong>
-                            </div>
-                            <div class="dailyProfitStat">
-                                Refunds
-                                <strong id="dailyRefundsValue">0</strong>
-                            </div>
+                        <div class="dailyProfitStat">
+                            Payouts
+                            <strong id="dailyPayoutsValue">
+                                0
+                            </strong>
                         </div>
 
-                        <div id="dailyGameBreakdown" class="dailyGameBreakdown">
-                            <div class="emptyState">Unlock banker controls to load today's figures.</div>
+                        <div class="dailyProfitStat">
+                            Refunds
+                            <strong id="dailyRefundsValue">
+                                0
+                            </strong>
                         </div>
 
-                        <div class="dailyProfitFootnote">
-                            Real/paid excludes welcome bonuses, daily-spin chips and banker grants marked free. Source
-                            tracking applies going forward and resets daily at 00:00 UTC.
+                    </div>
+
+                    <div id="dailyGameBreakdown" class="dailyGameBreakdown">
+                        <div class="emptyState">
+                            Unlock banker controls to load today's figures.
                         </div>
                     </div>
+
+                    <div class="dailyProfitFootnote">
+                        Real/paid excludes welcome bonuses, daily-spin
+                        chips and banker grants marked free. Source
+                        tracking applies going forward and resets daily
+                        at 00:00 UTC.
+                    </div>
+
+
                 </div>
 
                 <div id="dailySpinPage" class="tabPage">
@@ -4237,6 +4436,82 @@
             render();
             await refreshState(true);
         }
+        function showCasinoRegistrationModal(
+            playerId,
+            playerName
+        ) {
+            const modal =
+                $("casinoRegistrationGuide");
+
+            if (!modal) {
+                console.error(
+                    "casinoRegistrationGuide element not found"
+                );
+
+                return;
+            }
+
+            const input =
+                $("casinoRegistrationCode");
+
+            const status =
+                $("casinoRegistrationStatus");
+
+            if (input) {
+                input.value = "";
+            }
+
+            if (status) {
+                status.textContent = "";
+                status.className =
+                    "firstLoginGuideStatus";
+            }
+
+            modal.dataset.playerId =
+                playerId;
+
+            modal.dataset.playerName =
+                playerName;
+
+            modal.style.display =
+                "flex";
+
+            setTimeout(() => {
+                input?.focus();
+            }, 50);
+        }
+
+
+        function hideCasinoRegistrationModal() {
+            const modal =
+                $("casinoRegistrationGuide");
+
+            if (!modal) {
+                return;
+            }
+
+            modal.style.display =
+                "none";
+        }
+
+
+        function setCasinoRegistrationStatus(
+            message,
+            type = ""
+        ) {
+            const status =
+                $("casinoRegistrationStatus");
+
+            if (!status) {
+                return;
+            }
+
+            status.textContent =
+                message;
+
+            status.className =
+                `firstLoginGuideStatus ${type}`;
+        }
 
         async function registerCasinoPlayer() {
             const playerId = String(
@@ -4256,16 +4531,103 @@
                 return;
             }
 
-            const json = await apiRequest(
-                "/chips/register-player",
-                {
-                    method: "POST",
-                    body: {
-                        playerId,
-                        playerName
+
+            let json;
+
+            try {
+                json = await apiRequest(
+                    "/chips/register-player",
+                    {
+                        method: "POST",
+                        body: {
+                            playerId,
+                            playerName,
+                            authCode:
+                                String(
+                                    authCode || ""
+                                )
+                                    .trim()
+                                    .toUpperCase()
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error(
+                    "Casino registration request failed:",
+                    error
+                );
+
+                throw error;
+            }
+
+
+            if (
+                json?.ok &&
+                json.newPlayer === false &&
+                !json.reRegistered
+            ) {
+                lastRegisteredCasinoPlayerId =
+                    playerId;
+
+                const registeredState =
+                    json.state || null;
+
+                if (registeredState) {
+                    const currentChickenState =
+                        state.chicken;
+
+                    state =
+                        registeredState;
+
+                    if (
+                        chickenActionVersion > 0 &&
+                        currentChickenState
+                    ) {
+                        state.chicken =
+                            currentChickenState;
                     }
                 }
-            );
+
+                render();
+
+                return;
+            }
+
+
+            if (
+                !json?.ok &&
+                json?.error ===
+                "A banker registration code is required"
+            ) {
+                showCasinoRegistrationModal(
+                    playerId,
+                    playerName
+                );
+
+                return;
+            }
+
+            if (
+                !json?.ok &&
+                (
+                    json?.error ===
+                    "Invalid registration code" ||
+                    json?.error ===
+                    "Invalid or expired banker registration code"
+                )
+            ) {
+                showCasinoRegistrationModal(
+                    playerId,
+                    playerName
+                );
+
+                setCasinoRegistrationStatus(
+                    json.error,
+                    "error"
+                );
+
+                return;
+            }
 
             if (!json.ok) {
                 throw new Error(
@@ -4274,8 +4636,12 @@
                 );
             }
 
+
             lastRegisteredCasinoPlayerId =
                 playerId;
+
+
+            authCode = "";
 
             const registeredState =
                 json.state || null;
@@ -4284,7 +4650,8 @@
                 const currentChickenState =
                     state.chicken;
 
-                state = registeredState;
+                state =
+                    registeredState;
 
                 if (
                     chickenActionVersion > 0 &&
@@ -4295,6 +4662,10 @@
                 }
             }
 
+
+            hideCasinoRegistrationModal?.();
+
+
             if (
                 Number(
                     json.startingBonusGranted || 0
@@ -4303,13 +4674,153 @@
                 setStatus(
                     `Welcome bonus: +${shortMoney(
                         json.startingBonusGranted
-                    )
-                    } chips`,
+                    )} chips`,
                     5000
+                );
+            } else if (
+                json.reRegistered
+            ) {
+                setStatus(
+                    "CASINO REGISTRATION RESTORED",
+                    4000
                 );
             }
 
             render();
+        }
+
+        async function submitCasinoRegistration() {
+            const modal =
+                $("casinoRegistrationGuide");
+
+            if (!modal) {
+                return;
+            }
+
+            const playerId =
+                String(
+                    modal.dataset.playerId || ""
+                ).trim();
+
+            const playerName =
+                String(
+                    modal.dataset.playerName || ""
+                ).trim();
+
+            const authCode =
+                String(
+                    $("casinoRegistrationCode")?.value || ""
+                )
+                    .trim()
+                    .toUpperCase();
+
+            if (!authCode) {
+                return setCasinoRegistrationStatus(
+                    "Enter your banker registration code.",
+                    "error"
+                );
+            }
+
+            if (authCode.length !== 8) {
+                return setCasinoRegistrationStatus(
+                    "Registration codes are 8 characters.",
+                    "error"
+                );
+            }
+
+            try {
+                setCasinoRegistrationStatus(
+                    "Registering...",
+                    ""
+                );
+
+                const json =
+                    await apiRequest(
+                        "/chips/register-player",
+                        {
+                            method: "POST",
+
+                            body: {
+                                playerId,
+                                playerName,
+                                authCode
+                            }
+                        }
+                    );
+
+                if (!json.ok) {
+                    throw new Error(
+                        json.error ||
+                        "Could not register casino player"
+                    );
+                }
+
+                lastRegisteredCasinoPlayerId =
+                    playerId;
+
+                const registeredState =
+                    json.state || null;
+
+                if (registeredState) {
+                    const currentChickenState =
+                        state.chicken;
+
+                    state =
+                        registeredState;
+
+                    if (
+                        chickenActionVersion > 0 &&
+                        currentChickenState
+                    ) {
+                        state.chicken =
+                            currentChickenState;
+                    }
+                }
+
+                hideCasinoRegistrationModal();
+
+                if (
+                    Number(
+                        json.startingBonusGranted || 0
+                    ) > 0
+                ) {
+                    setStatus(
+                        `Welcome bonus: +${shortMoney(
+                            json.startingBonusGranted
+                        )} chips`,
+                        5000
+                    );
+                } else if (
+                    json.reRegistered
+                ) {
+                    setStatus(
+                        "CASINO REGISTRATION RESTORED",
+                        4000
+                    );
+                } else {
+                    setStatus(
+                        "CASINO REGISTERED",
+                        3000
+                    );
+                }
+
+                render();
+
+            } catch (error) {
+                console.error(
+                    "Casino registration failed:",
+                    error
+                );
+
+                setCasinoRegistrationStatus(
+                    String(
+                        error?.message ||
+                        error ||
+                        "Registration failed"
+                    ),
+                    "error"
+                );
+            }
         }
 
         async function requestChips() {
@@ -9646,6 +10157,110 @@
                         }).join("");
             }
         }
+        async function unregisterCasinoPlayer() {
+            if (!adminToken) {
+                return setStatus(
+                    "BANKER LOCKED",
+                    1800
+                );
+            }
+
+            const playerId = String(
+                $("unregisterPlayerIdInput")?.value || ""
+            ).trim();
+
+            const playerName = String(
+                $("unregisterPlayerNameInput")?.value || ""
+            ).trim();
+
+            const reason = String(
+                $("unregisterPlayerReasonInput")?.value || ""
+            ).trim();
+
+            if (!playerId) {
+                return setStatus(
+                    "ENTER PLAYER ID",
+                    1800
+                );
+            }
+
+            const confirmed =
+                await showCasinoConfirm({
+                    title: "🚪 Unregister Player",
+                    message:
+                        `This will force player ${playerId} to register again with a new banker registration code.\n\n` +
+                        "Their casino balance and history will NOT be wiped, but their current PIN will be removed.",
+                    confirmText:
+                        "Yes, Unregister",
+                    cancelText:
+                        "Cancel"
+                });
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                setStatus(
+                    "UNREGISTERING PLAYER...",
+                    0
+                );
+
+                const json = await apiRequest(
+                    "/chips/unregister-player",
+                    {
+                        method: "POST",
+                        token: adminToken,
+                        body: {
+                            playerId,
+                            playerName,
+                            reason,
+                            bankerId:
+                                autoUserId || "",
+                            bankerName:
+                                autoName ||
+                                "Unknown banker"
+                        }
+                    }
+                );
+
+                if (!json.ok) {
+                    throw new Error(
+                        json.error ||
+                        "Could not unregister player"
+                    );
+                }
+
+                state =
+                    json.state ||
+                    state;
+
+                $("unregisterPlayerIdInput").value =
+                    "";
+
+                $("unregisterPlayerNameInput").value =
+                    "";
+
+                $("unregisterPlayerReasonInput").value =
+                    "";
+
+                setStatus(
+                    "PLAYER UNREGISTERED",
+                    3000
+                );
+
+                render();
+
+            } catch (error) {
+                setStatus(
+                    String(
+                        error.message ||
+                        error
+                    ),
+                    3000
+                );
+            }
+        }
         function renderLottery() {
             let lottery = state.lottery || {
                 ticketPrice: 100000000,
@@ -10655,7 +11270,12 @@
             };
 
             Object.entries(pages).forEach(([name, id]) => {
-                $(id)?.classList.toggle("active", tab === name);
+                const page = $(id);
+                if (!page) return;
+
+                const active = tab === name;
+                page.classList.toggle("active", active);
+                page.style.display = active ? "block" : "none";
             });
 
             Object.entries(tabButtons).forEach(([name, id]) => {
@@ -10690,69 +11310,56 @@
         const buttons = document.querySelectorAll(".tabButton");
         const indicator = document.querySelector(".tabIndicator");
 
-        buttons.forEach((button, index) => {
-            button.addEventListener("click", () => {
+        const TAB_BY_BUTTON_ID = {
+            wheelTabButton: "wheel",
+            blackjackTabButton: "blackjack",
+            racingTabButton: "racing",
+            slotsTabButton: "slots",
+            MinesTabButton: "mines",
+            dealTabButton: "deal",
+            rouletteTabButton: "roulette",
+            chickenTabButton: "chicken",
+            hiloTabButton: "hilo",
+            plinkoTabButton: "plinko",
+            scratchTabButton: "scratch",
+            lotteryTabButton: "lottery",
+            dailySpinTabButton: "dailySpin",
+            chipsTabButton: "chips",
+            userSettingsTabButton: "userSettings"
+        };
 
-                document.querySelector(".tabButton.active")?.classList.remove("active");
-                button.classList.add("active");
+        buttons.forEach(button => {
+            button.addEventListener("click", event => {
+                event.preventDefault();
+                event.stopPropagation();
 
-                if (button.innerHTML.toLowerCase().includes("wheel")) {
-                    setTab("wheel")
-                }
-                else if (button.innerHTML.toLowerCase().includes("blackjack")) {
-                    setTab("blackjack")
-                }
-                else if (button.innerHTML.toLowerCase().includes("racing")) {
-                    setTab("racing")
-                }
-                else if (button.innerHTML.toLowerCase().includes("slots")) {
-                    setTab("slots")
-                }
-                else if (button.innerHTML.toLowerCase().includes("mines")) {
-                    setTab("mines")
-                }
-                else if (button.innerHTML.toLowerCase().includes("deal")) {
-                    setTab("deal")
-                }
-                else if (button.innerHTML.toLowerCase().includes("roulette")) {
-                    setTab("roulette")
-                }
-                else if (button.innerHTML.toLowerCase().includes("chicken")) {
-                    setTab("chicken")
-                }
-                else if (button.innerHTML.toLowerCase().includes("scratch")) {
-                    setTab("scratch");
+                const tab = TAB_BY_BUTTON_ID[button.id];
+                if (!tab) return;
+
+                setTab(tab);
+                MoveIndicator(button);
+
+                if (tab === "dailySpin") {
+                    Promise.resolve()
+                        .then(() => loadDailySpinStatus())
+                        .catch(error => {
+                            console.error("Daily Spin status load failed:", error);
+                            setStatus(error?.message || "Could not load Daily Spin", 3000);
+                        });
+                } else if (tab === "chips") {
+                    Promise.resolve()
+                        .then(() => loadDailyCasinoProfit())
+                        .catch(error => {
+                            console.error("Chip daily-profit load failed:", error);
+                            setStatus(error?.message || "Could not load Chips data", 3000);
+                        });
+                } else if (tab === "scratch") {
                     renderScratchPaytable();
                     renderScratchHistory();
                     renderRewardBanners();
-                }
-                else if (
-                    button.innerHTML
-                        .toLowerCase()
-                        .includes("plinko")
-                ) {
-                    setTab("plinko");
-                }
-                else if (button.innerHTML.toLowerCase().includes("lottery")) {
-                    setTab("lottery");
-                }
-                else if (button.innerHTML.toLowerCase().includes("daily spin")) {
-                    setTab("dailySpin");
-                    loadDailySpinStatus();
-                }
-                else if (button.innerHTML.toLowerCase().includes("chips")) {
-                    setTab("chips");
-                    loadDailyCasinoProfit();
-                }
-                else if (button.innerHTML.toLowerCase().includes("settings")) {
-                    setTab("userSettings");
+                } else if (tab === "userSettings") {
                     applyUserSettingsToUI();
                 }
-                else if (button.innerHTML.toLowerCase().includes("hi-low")) {
-                    setTab("hilo")
-                }
-
-                MoveIndicator(button)
             });
         });
 
@@ -11024,6 +11631,149 @@
             setTimeout(() => {
                 overlay.classList.remove("active");
             }, 3000);
+        }
+        async function generateRegistrationCode() {
+            if (!adminToken) {
+                return setStatus(
+                    "BANKER LOCKED",
+                    1800
+                );
+            }
+
+            const button =
+                $("generateRegistrationCodeButton");
+
+            try {
+                if (button) {
+                    button.disabled = true;
+                    button.textContent =
+                        "Generating...";
+                }
+
+                const json = await apiRequest(
+                    "/chips/registration-code",
+                    {
+                        method: "POST",
+                        token: adminToken,
+
+                        body: {
+                            bankerId:
+                                autoUserId || "",
+
+                            bankerName:
+                                autoName ||
+                                "Unknown banker"
+                        }
+                    }
+                );
+
+                if (!json || !json.ok) {
+                    throw new Error(
+                        json?.error ||
+                        "Could not generate registration code"
+                    );
+                }
+
+                const code =
+                    String(json.code || "")
+                        .trim()
+                        .toUpperCase();
+
+                if (!/^[A-Z2-9]{8}$/.test(code)) {
+                    console.error(
+                        "Invalid registration code returned:",
+                        json.code
+                    );
+
+                    throw new Error(
+                        "Server returned an invalid registration code"
+                    );
+                }
+
+
+                const display =
+                    $("generatedRegistrationCode");
+
+                const value =
+                    $("registrationCodeValue");
+
+                const expiry =
+                    $("registrationCodeExpiry");
+
+                const status =
+                    $("registrationCodeStatus");
+
+                if (!display || !value) {
+                    throw new Error(
+                        "Registration code display elements are missing."
+                    );
+                }
+
+                value.textContent = code;
+
+                display.style.display = "block";
+
+                if (expiry) {
+                    const expiresAt =
+                        Number(json.expiresAt || 0);
+
+                    if (expiresAt) {
+                        const minutes =
+                            Math.max(
+                                1,
+                                Math.ceil(
+                                    (
+                                        expiresAt -
+                                        Date.now()
+                                    ) / 60000
+                                )
+                            );
+
+                        expiry.textContent =
+                            `Expires in approximately ${minutes} minutes • One use only`;
+                    } else {
+                        expiry.textContent =
+                            "Expires in 30 minutes • One use only";
+                    }
+                }
+
+                if (status) {
+                    status.textContent =
+                        "Code generated successfully. Copy it and give it to the player.";
+                }
+
+                setStatus(
+                    "REGISTRATION CODE GENERATED",
+                    2500
+                );
+
+                console.log(
+                    "[REGISTRATION] Generated:",
+                    code
+                );
+
+            } catch (error) {
+                console.error(
+                    "Registration code generation failed:",
+                    error
+                );
+
+                setStatus(
+                    String(
+                        error?.message ||
+                        error ||
+                        "Could not generate registration code"
+                    ),
+                    3500
+                );
+
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent =
+                        "Generate Registration Code";
+                }
+            }
         }
 
         function maybeShowRoundResultPopup(type, round) {
@@ -11511,6 +12261,107 @@
 
             return colours[Math.floor(Math.random() * colours.length)];
         }
+        async function generateCasinoRegistrationCode() {
+            try {
+                const json = await apiRequest(
+                    "/chips/registration-code",
+                    {
+                        method: "POST",
+                        body: {
+                            bankerId:
+                                autoUserId || "",
+                            bankerName:
+                                autoName || ""
+                        }
+                    }
+                );
+
+                if (!json.ok) {
+                    throw new Error(
+                        json.error ||
+                        "Could not generate registration code"
+                    );
+                }
+
+                const code =
+                    String(json.code || "")
+                        .trim()
+                        .toUpperCase();
+
+                if (!code) {
+                    throw new Error(
+                        "Server did not return a registration code"
+                    );
+                }
+
+                const codeBox =
+                    $("generatedRegistrationCode");
+
+                const codeValue =
+                    $("registrationCodeValue");
+
+                const expiry =
+                    $("registrationCodeExpiry");
+
+                if (codeValue) {
+                    codeValue.textContent =
+                        code;
+                }
+
+                if (codeBox) {
+                    codeBox.style.display =
+                        "block";
+                }
+
+                if (expiry) {
+                    const expiresAt =
+                        Number(json.expiresAt || 0);
+
+                    if (expiresAt) {
+                        const minutes =
+                            Math.max(
+                                1,
+                                Math.ceil(
+                                    (
+                                        expiresAt -
+                                        Date.now()
+                                    ) / 60000
+                                )
+                            );
+
+                        expiry.textContent =
+                            `Expires in approximately ${minutes} minutes • One use only`;
+                    } else {
+                        expiry.textContent =
+                            "Expires in 30 minutes • One use only";
+                    }
+                }
+
+                console.log(
+                    "[BANKER] Registration code generated:",
+                    code
+                );
+
+                setStatus(
+                    "REGISTRATION CODE GENERATED",
+                    3000
+                );
+
+            } catch (error) {
+                console.error(
+                    "[BANKER] Registration code generation failed:",
+                    error
+                );
+
+                setStatus(
+                    String(
+                        error.message ||
+                        error
+                    ),
+                    3000
+                );
+            }
+        }
 
         function scrollTabs(direction) {
             if (!scroller) return;
@@ -11812,6 +12663,14 @@
                 'pointerdown',
                 unlockSlotPayoutSound
             );
+            $("unregisterPlayerButton")?.addEventListener(
+                "click",
+                unregisterCasinoPlayer
+            );
+            $("casinoRegistrationSubmit")?.addEventListener(
+                "click",
+                submitCasinoRegistration
+            );
 
             $('slotSpinButton').addEventListener(
                 'click',
@@ -11893,6 +12752,43 @@
             $("cashoutChipsButton").addEventListener("click", cashoutPlayerChips);
             $("scratchBuyButton")?.addEventListener("click", buyScratchTickets);
             $("scratchRevealAllButton")?.addEventListener("click", revealAllScratchTickets);
+            $("generateRegistrationCodeButton")?.addEventListener(
+                "click",
+                generateRegistrationCode
+            );
+
+            $("copyRegistrationCodeButton")?.addEventListener(
+                "click",
+                async () => {
+                    const code = String(
+                        $("registrationCodeValue")?.textContent || ""
+                    ).trim();
+
+                    if (!code || code === "--------") {
+                        setStatus("GENERATE A CODE FIRST", 1800);
+                        return;
+                    }
+
+                    try {
+                        await navigator.clipboard.writeText(code);
+                        $("registrationCodeStatus").textContent =
+                            "Code copied to clipboard.";
+                        setStatus("REGISTRATION CODE COPIED", 1800);
+                    } catch (error) {
+                        const value = $("registrationCodeValue");
+                        if (value) {
+                            const range = document.createRange();
+                            range.selectNodeContents(value);
+                            const selection = window.getSelection();
+                            selection.removeAllRanges();
+                            selection.addRange(range);
+                        }
+                        $("registrationCodeStatus").textContent =
+                            "Select the highlighted code and copy it.";
+                    }
+                }
+            );
+
 
             const requestWithdrawalButton =
                 $("requestWithdrawalButton");
