@@ -1726,12 +1726,7 @@
                             </button>
                         </div>
 
-                    </div>
-
-
-                </div>
-
-                <div id="dailyProfitPanel" class="dailyProfitPanel" style="display:none !important;">
+<div id="dailyProfitPanel" class="dailyProfitPanel" style="display:none !important;">
 
                     <div class="dailyProfitHeader">
                         <div>
@@ -1813,6 +1808,13 @@
 
 
                 </div>
+
+                    </div>
+
+
+                </div>
+
+                
             </div>
        
 
@@ -3357,6 +3359,10 @@ function clearSavedCasinoPin(playerId = autoUserId) {
                     Math.random().toString(36).slice(2)
                 );
 
+    
+        let plinkoLockedMultipliers = null;
+
+
         const DEFAULT_PLINKO_MULTIPLIERS = [
             0.20,
             0.50,
@@ -3372,20 +3378,41 @@ function clearSavedCasinoPin(playerId = autoUserId) {
         ];
 
         function getPlinkoMultipliers() {
+          
+            if (
+                Array.isArray(plinkoLockedMultipliers) &&
+                plinkoLockedMultipliers.length ===
+                    DEFAULT_PLINKO_MULTIPLIERS.length
+            ) {
+                return plinkoLockedMultipliers.slice();
+            }
+
             const slots = state.plinko?.slots;
 
             if (
                 Array.isArray(slots) &&
-                slots.length === DEFAULT_PLINKO_MULTIPLIERS.length
+                slots.length ===
+                    DEFAULT_PLINKO_MULTIPLIERS.length
             ) {
-                return slots
-                    .slice()
-                    .sort(
-                        (a, b) =>
-                            Number(a.slotIndex) -
-                            Number(b.slotIndex)
-                    )
-                    .map(slot => Number(slot.multiplier));
+                const receivedLayout =
+                    slots
+                        .slice()
+                        .sort(
+                            (a, b) =>
+                                Number(a.slotIndex) -
+                                Number(b.slotIndex)
+                        )
+                        .map(
+                            slot =>
+                                Number(
+                                    slot.multiplier
+                                )
+                        );
+
+                plinkoLockedMultipliers =
+                    receivedLayout.slice();
+
+                return receivedLayout;
             }
 
             return DEFAULT_PLINKO_MULTIPLIERS;
@@ -3620,15 +3647,46 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             const boardHeight =
                 board.clientHeight;
 
-            const slotCount =
-                getPlinkoMultipliers().length;
+       
+            const slotElements =
+                Array.from(
+                    document.querySelectorAll(
+                        "#plinkoSlots .plinkoSlot"
+                    )
+                );
 
-            const slotWidth =
-                boardWidth / slotCount;
+            const targetSlot =
+                slotElements[slotIndex];
+
+            if (!targetSlot) {
+                plinkoBusy =
+                    Math.max(
+                        0,
+                        plinkoBusy - 1
+                    );
+
+                setStatus(
+                    "PLINKO SLOT POSITION ERROR",
+                    3000
+                );
+
+                return;
+            }
+
+            const boardRect =
+                board.getBoundingClientRect();
+
+            const slotRect =
+                targetSlot.getBoundingClientRect();
 
             const targetX =
-                slotWidth *
-                (slotIndex + 0.5);
+                (
+                    slotRect.left -
+                    boardRect.left
+                ) +
+                (
+                    slotRect.width / 2
+                );
 
             const startX =
                 boardWidth / 2;
@@ -4057,13 +4115,36 @@ function clearSavedCasinoPin(playerId = autoUserId) {
 
                 const multiplier =
                     Number(
-                        result.multiplier ||
-                        PLINKO_MULTIPLIERS[slotIndex]
+                        result.multiplier
                     );
+
+                if (
+                    !Number.isFinite(multiplier)
+                ) {
+                    throw new Error(
+                        "Invalid Plinko result multiplier"
+                    );
+                }
 
 
                 state =
                     json.state || state;
+
+          
+                if (
+                    Array.isArray(
+                        plinkoLockedMultipliers
+                    ) &&
+                    state.plinko
+                ) {
+                    state.plinko.slots =
+                        plinkoLockedMultipliers.map(
+                            (multiplier, slotIndex) => ({
+                                slotIndex,
+                                multiplier
+                            })
+                        );
+                }
 
                 const completedHistory =
                     json.state?.plinko?.history ||
@@ -12337,55 +12418,84 @@ saveCasinoPin(
         function extractGameData(message) {
             if (!message) return null;
 
-            const candidates = [
-                message,
-                message.data,
-                message.cache,
-                message.payload,
-                message.value,
-                message.values,
-                message.namedData,
-                message.result,
-                message.response
-            ];
+         
+            const seen = new Set();
 
-            for (const candidate of candidates) {
+            function walk(value, depth = 0) {
+                if (!value || depth > 8) return null;
+
                 if (
-                    !candidate ||
-                    typeof candidate !== 'object'
+                    typeof value === "string" ||
+                    typeof value === "number" ||
+                    typeof value === "boolean"
                 ) {
-                    continue;
+                    return null;
                 }
+
+                if (typeof value !== "object") return null;
+                if (seen.has(value)) return null;
+                seen.add(value);
 
                 const userId =
-                    candidate.user_id ??
-                    candidate.userId ??
-                    candidate.userid ??
-                    candidate.player_id ??
-                    candidate.playerId ??
-                    candidate.id;
+                    value.user_id ??
+                    value.userId ??
+                    value.userid ??
+                    value.player_id ??
+                    value.playerId ??
+                    value.playerID ??
+                    value.steam_id ??
+                    value.steamId ??
+                    value.id;
 
                 const playerName =
-                    candidate.name ??
-                    candidate.username ??
-                    candidate.player_name ??
-                    candidate.playerName ??
-                    candidate.displayName;
+                    value.name ??
+                    value.username ??
+                    value.player_name ??
+                    value.playerName ??
+                    value.displayName ??
+                    value.display_name;
 
                 if (
-                    userId !== undefined ||
-                    playerName !== undefined
+                    userId !== undefined &&
+                    userId !== null &&
+                    String(userId).trim()
                 ) {
                     return {
-                        ...candidate,
-                        user_id: userId,
-                        name: playerName
+                        ...value,
+                        user_id: String(userId).trim(),
+                        name:
+                            playerName !== undefined &&
+                            playerName !== null
+                                ? String(playerName).trim()
+                                : undefined
                     };
                 }
+
+           
+                const values = Array.isArray(value)
+                    ? value
+                    : Object.values(value);
+
+                for (const child of values) {
+                    const result = walk(child, depth + 1);
+                    if (result?.user_id) {
+                        if (
+                            !result.name &&
+                            playerName !== undefined &&
+                            playerName !== null
+                        ) {
+                            result.name = String(playerName).trim();
+                        }
+                        return result;
+                    }
+                }
+
+                return null;
             }
 
-            return null;
+            return walk(message);
         }
+
 function applyGameData(data) {
     if (!data) {
         return false;
@@ -12452,6 +12562,10 @@ function applyGameData(data) {
         updateBankerUI();
         updateDetectedPlayerDisplay();
         render();
+
+        if (autoUserId && !autoName) {
+            requestGameData();
+        }
     }
 
     return changed;
@@ -12459,19 +12573,35 @@ function applyGameData(data) {
 
         function requestGameData() {
             try {
-                window.parent.postMessage({ type: 'getData' }, '*');
-                window.parent.postMessage({
-                    type: 'getNamedData',
-                    keys: [
-                        'user_id',
-                        'userId',
-                        'playerId',
-                        'name',
-                        'username',
-                        'playerName'
-                    ]
-                }, '*');
-            } catch (e) { }
+                window.parent.postMessage(
+                    { type: 'getData' },
+                    '*'
+                );
+
+                window.parent.postMessage(
+                    {
+                        type: 'getNamedData',
+                        keys: [
+                            'user_id',
+                            'userId',
+                            'userid',
+                            'player_id',
+                            'playerId',
+                            'playerID',
+                            'name',
+                            'username',
+                            'playerName',
+                            'displayName'
+                        ]
+                    },
+                    '*'
+                );
+            } catch (e) {
+                console.warn(
+                    '[CASINO] Could not request Transport Tycoon game data:',
+                    e
+                );
+            }
         }
 
         window.addEventListener('message', function (event) {
@@ -13123,8 +13253,10 @@ function applyGameData(data) {
                 } else {
                     requestGameData();
                 }
-            }, 1500);
-            setTimeout(() => clearInterval(gameDataRetry), 15000);
+            }, 1000);
+
+          
+            window.casinoGameDataRetry = gameDataRetry;
             startPolling();
             setInterval(updateAutomaticGameCountdowns, 250);
             setInterval(renderLottery, 1000);
