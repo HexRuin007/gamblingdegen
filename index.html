@@ -3199,9 +3199,11 @@ function clearSavedCasinoPin(playerId = autoUserId) {
         const requestStartedBjVersion = blackjackActionVersion;
         const requestStartedChickenVersion = chickenActionVersion;
 
-        const stateQuery = autoUserId
-            ? '?playerId=' + encodeURIComponent(autoUserId)
-            : '';
+        const stateQuery =
+            '?playerId=' +
+            encodeURIComponent(autoUserId || '') +
+            '&plinkoSessionId=' +
+            encodeURIComponent(plinkoSessionId);
 
         const json = await apiRequest('/state' + stateQuery, {
             token: adminToken || undefined
@@ -3223,7 +3225,7 @@ function clearSavedCasinoPin(playerId = autoUserId) {
 
         state = json.state || state;
 
-        // Check whether the current player needs to register again.
+       
         const currentPlayerId =
             String(autoUserId || "").trim();
 
@@ -3344,7 +3346,18 @@ function clearSavedCasinoPin(playerId = autoUserId) {
 
 
 
-        const PLINKO_MULTIPLIERS = [
+        const plinkoSessionId =
+            (
+                window.crypto &&
+                typeof window.crypto.randomUUID === "function"
+            )
+                ? window.crypto.randomUUID()
+                : (
+                    Date.now().toString(36) +
+                    Math.random().toString(36).slice(2)
+                );
+
+        const DEFAULT_PLINKO_MULTIPLIERS = [
             0.20,
             0.50,
             0.80,
@@ -3358,6 +3371,26 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             0.20
         ];
 
+        function getPlinkoMultipliers() {
+            const slots = state.plinko?.slots;
+
+            if (
+                Array.isArray(slots) &&
+                slots.length === DEFAULT_PLINKO_MULTIPLIERS.length
+            ) {
+                return slots
+                    .slice()
+                    .sort(
+                        (a, b) =>
+                            Number(a.slotIndex) -
+                            Number(b.slotIndex)
+                    )
+                    .map(slot => Number(slot.multiplier));
+            }
+
+            return DEFAULT_PLINKO_MULTIPLIERS;
+        }
+
         let plinkoBusy = 0;
         let plinkoBallSequence = 0;
         let plinkoAutoPlayActive = false;
@@ -3369,7 +3402,13 @@ function clearSavedCasinoPin(playerId = autoUserId) {
 
             if (!pegLayer || !slots) return;
 
-            if (pegLayer.dataset.built === "true") {
+            const multipliers = getPlinkoMultipliers();
+            const layoutKey = multipliers.join(",");
+
+            if (
+                pegLayer.dataset.built === "true" &&
+                pegLayer.dataset.layoutKey === layoutKey
+            ) {
                 return;
             }
 
@@ -3377,7 +3416,7 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             slots.innerHTML = "";
 
             const rows = 11;
-            const bottomPegCount = PLINKO_MULTIPLIERS.length + 1;
+            const bottomPegCount = multipliers.length + 1;
             const pegSpacing = 100 / (bottomPegCount + 1);
 
             for (let row = 0; row < rows; row++) {
@@ -3399,7 +3438,7 @@ function clearSavedCasinoPin(playerId = autoUserId) {
                 }
             }
 
-            PLINKO_MULTIPLIERS.forEach(
+            multipliers.forEach(
                 multiplier => {
 
                     const slot =
@@ -3424,6 +3463,7 @@ function clearSavedCasinoPin(playerId = autoUserId) {
 
             slots.dataset.built = "true";
             pegLayer.dataset.built = "true";
+            pegLayer.dataset.layoutKey = layoutKey;
         }
 
 
@@ -3581,7 +3621,7 @@ function clearSavedCasinoPin(playerId = autoUserId) {
                 board.clientHeight;
 
             const slotCount =
-                PLINKO_MULTIPLIERS.length;
+                getPlinkoMultipliers().length;
 
             const slotWidth =
                 boardWidth / slotCount;
@@ -3994,7 +4034,8 @@ function clearSavedCasinoPin(playerId = autoUserId) {
                                 playerId,
                                 playerName,
                                 amount,
-                                pinProof
+                                pinProof,
+                                plinkoSessionId
                             }
                         }
                     );
@@ -4007,7 +4048,7 @@ function clearSavedCasinoPin(playerId = autoUserId) {
                     Math.max(
                         0,
                         Math.min(
-                            PLINKO_MULTIPLIERS.length - 1,
+                            getPlinkoMultipliers().length - 1,
                             Number(
                                 result.slotIndex || 0
                             )
@@ -11755,7 +11796,7 @@ saveCasinoPin(
                 )
             );
 
-            box.innerHTML = PLINKO_MULTIPLIERS
+            box.innerHTML = getPlinkoMultipliers()
                 .map(multiplier => {
 
                     const payout =
@@ -12376,7 +12417,7 @@ function applyGameData(data) {
 
         autoUserId = nextId;
 
-        // Load this player's saved PIN.
+      
         if (previousPlayerId !== nextId) {
             loadSavedCasinoPin(nextId);
         }
