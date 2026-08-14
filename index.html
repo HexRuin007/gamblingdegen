@@ -2030,6 +2030,86 @@
             "709309": "1202575097060266035"
         };
         let casinoPin = null;
+        const STORAGE_CASINO_PIN_PREFIX = "tt_shared_casino_pin_";
+
+function getCasinoPinStorageKey(playerId = autoUserId) {
+    const id = String(playerId || "").trim();
+
+    if (!id) {
+        return "";
+    }
+
+    return STORAGE_CASINO_PIN_PREFIX + id;
+}
+
+function loadSavedCasinoPin(playerId = autoUserId) {
+    const key = getCasinoPinStorageKey(playerId);
+
+    if (!key) {
+        casinoPin = null;
+        return;
+    }
+
+    try {
+        const savedPin = String(
+            localStorage.getItem(key) || ""
+        ).trim();
+
+        if (/^\d{4,8}$/.test(savedPin)) {
+            casinoPin = savedPin;
+        } else {
+            casinoPin = null;
+        }
+    } catch (error) {
+        console.warn(
+            "Could not load saved casino PIN:",
+            error
+        );
+
+        casinoPin = null;
+    }
+}
+
+function saveCasinoPin(pin, playerId = autoUserId) {
+    const key = getCasinoPinStorageKey(playerId);
+
+    if (!key) {
+        return;
+    }
+
+    try {
+        localStorage.setItem(
+            key,
+            String(pin)
+        );
+    } catch (error) {
+        console.warn(
+            "Could not save casino PIN:",
+            error
+        );
+    }
+}
+
+function clearSavedCasinoPin(playerId = autoUserId) {
+    const key = getCasinoPinStorageKey(playerId);
+
+    if (!key) {
+        return;
+    }
+
+    try {
+        localStorage.removeItem(key);
+    } catch (error) {
+        console.warn(
+            "Could not clear saved casino PIN:",
+            error
+        );
+    }
+
+    if (String(playerId) === String(autoUserId)) {
+        casinoPin = null;
+    }
+}
         function getBankerDiscordId(gameId) {
             return BANKER_DISCORD_IDS[String(gameId)] || String(gameId || "");
         }
@@ -3084,18 +3164,34 @@
             }
         }
 
-        async function setupPin(pin) {
-            const json = await apiRequest('/chips/set-pin', {
-                method: 'POST',
-                body: { playerId: autoUserId, pin }
-            });
+    async function setupPin(pin) {
+    const playerId = String(autoUserId || "").trim();
 
-            if (!json.ok) {
-                throw new Error(json.error || "Could not set PIN");
-            }
+    if (!playerId) {
+        throw new Error("No player ID available");
+    }
 
-            casinoPin = pin;
+    const json = await apiRequest('/chips/set-pin', {
+        method: 'POST',
+        body: {
+            playerId,
+            pin
         }
+    });
+
+    if (!json.ok) {
+        throw new Error(
+            json.error || "Could not set PIN"
+        );
+    }
+
+    casinoPin = String(pin);
+
+    saveCasinoPin(
+        casinoPin,
+        playerId
+    );
+}
    async function refreshState(silent) {
     try {
         const requestStartedAt = Date.now();
@@ -4221,9 +4317,14 @@
                         if (isFirstTime) {
                             await setupPin(pin);
                         } else {
-                            casinoPin = pin;
+                           casinoPin = pin;
 
-                            await getPinProof();
+await getPinProof();
+
+saveCasinoPin(
+    casinoPin,
+    autoUserId
+);
                         }
 
                         cleanup();
@@ -4368,9 +4469,9 @@
             $("resetPinPlayerIdInput").value = "";
 
 
-            if (String(playerId) === String(autoUserId)) {
-                casinoPin = null;
-            }
+          if (String(playerId) === String(autoUserId)) {
+    clearSavedCasinoPin(playerId);
+}
 
             state = json.state || state;
             setStatus(`PIN reset for ${playerId}`, 3000);
@@ -4888,31 +4989,84 @@
             }
         }
 
-        async function requestChips() {
-            const playerId = String(autoUserId || '').trim();
-            const playerName = String(autoName || '').trim();
-            const amount = parseMoneyInput($('chipRequestAmount').value);
-            const requestType = $('chipRequestType')?.value === 'free' ? 'free' : 'paid';
-            if (!playerId || !playerName) return setStatus('NO GAME DATA', 1800);
-            if (!amount || amount < 1) return setStatus('NO CHIP AMOUNT', 1800);
-            try {
-                const json = await apiRequest('/chips/request', {
-                    method: 'POST',
-                    body: { playerId, playerName, amount, requestType }
-                });
-                state = json.state || state;
-                $('chipRequestAmount').value = '';
-                setStatus(
-                    json.autoApproved
-                        ? `FREE CHIPS AUTO-APPROVED: ${shortMoney(amount)}`
-                        : `${requestType.toUpperCase()} CHIPS REQUESTED`,
-                    2500
-                );
-                render();
-            } catch (e) {
-                setStatus(String(e.message || e), 2500);
+   async function requestChips() {
+    const playerId = String(
+        autoUserId || ""
+    ).trim();
+
+    const playerName = String(
+        autoName || ""
+    ).trim();
+
+    const amount = parseMoneyInput(
+        $("chipRequestAmount").value
+    );
+
+    const requestType =
+        $("chipRequestType")?.value === "free"
+            ? "free"
+            : "paid";
+
+    if (!playerId || !playerName) {
+        return setStatus(
+            "NO GAME DATA",
+            1800
+        );
+    }
+
+    if (!amount || amount < 1) {
+        return setStatus(
+            "NO CHIP AMOUNT",
+            1800
+        );
+    }
+
+ 
+    if (!(await ensurePinReady())) {
+        return setStatus(
+            "PIN REQUIRED",
+            2200
+        );
+    }
+
+    try {
+     
+        const pinProof = await getPinProof();
+
+        const json = await apiRequest(
+            "/chips/request",
+            {
+                method: "POST",
+                body: {
+                    playerId,
+                    playerName,
+                    amount,
+                    requestType,
+                    pinProof
+                }
             }
-        }
+        );
+
+        state = json.state || state;
+
+        $("chipRequestAmount").value = "";
+
+        setStatus(
+            json.autoApproved
+                ? `FREE CHIPS AUTO-APPROVED: ${shortMoney(amount)}`
+                : `${requestType.toUpperCase()} CHIPS REQUESTED`,
+            2500
+        );
+
+        render();
+
+    } catch (e) {
+        setStatus(
+            String(e.message || e),
+            2500
+        );
+    }
+}
 
         async function requestChipWithdrawal() {
             const playerId = String(
@@ -12191,68 +12345,76 @@
 
             return null;
         }
+function applyGameData(data) {
+    if (!data) {
+        return false;
+    }
 
-        function applyGameData(data) {
-            if (!data) return false;
+    let changed = false;
 
-            let changed = false;
+    const rawId =
+        data.user_id ??
+        data.userId ??
+        data.userid ??
+        data.player_id ??
+        data.playerId ??
+        data.id;
 
-            const rawId =
-                data.user_id ??
-                data.userId ??
-                data.userid ??
-                data.player_id ??
-                data.playerId ??
-                data.id;
+    const nextId =
+        rawId !== undefined &&
+        rawId !== null
+            ? String(rawId).trim()
+            : "";
 
-            if (
-                rawId !== undefined &&
-                rawId !== null
-            ) {
-                const nextId = String(rawId).trim();
+    if (
+        nextId &&
+        autoUserId !== nextId
+    ) {
+        const previousPlayerId = String(
+            autoUserId || ""
+        ).trim();
 
-                if (
-                    nextId &&
-                    autoUserId !== nextId
-                ) {
-                    autoUserId = nextId;
-                    changed = true;
-                }
-            }
+        autoUserId = nextId;
 
-            const rawName =
-                data.name ??
-                data.username ??
-                data.player_name ??
-                data.playerName ??
-                data.displayName;
-
-            if (
-                rawName !== undefined &&
-                rawName !== null
-            ) {
-                const nextName =
-                    String(rawName).trim();
-
-                if (
-                    nextName &&
-                    autoName !== nextName
-                ) {
-                    autoName = nextName;
-                    changed = true;
-                }
-            }
-
-            if (changed) {
-                updateBankerUI();
-                updateDetectedPlayerDisplay();
-                render();
-
-
-            }
-
-            return changed;
+        // Load this player's saved PIN.
+        if (previousPlayerId !== nextId) {
+            loadSavedCasinoPin(nextId);
         }
+
+        changed = true;
+    }
+
+    const rawName =
+        data.name ??
+        data.username ??
+        data.player_name ??
+        data.playerName ??
+        data.displayName;
+
+    if (
+        rawName !== undefined &&
+        rawName !== null
+    ) {
+        const nextName =
+            String(rawName).trim();
+
+        if (
+            nextName &&
+            autoName !== nextName
+        ) {
+            autoName = nextName;
+            changed = true;
+        }
+    }
+
+    if (changed) {
+        updateBankerUI();
+        updateDetectedPlayerDisplay();
+        render();
+    }
+
+    return changed;
+}
 
         function requestGameData() {
             try {
