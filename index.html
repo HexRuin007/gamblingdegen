@@ -1213,6 +1213,14 @@
                             <button id="scratchBuyButton" class="green">Buy Tickets</button>
                         </div>
 
+                        <button id="scratchAutoPlayButton" type="button">
+                            ▶ AUTO SCRATCH
+                        </button>
+
+                        <div id="scratchAutoPlayStatus" class="small">
+                            Auto Scratch is off
+                        </div>
+
                         <div class="quickBetGrid">
                             <button class="quickBetButton" data-target="scratchPriceInput"
                                 data-amount="1000000">1M</button>
@@ -2135,6 +2143,9 @@ function clearSavedCasinoPin(playerId = autoUserId) {
         let scratchRevealing = false;
         let currentScratchBatch = null;
         let scratchSummaryShown = false;
+        let scratchAutoPlayRunning = false;
+        let scratchAutoPlayPrice = 0;
+        let scratchAutoPlayQuantity = 0;
 
         function loadUserSettings() {
             try {
@@ -7918,13 +7929,11 @@ saveCasinoPin(
             cover.classList.add("scratched");
 
             const allTicketsFinished = scratchTickets.every((_, t) => {
-
                 return Array.from(
                     document.querySelectorAll(
                         `.scratchCellCover[data-ticket="${t}"]`
                     )
                 ).every(c => c.classList.contains("scratched"));
-
             });
 
             if (!allTicketsFinished) return;
@@ -7945,7 +7954,8 @@ saveCasinoPin(
 
         async function revealAllScratchTickets() {
 
-            if (scratchRevealing) return;
+            if (scratchRevealing) return false;
+            if (!scratchTickets.length) return false;
 
             scratchRevealing = true;
 
@@ -7956,9 +7966,7 @@ saveCasinoPin(
                 );
 
                 for (const cover of covers) {
-
                     cover.classList.add("scratched");
-
                     await wait(45);
                 }
 
@@ -7972,19 +7980,20 @@ saveCasinoPin(
 
                 showScratchBatchSummary(currentScratchBatch);
                 await wait(3000);
-                await claimScratchTickets();
+
+                return await claimScratchTickets();
 
             } finally {
-
                 scratchRevealing = false;
-
             }
-
         }
+
         async function claimScratchTickets() {
-            if (!scratchTickets.length) return;
+
+            if (!scratchTickets.length) return false;
 
             try {
+
                 const json = await apiRequest("/scratch/claim", {
                     method: "POST",
                     body: {
@@ -8012,46 +8021,93 @@ saveCasinoPin(
 
                 setStatus("SCRATCH COMPLETE", 1800);
 
+                return true;
+
             } catch (error) {
+
                 setStatus(error.message || "Claim failed", 2500);
+
+                return false;
             }
         }
-        async function buyScratchTickets() {
+
+        async function buyScratchTickets(options = {}) {
+
             const playerId = String(autoUserId || "").trim();
             const playerName = String(autoName || "").trim();
-            let ticketPrice = parseMoneyInput($("scratchPriceInput").value);
-            let quantity = Math.floor(Number($("scratchQuantityInput").value || 1));
 
-            if (!playerId || !playerName)
-                return setStatus("NO GAME DATA", 1800);
+            let ticketPrice =
+                options.ticketPrice !== undefined
+                    ? Number(options.ticketPrice)
+                    : parseMoneyInput($("scratchPriceInput").value);
+
+            let quantity =
+                options.quantity !== undefined
+                    ? Math.floor(Number(options.quantity))
+                    : Math.floor(Number($("scratchQuantityInput").value || 1));
+
+            const isAutoplay = options.autoplay === true;
+
+            if (!playerId || !playerName) {
+                setStatus("NO GAME DATA", 1800);
+                return false;
+            }
 
             const rewards = state.rewards || {};
             const myRewards = rewards[String(playerId)] || {};
             const hasFreeBet = Number(myRewards.scratchTickets || 0) > 0;
 
+            /*
+             * Autoplay must use the exact same paid ticket price and quantity
+             * every cycle. A free-ticket reward would change the purchase to
+             * one free ticket, so don't silently alter the autoplay settings.
+             */
+            if (isAutoplay && hasFreeBet) {
+                setStatus(
+                    "AUTOPLAY REQUIRES PAID TICKETS",
+                    2500
+                );
+                return false;
+            }
+
             if (!hasFreeBet) {
-                if (!ticketPrice || ticketPrice < 1)
-                    return setStatus("NO TICKET PRICE", 1800);
 
-                if (!quantity || quantity < 1 || quantity > 20)
-                    return setStatus("CHOOSE 1-20 TICKETS", 2000);
+                if (!ticketPrice || ticketPrice < 1) {
+                    setStatus("NO TICKET PRICE", 1800);
+                    return false;
+                }
 
-                if (ticketPrice * quantity > getMyChipBalance())
-                    return setStatus("NOT ENOUGH CHIPS", 2200);
+                if (!quantity || quantity < 1 || quantity > 20) {
+                    setStatus("CHOOSE 1-20 TICKETS", 2000);
+                    return false;
+                }
+
+                if (ticketPrice * quantity > getMyChipBalance()) {
+                    setStatus("NOT ENOUGH CHIPS", 2200);
+                    return false;
+                }
+
             } else {
+
                 ticketPrice = 10000000;
                 quantity = 1;
             }
 
             if (scratchTickets.length) {
-                return setStatus("Reveal your current scratch cards first.", 2500);
+                setStatus(
+                    "Reveal your current scratch cards first.",
+                    2500
+                );
+                return false;
             }
 
             if (!(await ensurePinReady())) {
-                return setStatus("PIN REQUIRED", 2200);
+                setStatus("PIN REQUIRED", 2200);
+                return false;
             }
 
             try {
+
                 const pinProof = await getPinProof();
 
                 const json = await apiRequest("/scratch/buy", {
@@ -8069,19 +8125,189 @@ saveCasinoPin(
                 scratchTickets = json.tickets || [];
                 currentScratchBatch = json.batch || null;
                 scratchSummaryShown = false;
+
                 buildScratchCardsGrid();
+
                 const buyButton = $("scratchBuyButton");
                 if (buyButton) {
                     buyButton.disabled = true;
                 }
 
                 render();
+
+                return true;
+
             } catch (e) {
+
                 setStatus(String(e.message || e), 2500);
+
+                return false;
             }
         }
 
+        function updateScratchAutoPlayButton() {
 
+            const button = $("scratchAutoPlayButton");
+            const status = $("scratchAutoPlayStatus");
+
+            if (!button) return;
+
+            if (scratchAutoPlayRunning) {
+
+                button.textContent = "■ STOP AUTOSCRATCH";
+                button.classList.add("danger");
+
+                if (status) {
+                    status.textContent =
+                        `Auto Scratch running: ${scratchAutoPlayQuantity} ticket(s) at ${shortMoney(scratchAutoPlayPrice)} each`;
+                }
+
+            } else {
+
+                button.textContent = "▶ AUTO SCRATCH";
+                button.classList.remove("danger");
+
+                if (status) {
+                    status.textContent = "Auto Scratch is off";
+                }
+            }
+        }
+
+        function stopScratchAutoPlay(message = "AUTOSCRATCH STOPPED") {
+
+            scratchAutoPlayRunning = false;
+            updateScratchAutoPlayButton();
+
+            if (message) {
+                setStatus(message, 1800);
+            }
+        }
+
+        async function runScratchAutoPlay() {
+
+            if (scratchAutoPlayRunning) {
+                stopScratchAutoPlay();
+                return;
+            }
+
+            const price = parseMoneyInput(
+                $("scratchPriceInput")?.value || ""
+            );
+
+            const quantity = Math.floor(
+                Number($("scratchQuantityInput")?.value || 0)
+            );
+
+            const playerId = String(autoUserId || "").trim();
+            const playerName = String(autoName || "").trim();
+
+            if (!playerId || !playerName) {
+                setStatus("NO GAME DATA", 1800);
+                return;
+            }
+
+            if (!price || price < 1) {
+                setStatus("NO TICKET PRICE", 1800);
+                return;
+            }
+
+            if (!quantity || quantity < 1 || quantity > 20) {
+                setStatus("CHOOSE 1-20 TICKETS", 2000);
+                return;
+            }
+
+            const rewards = state.rewards || {};
+            const myRewards = rewards[String(playerId)] || {};
+            const hasFreeBet = Number(myRewards.scratchTickets || 0) > 0;
+
+            if (hasFreeBet) {
+                setStatus(
+                    "AUTOPLAY REQUIRES PAID TICKETS",
+                    2500
+                );
+                return;
+            }
+
+            const totalCost = price * quantity;
+
+            if (totalCost > getMyChipBalance()) {
+                setStatus("NOT ENOUGH CHIPS", 2200);
+                return;
+            }
+
+            if (scratchTickets.length) {
+                setStatus(
+                    "REVEAL YOUR CURRENT SCRATCH CARDS FIRST",
+                    2500
+                );
+                return;
+            }
+
+            scratchAutoPlayPrice = price;
+            scratchAutoPlayQuantity = quantity;
+            scratchAutoPlayRunning = true;
+
+            updateScratchAutoPlayButton();
+
+            try {
+
+                while (scratchAutoPlayRunning) {
+
+                    /*
+                     * The price and quantity are deliberately taken from the
+                     * saved autoplay values, not the live inputs. Changing
+                     * the inputs while autoplay is running therefore cannot
+                     * change the batch size or ticket price.
+                     */
+
+                    const bought = await buyScratchTickets({
+                        ticketPrice: scratchAutoPlayPrice,
+                        quantity: scratchAutoPlayQuantity,
+                        autoplay: true
+                    });
+
+                    if (!bought) {
+                        break;
+                    }
+
+                    if (!scratchTickets.length) {
+                        setStatus(
+                            "AUTOSCRATCH COULD NOT BUY TICKETS",
+                            2500
+                        );
+                        break;
+                    }
+
+                    const completed = await revealAllScratchTickets();
+
+                    if (!completed) {
+                        break;
+                    }
+
+                    if (!scratchAutoPlayRunning) {
+                        break;
+                    }
+
+                    /*
+                     * Wait one tick before the next purchase so the UI/state
+                     * has time to settle after the claim.
+                     */
+                    await wait(250);
+
+                    if (scratchAutoPlayRunning) {
+                        updateScratchAutoPlayButton();
+                    }
+                }
+
+            } finally {
+
+                scratchAutoPlayRunning = false;
+                scratchAutoPlayPrice = 0;
+                scratchAutoPlayQuantity = 0;
+
+                updateScratchAutoPlayButton();
+            }
+        }
 
         function showScratchBatchSummary(batch) {
             const box = $("scratchBatchSummary");
@@ -13226,6 +13452,8 @@ function applyGameData(data) {
             $("cashoutChipsButton").addEventListener("click", cashoutPlayerChips);
             $("scratchBuyButton")?.addEventListener("click", buyScratchTickets);
             $("scratchRevealAllButton")?.addEventListener("click", revealAllScratchTickets);
+            $("scratchAutoPlayButton")?.addEventListener("click", runScratchAutoPlay);
+            updateScratchAutoPlayButton();
             $("generateRegistrationCodeButton")?.addEventListener(
                 "click",
                 generateRegistrationCode
