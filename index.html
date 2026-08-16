@@ -3104,28 +3104,40 @@ function clearSavedCasinoPin(playerId = autoUserId) {
         function getServerUrl() {
             return String(SERVER_URL || '').trim().replace(/\/$/, '')
         }
-        async function apiRequest(path, options) {
-            const response = await fetch(getServerUrl() + path, {
-                method: options?.method || 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(options?.token ? {
-                        Authorization: 'Bearer ' + options.token
-                    } : {})
-                },
-                body: options?.body ? JSON.stringify(options.body) : undefined
-            });
-            const text = await response.text();
-            let json;
-            try {
-                json = text ? JSON.parse(text) : {}
-            } catch (e) {
-                throw new Error(text || 'Bad server response')
-            }
-            if (!response.ok || json.ok === false)
-                throw new Error(json.error || 'Server error');
-            return json
+   async function apiRequest(path, options) {
+    const response = await fetch(getServerUrl() + path, {
+        method: options?.method || 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options?.token ? {
+                Authorization: 'Bearer ' + options.token
+            } : {})
+        },
+        body: options?.body ? JSON.stringify(options.body) : undefined
+    });
+
+    const text = await response.text();
+    let json;
+    try {
+        json = text ? JSON.parse(text) : {}
+    } catch (e) {
+        throw new Error(text || 'Bad server response')
+    }
+
+    if (!response.ok || json.ok === false) {
+        const message = json.error || 'Server error';
+
+    
+        if (options?.body?.pinProof && isPinAuthError(message)) {
+            casinoPin = null;
+            clearSavedCasinoPin(autoUserId);
         }
+
+        throw new Error(message);
+    }
+
+    return json;
+}
         async function hmacSha256Hex(key, message) {
             const enc = new TextEncoder();
             const cryptoKey = await crypto.subtle.importKey(
@@ -3135,22 +3147,36 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        async function getPinProof() {
-            if (!casinoPin) {
-                throw new Error("PIN not entered yet");
-            }
+async function getPinProof() {
+    if (!casinoPin) {
+        throw new Error("PIN not entered yet");
+    }
 
-            const challenge = await apiRequest('/chips/pin-challenge', {
-                method: 'POST',
-                body: { playerId: autoUserId }
-            });
-
-            if (!challenge.ok) {
-                throw new Error(challenge.error || "Could not get PIN challenge");
-            }
-
-            return await hmacSha256Hex(casinoPin, challenge.nonce);
+    let challenge;
+    try {
+        challenge = await apiRequest('/chips/pin-challenge', {
+            method: 'POST',
+            body: { playerId: autoUserId }
+        });
+    } catch (error) {
+        const message = String(error.message || error);
+        if (isPinAuthError(message)) {
+            casinoPin = null;
+            clearSavedCasinoPin(autoUserId);
         }
+        throw error;
+    }
+
+    if (!challenge.ok) {
+        if (isPinAuthError(challenge.error)) {
+            casinoPin = null;
+            clearSavedCasinoPin(autoUserId);
+        }
+        throw new Error(challenge.error || "Could not get PIN challenge");
+    }
+
+    return await hmacSha256Hex(casinoPin, challenge.nonce);
+}
 
         async function checkPinStatus() {
             if (!autoUserId) return null;
@@ -12700,6 +12726,15 @@ function applyGameData(data) {
 
             return colours[Math.floor(Math.random() * colours.length)];
         }
+        function isPinAuthError(message) {
+    const text = String(message || "").toLowerCase();
+    return (
+        text.includes("no pin set") ||
+        text.includes("incorrect pin") ||
+        text.includes("pin challenge expired") ||
+        text.includes("too many failed attempts")
+    );
+}
         async function generateCasinoRegistrationCode() {
             try {
                 const json = await apiRequest(
