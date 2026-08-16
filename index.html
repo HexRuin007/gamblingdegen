@@ -8057,11 +8057,7 @@ saveCasinoPin(
             const myRewards = rewards[String(playerId)] || {};
             const hasFreeBet = Number(myRewards.scratchTickets || 0) > 0;
 
-            /*
-             * Autoplay must use the exact same paid ticket price and quantity
-             * every cycle. A free-ticket reward would change the purchase to
-             * one free ticket, so don't silently alter the autoplay settings.
-             */
+       
             if (isAutoplay && hasFreeBet) {
                 setStatus(
                     "AUTOPLAY REQUIRES PAID TICKETS",
@@ -8253,12 +8249,7 @@ saveCasinoPin(
 
                 while (scratchAutoPlayRunning) {
 
-                    /*
-                     * The price and quantity are deliberately taken from the
-                     * saved autoplay values, not the live inputs. Changing
-                     * the inputs while autoplay is running therefore cannot
-                     * change the batch size or ticket price.
-                     */
+                 
 
                     const bought = await buyScratchTickets({
                         ticketPrice: scratchAutoPlayPrice,
@@ -8288,10 +8279,7 @@ saveCasinoPin(
                         break;
                     }
 
-                    /*
-                     * Wait one tick before the next purchase so the UI/state
-                     * has time to settle after the claim.
-                     */
+                
                     await wait(250);
 
                     if (scratchAutoPlayRunning) {
