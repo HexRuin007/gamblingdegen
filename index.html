@@ -5022,19 +5022,20 @@ saveCasinoPin(
                     ""
                 );
 
-                const json =
-                    await apiRequest(
-                        "/chips/register-player",
-                        {
-                            method: "POST",
+    const json =
+    await apiRequest(
+        "/chips/register-player",
+        {
+            method: "POST",
 
-                            body: {
-                                playerId,
-                                playerName,
-                                authCode
-                            }
-                        }
-                    );
+            body: {
+                playerId,
+                playerName,
+                authCode,
+                plinkoSessionId
+            }
+        }
+    );
 
                 if (!json.ok) {
                     throw new Error(
