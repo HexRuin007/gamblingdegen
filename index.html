@@ -41,10 +41,49 @@
 
 
     <div id="firstLoginGuide" class="firstLoginGuideBackdrop" role="dialog" aria-modal="true"
-        aria-labelledby="firstLoginGuideTitle">
+        aria-labelledby="firstLoginGuideTitle" style="display:none;">
 
-        ...
+        <div class="firstLoginGuideModal" style="position:relative;">
+            <button id="firstLoginGuideClose" type="button" aria-label="Close casino guide" title="Close"
+                style="position:absolute;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:50%;
+                background:rgba(255,255,255,.10);color:#fff;font-size:22px;line-height:36px;cursor:pointer;
+                z-index:2;">
+                ×
+            </button>
 
+            <div class="firstLoginGuideHeader">
+                <div id="firstLoginGuideTitle" class="firstLoginGuideTitle">🎰 Pearadise Casino Guide</div>
+                <div class="firstLoginGuideIntro">
+                    Quick guide to using the casino. You can open this again at any time with the ? button.
+                </div>
+            </div>
+
+            <div class="firstLoginGuideBody">
+                <div class="firstLoginGuideImportant">
+                    <strong>Getting started</strong><br><br>
+                    Use the tabs at the top to choose a game. Your detected player name, ID and chip balance
+                    will appear automatically when the casino receives your game data.
+                </div>
+
+                <div style="margin-top:16px;">
+                    <strong>How to use the casino</strong><br><br>
+                    • Choose a game from the tabs.<br>
+                    • Enter your bet and confirm it.<br>
+                    • Bankers handle any games or actions that require banker confirmation.<br>
+                    • Use the Chips tab for chip requests and withdrawals.<br>
+                    • Use Settings to change your casino preferences.
+                </div>
+
+                <div style="margin-top:16px;">
+                    <strong>Need this guide again?</strong><br><br>
+                    Click the <strong>?</strong> button at the bottom of any casino game page.
+                </div>
+            </div>
+
+            <div class="firstLoginGuideFooter">
+                <button id="firstLoginGuideDone" type="button">Got it</button>
+            </div>
+        </div>
     </div>
 
 
@@ -13664,6 +13703,11 @@ function applyGameData(data) {
 
                 document.body.classList.remove("userappHidden");
                 guide.classList.add("active");
+                guide.style.display = "flex";
+                guide.style.visibility = "visible";
+                guide.style.opacity = "1";
+                guide.style.pointerEvents = "auto";
+                guide.style.zIndex = "999998";
 
                 const body = guide.querySelector(".firstLoginGuideBody");
                 if (body) body.scrollTop = 0;
@@ -13674,6 +13718,10 @@ function applyGameData(data) {
                 if (!guide) return;
 
                 guide.classList.remove("active");
+                guide.style.display = "none";
+                guide.style.visibility = "hidden";
+                guide.style.opacity = "0";
+                guide.style.pointerEvents = "none";
 
                 try {
                     localStorage.setItem(FIRST_LOGIN_GUIDE_KEY, "true");
@@ -13751,9 +13799,27 @@ function applyGameData(data) {
                 resetOverlayToSafePosition();
                 bindPlinkoControls();
 
-                document
-                    .getElementById("firstLoginGuideClose")
-                    ?.addEventListener("click", closeFirstLoginGuide);
+                const firstLoginGuide = document.getElementById("firstLoginGuide");
+                const firstLoginGuideClose = document.getElementById("firstLoginGuideClose");
+                const firstLoginGuideDone = document.getElementById("firstLoginGuideDone");
+
+                firstLoginGuideClose?.addEventListener("click", event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeFirstLoginGuide();
+                });
+
+                firstLoginGuideDone?.addEventListener("click", event => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    closeFirstLoginGuide();
+                });
+
+                firstLoginGuide?.addEventListener("click", event => {
+                    if (event.target === firstLoginGuide) {
+                        closeFirstLoginGuide();
+                    }
+                });
 
                 document
                     .getElementById("hideUserappButton")
