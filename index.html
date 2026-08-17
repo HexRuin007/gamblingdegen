@@ -2520,6 +2520,8 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             , dailyProfitLoading = false
             , dailyProfitLastLoadedAt = 0
             , lastRegisteredCasinoPlayerId = ""
+            , registrationRequestInProgress = false
+            , registrationTransitionUntil = 0
             , dealFinishedView = null
             , dealFinishedViewUntil = 0
             , dealFinishedViewTimer = null
@@ -3281,11 +3283,16 @@ async function getPinProof() {
         const currentPlayerId =
             String(autoUserId || "").trim();
 
+        const registrationTransitionActive =
+            registrationTransitionUntil > Date.now();
+
         if (
             currentPlayerId &&
-            state.registrationRequired === true
+            state.registrationRequired === true &&
+            !registrationRequestInProgress &&
+            !registrationTransitionActive &&
+            lastRegisteredCasinoPlayerId !== currentPlayerId
         ) {
-            lastRegisteredCasinoPlayerId = "";
             authCode = "";
 
             showCasinoRegistrationModal(
@@ -4774,64 +4781,81 @@ saveCasinoPin(
             render();
             await refreshState(true);
         }
-        function showCasinoRegistrationModal(
-            playerId,
-            playerName
-        ) {
-            const modal =
-                $("casinoRegistrationGuide");
+    function showCasinoRegistrationModal(playerId, playerName) {
+    const modal = $("casinoRegistrationGuide");
 
-            if (!modal) {
-                console.error(
-                    "casinoRegistrationGuide element not found"
-                );
+    if (!modal) {
+        console.error("casinoRegistrationGuide element not found");
+        return;
+    }
 
-                return;
-            }
+    const firstLoginGuide = $("firstLoginGuide");
 
-            const input =
-                $("casinoRegistrationCode");
+    if (firstLoginGuide) {
+        firstLoginGuide.classList.remove("active");
+        firstLoginGuide.style.display = "none";
+        firstLoginGuide.style.visibility = "hidden";
+        firstLoginGuide.style.pointerEvents = "none";
+    }
 
-            const status =
-                $("casinoRegistrationStatus");
+    const input = $("casinoRegistrationCode");
+    const status = $("casinoRegistrationStatus");
 
-            if (input) {
-                input.value = "";
-            }
+    const wasVisible =
+        modal.style.display === "flex" ||
+        getComputedStyle(modal).display === "flex";
 
-            if (status) {
-                status.textContent = "";
-                status.className =
-                    "firstLoginGuideStatus";
-            }
+    modal.dataset.playerId = String(playerId || "");
+    modal.dataset.playerName = String(playerName || "");
 
-            modal.dataset.playerId =
-                playerId;
+    if (!wasVisible && input) {
+        input.value = "";
+    }
 
-            modal.dataset.playerName =
-                playerName;
+    if (!wasVisible && status) {
+        status.textContent = "";
+        status.className = "firstLoginGuideStatus";
+    }
 
-            modal.style.display =
-                "flex";
+    modal.style.display = "flex";
+    modal.style.visibility = "visible";
+    modal.style.opacity = "1";
+    modal.style.pointerEvents = "auto";
+    modal.style.zIndex = "999999";
 
-            setTimeout(() => {
-                input?.focus();
-            }, 50);
-        }
+    const registrationModal =
+        modal.querySelector(".firstLoginGuideModal");
+
+    if (registrationModal) {
+        registrationModal.style.visibility = "visible";
+        registrationModal.style.opacity = "1";
+        registrationModal.style.pointerEvents = "auto";
+        registrationModal.style.zIndex = "1000000";
+    }
+
+    if (!wasVisible) {
+        setTimeout(() => {
+            input?.focus();
+        }, 50);
+    }
+}
 
 
-        function hideCasinoRegistrationModal() {
-            const modal =
-                $("casinoRegistrationGuide");
+function hideCasinoRegistrationModal() {
+    const modal = $("casinoRegistrationGuide");
 
-            if (!modal) {
-                return;
-            }
+    if (!modal) {
+        return;
+    }
 
-            modal.style.display =
-                "none";
-        }
+    modal.style.display = "none";
+    modal.style.visibility = "hidden";
+    modal.style.opacity = "0";
+    modal.style.pointerEvents = "none";
 
+    modal.removeAttribute("data-player-id");
+    modal.removeAttribute("data-player-name");
+}
 
         function setCasinoRegistrationStatus(
             message,
@@ -5031,141 +5055,163 @@ saveCasinoPin(
         }
 
         async function submitCasinoRegistration() {
-            const modal =
-                $("casinoRegistrationGuide");
+    const modal = $("casinoRegistrationGuide");
 
-            if (!modal) {
-                return;
-            }
+    if (!modal || registrationRequestInProgress) {
+        return;
+    }
 
-            const playerId =
-                String(
-                    modal.dataset.playerId || ""
-                ).trim();
+    const playerId =
+        String(modal.dataset.playerId || "").trim();
 
-            const playerName =
-                String(
-                    modal.dataset.playerName || ""
-                ).trim();
+    const playerName =
+        String(modal.dataset.playerName || "").trim();
 
-            const authCode =
-                String(
-                    $("casinoRegistrationCode")?.value || ""
-                )
-                    .trim()
-                    .toUpperCase();
+    const input = $("casinoRegistrationCode");
+    const button = $("casinoRegistrationSubmit");
 
-            if (!authCode) {
-                return setCasinoRegistrationStatus(
-                    "Enter your banker registration code.",
-                    "error"
-                );
-            }
+    const code =
+        String(input?.value || "")
+            .trim()
+            .toUpperCase();
 
-            if (authCode.length !== 8) {
-                return setCasinoRegistrationStatus(
-                    "Registration codes are 8 characters.",
-                    "error"
-                );
-            }
+    if (!playerId || !playerName) {
+        return setCasinoRegistrationStatus(
+            "Waiting for your player details...",
+            "error"
+        );
+    }
 
-            try {
-                setCasinoRegistrationStatus(
-                    "Registering...",
-                    ""
-                );
+    if (!code) {
+        return setCasinoRegistrationStatus(
+            "Enter your banker registration code.",
+            "error"
+        );
+    }
 
-    const json =
-    await apiRequest(
-        "/chips/register-player",
-        {
-            method: "POST",
+    if (code.length !== 8) {
+        return setCasinoRegistrationStatus(
+            "Registration codes are 8 characters.",
+            "error"
+        );
+    }
 
-            body: {
-                playerId,
-                playerName,
-                authCode,
-                plinkoSessionId
-            }
-        }
+    registrationRequestInProgress = true;
+
+    if (button) {
+        button.disabled = true;
+        button.dataset.originalText =
+            button.textContent || "Register Casino Account";
+        button.textContent = "Registering...";
+    }
+
+    setCasinoRegistrationStatus(
+        "Registering...",
+        ""
     );
 
-                if (!json.ok) {
-                    throw new Error(
-                        json.error ||
-                        "Could not register casino player"
-                    );
+    try {
+        const json = await apiRequest(
+            "/chips/register-player",
+            {
+                method: "POST",
+                body: {
+                    playerId,
+                    playerName,
+                    authCode: code,
+                    plinkoSessionId
                 }
+            }
+        );
 
-                lastRegisteredCasinoPlayerId =
-                    playerId;
+        if (!json?.ok) {
+            throw new Error(
+                json?.error ||
+                "Could not register casino player"
+            );
+        }
 
-                const registeredState =
-                    json.state || null;
+        lastRegisteredCasinoPlayerId = playerId;
+        registrationTransitionUntil = Date.now() + 5000;
+        authCode = "";
 
-                if (registeredState) {
-                    const currentChickenState =
-                        state.chicken;
+        const registeredState =
+            json.state || null;
 
-                    state =
-                        registeredState;
+        if (registeredState) {
+            const currentChickenState =
+                state.chicken;
 
-                    if (
-                        chickenActionVersion > 0 &&
-                        currentChickenState
-                    ) {
-                        state.chicken =
-                            currentChickenState;
-                    }
-                }
+            state = registeredState;
 
-                hideCasinoRegistrationModal();
-
-                if (
-                    Number(
-                        json.startingBonusGranted || 0
-                    ) > 0
-                ) {
-                    setStatus(
-                        `Welcome bonus: +${shortMoney(
-                            json.startingBonusGranted
-                        )} chips`,
-                        5000
-                    );
-                } else if (
-                    json.reRegistered
-                ) {
-                    setStatus(
-                        "CASINO REGISTRATION RESTORED",
-                        4000
-                    );
-                } else {
-                    setStatus(
-                        "CASINO REGISTERED",
-                        3000
-                    );
-                }
-
-                render();
-
-            } catch (error) {
-                console.error(
-                    "Casino registration failed:",
-                    error
-                );
-
-                setCasinoRegistrationStatus(
-                    String(
-                        error?.message ||
-                        error ||
-                        "Registration failed"
-                    ),
-                    "error"
-                );
+            if (
+                chickenActionVersion > 0 &&
+                currentChickenState
+            ) {
+                state.chicken =
+                    currentChickenState;
             }
         }
 
-   async function requestChips() {
+        hideCasinoRegistrationModal();
+
+        if (
+            Number(
+                json.startingBonusGranted || 0
+            ) > 0
+        ) {
+            setStatus(
+                `Welcome bonus: +${shortMoney(
+                    json.startingBonusGranted
+                )} chips`,
+                5000
+            );
+        } else if (json.reRegistered) {
+            setStatus(
+                "CASINO REGISTRATION RESTORED",
+                4000
+            );
+        } else {
+            setStatus(
+                "CASINO REGISTERED",
+                3000
+            );
+        }
+
+        render();
+
+
+        await refreshState(true);
+
+    } catch (error) {
+        console.error(
+            "Casino registration failed:",
+            error
+        );
+
+        setCasinoRegistrationStatus(
+            String(
+                error?.message ||
+                error ||
+                "Registration failed"
+            ),
+            "error"
+        );
+
+    } finally {
+        registrationRequestInProgress = false;
+
+        if (button) {
+            button.disabled = false;
+            button.textContent =
+                button.dataset.originalText ||
+                "Register Casino Account";
+        }
+    }
+}
+
+
+async function requestChips() {
     const playerId = String(
         autoUserId || ""
     ).trim();
@@ -13726,7 +13772,25 @@ function applyGameData(data) {
                     });
 
                 addHelpButtonsToPages();
-                setTimeout(() => openFirstLoginGuide(false), 5200);
+                setTimeout(() => {
+    const registrationModal = $("casinoRegistrationGuide");
+
+    if (
+        registrationRequestInProgress ||
+        (
+            registrationModal &&
+            registrationModal.style.display === "flex"
+        ) ||
+        (
+            String(autoUserId || "").trim() &&
+            state.registrationRequired === true
+        )
+    ) {
+        return;
+    }
+
+    openFirstLoginGuide(false);
+}, 5200);
             });
         })();
     </script>
