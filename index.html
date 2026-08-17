@@ -1506,7 +1506,20 @@
             min-height:18px;
         ">
                         </div>
+<div class="panelHeader" style="margin-top:18px;">
+    <div class="panelTitle">✅ Manual Register Player</div>
+    <div class="panelHint">No code needed</div>
+</div>
 
+<input id="manualRegisterPlayerIdInput" type="text" placeholder="Player ID" />
+
+<input id="manualRegisterPlayerNameInput" type="text" placeholder="Player name" />
+
+<button id="manualRegisterPlayerButton" class="green" type="button">
+    Register Player
+</button>
+
+<div id="manualRegisterStatus" class="chipRequestStatus"></div>
 
                         <div class="panelHeader" style="margin-top:18px;">
                             <div class="panelTitle">🚪 Unregister Player</div>
@@ -10864,6 +10877,67 @@ saveCasinoPin(
         );
     }
 }
+
+async function manualRegisterPlayer() {
+    if (!adminToken) {
+        return setStatus("BANKER LOCKED", 1800);
+    }
+
+    const playerId = String(
+        $("manualRegisterPlayerIdInput")?.value || ""
+    ).trim();
+
+    const playerName = String(
+        $("manualRegisterPlayerNameInput")?.value || ""
+    ).trim();
+
+    if (!playerId) {
+        return setStatus("ENTER PLAYER ID", 1800);
+    }
+
+    try {
+        const json = await apiRequest(
+            "/chips/manual-register-player",
+            {
+                method: "POST",
+                token: adminToken,
+                body: {
+                    playerId,
+                    playerName: playerName || "Player",
+                    bankerId: autoUserId || "",
+                    bankerName: autoName || "Unknown banker"
+                }
+            }
+        );
+
+        state = json.state || state;
+
+        $("manualRegisterPlayerIdInput").value = "";
+        $("manualRegisterPlayerNameInput").value = "";
+
+        const statusBox = $("manualRegisterStatus");
+        if (statusBox) {
+            statusBox.textContent = json.alreadyRegistered
+                ? `${json.playerName} (${json.playerId}) was already registered.`
+                : `Registered ${json.playerName} (${json.playerId}) — starting chips granted.`;
+        }
+
+        setStatus(
+            json.alreadyRegistered
+                ? "ALREADY REGISTERED"
+                : "PLAYER REGISTERED",
+            2500
+        );
+
+        render();
+    } catch (error) {
+        const message = String(error.message || error);
+        setStatus(message, 3000);
+
+        const statusBox = $("manualRegisterStatus");
+        if (statusBox) statusBox.textContent = message;
+    }
+}
         function renderLottery() {
             let lottery = state.lottery || {
                 ticketPrice: 100000000,
@@ -13446,6 +13520,10 @@ function applyGameData(data) {
                 "click",
                 generateRegistrationCode
             );
+            $("manualRegisterPlayerButton")?.addEventListener(
+    "click",
+    manualRegisterPlayer
+);
 
             $("copyRegistrationCodeButton")?.addEventListener(
                 "click",
