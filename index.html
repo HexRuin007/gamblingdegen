@@ -4926,6 +4926,7 @@ saveCasinoPin(
                     }
                 }
 
+                hideCasinoRegistrationModal?.();
                 render();
 
                 return;
@@ -5000,6 +5001,8 @@ saveCasinoPin(
                 }
             }
 
+          
+            lastRegisteredCasinoPlayerId = playerId;
 
             hideCasinoRegistrationModal?.();
 
@@ -10910,6 +10913,13 @@ async function manualRegisterPlayer() {
             }
         );
 
+ 
+        if (String(autoUserId || "").trim() === playerId) {
+            lastRegisteredCasinoPlayerId = playerId;
+            authCode = "";
+            hideCasinoRegistrationModal?.();
+        }
+
         state = json.state || state;
 
         $("manualRegisterPlayerIdInput").value = "";
@@ -11180,12 +11190,7 @@ async function manualRegisterPlayer() {
         }
 
         function render() {
-            registerCasinoPlayer().catch(error => {
-                console.error(
-                    "Casino player registration failed:",
-                    error
-                );
-            });
+         
             updateAutomaticGameCountdowns();
             renderSlots();
             renderMines();
