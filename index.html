@@ -1609,6 +1609,32 @@
                             Give Chips
                         </button>
 
+                        <div class="panelHeader" style="margin-top:18px;">
+                            <div class="panelTitle">🎲 Random Active Player Rewards</div>
+                            <div class="panelHint">Gambled in last 3 days</div>
+                        </div>
+
+                       <input
+    id="randomRewardAmountInput"
+    type="text"
+    inputmode="decimal"
+    autocomplete="off"
+    placeholder="Paid chips per user (e.g. 10M)"
+/>
+
+                        <input id="randomRewardUserCountInput" type="number" min="1" max="1000" step="1"
+                            placeholder="Number of random users" />
+
+                        <button id="randomRewardButton" class="gold" type="button">
+                            🎲 Give Random Paid Chips
+                        </button>
+
+                        <div id="randomRewardStatus" class="chipRequestStatus" style="min-height:22px;"></div>
+
+                        <div id="randomRewardResults" style="margin-top:10px;">
+                            <div class="emptyState">No random rewards sent yet.</div>
+                        </div>
+
 
                         <div class="panelHeader" style="margin-top:12px;">
                             <div class="panelTitle">📥 Chip Requests</div>
@@ -5636,6 +5662,101 @@ async function requestChips() {
                 render();
             } catch (e) {
                 setStatus(String(e.message || e), 2500);
+            }
+        }
+
+        async function giveRandomActivePlayerRewards() {
+            if (!adminToken) return setStatus('LOCKED', 1500);
+
+            const amount = parseMoneyInput(
+                $('randomRewardAmountInput')?.value || ''
+            );
+            const userCount = Math.floor(Number(
+                $('randomRewardUserCountInput')?.value || 0
+            ));
+            const statusBox = $('randomRewardStatus');
+            const resultsBox = $('randomRewardResults');
+            const button = $('randomRewardButton');
+
+            if (!amount || amount < 1) {
+                if (statusBox) statusBox.textContent = 'Enter chips per user.';
+                return setStatus('CHIPS PER USER NEEDED', 1800);
+            }
+
+            if (!Number.isInteger(userCount) || userCount < 1 || userCount > 1000) {
+                if (statusBox) statusBox.textContent = 'Choose between 1 and 1000 users.';
+                return setStatus('CHOOSE 1-1000 USERS', 1800);
+            }
+
+            if (button) button.disabled = true;
+            if (statusBox) {
+                statusBox.textContent = 'Finding players who gambled in the last 3 days...';
+            }
+            if (resultsBox) {
+                resultsBox.innerHTML = '<div class="emptyState">Selecting random eligible players...</div>';
+            }
+
+            try {
+                const json = await apiRequest('/chips/random-reward', {
+                    method: 'POST',
+                    token: adminToken,
+                    body: {
+                        amount,
+                        userCount
+                    }
+                });
+
+                state = json.state || state;
+
+                const results = Array.isArray(json.results) ? json.results : [];
+                const failed = Array.isArray(json.failed) ? json.failed : [];
+
+                if (statusBox) {
+                    statusBox.textContent =
+                        `Sent ${Number(json.grantedCount) || 0} of ${Number(json.selectedCount) || 0} selected users ` +
+                        `(${Number(json.eligibleCount) || 0} eligible). All rewards were paid chips.`;
+                }
+
+                if (resultsBox) {
+                    if (!results.length && !failed.length) {
+                        resultsBox.innerHTML = '<div class="emptyState">No rewards were sent.</div>';
+                    } else {
+                        resultsBox.innerHTML = `
+                            <div class="small" style="margin-bottom:8px;">
+                                <b>${escapeHtml(String(results.length))}</b> paid reward(s) sent.
+                            </div>
+                            ${results.map(result => `
+                                <div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.08);">
+                                    <b>${escapeHtml(result.playerName || 'Player')}</b>
+                                    <span style="opacity:.7;">(${escapeHtml(result.playerId || '')})</span>
+                                    <div class="small">${escapeHtml(shortMoney(Number(result.amount) || 0))} paid chips • balance ${escapeHtml(shortMoney(Number(result.newBalance) || 0))}</div>
+                                </div>
+                            `).join('')}
+                            ${failed.map(result => `
+                                <div style="padding:8px 0;border-top:1px solid rgba(255,98,98,.18);">
+                                    <b>${escapeHtml(result.playerName || 'Player')}</b>
+                                    <span style="opacity:.7;">(${escapeHtml(result.playerId || '')})</span>
+                                    <div class="small">Failed: ${escapeHtml(result.reason || 'Unknown error')}</div>
+                                </div>
+                            `).join('')}
+                        `;
+                    }
+                }
+
+                if ($('randomRewardAmountInput')) $('randomRewardAmountInput').value = '';
+                if ($('randomRewardUserCountInput')) $('randomRewardUserCountInput').value = '';
+
+                setStatus('RANDOM PAID REWARDS SENT', 2200);
+                render();
+            } catch (e) {
+                const message = String(e.message || e);
+                if (statusBox) statusBox.textContent = message;
+                if (resultsBox) {
+                    resultsBox.innerHTML = `<div class="emptyState">${escapeHtml(message)}</div>`;
+                }
+                setStatus(message, 3000);
+            } finally {
+                if (button) button.disabled = false;
             }
         }
 
@@ -13464,6 +13585,7 @@ function applyGameData(data) {
 
             $('requestChipsButton').addEventListener('click', requestChips);
             $('grantChipsButton').addEventListener('click', () => grantChips());
+            $('randomRewardButton')?.addEventListener('click', giveRandomActivePlayerRewards);
             $("blacklistPlayerButton")?.addEventListener("click", blacklistPlayer);
             $("blacklistPlayerIdInput")?.addEventListener("keydown", event => {
                 if (event.key === "Enter") blacklistPlayer();
