@@ -5,6 +5,11 @@
     <meta charset="utf-8" />
     <title>Gambling Addicts</title>
     <link rel="stylesheet" href="./style.css" />
+
+    <style id="dartGameStyles">
+
+    </style>
+
 </head>
 
 <body>
@@ -44,8 +49,7 @@
         aria-labelledby="firstLoginGuideTitle" style="display:none;">
 
         <div class="firstLoginGuideModal" style="position:relative;">
-            <button id="firstLoginGuideClose" type="button" aria-label="Close casino guide" title="Close"
-                style="position:absolute;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:50%;
+            <button id="firstLoginGuideClose" type="button" aria-label="Close casino guide" title="Close" style="position:absolute;top:10px;right:10px;width:36px;height:36px;border:0;border-radius:50%;
                 background:rgba(255,255,255,.10);color:#fff;font-size:22px;line-height:36px;cursor:pointer;
                 z-index:2;">
                 ×
@@ -87,7 +91,7 @@
     </div>
 
 
-   
+
     <div id="casinoRegistrationGuide" class="firstLoginGuideBackdrop" style="display:none;" role="dialog"
         aria-modal="true" aria-labelledby="casinoRegistrationGuideTitle">
 
@@ -202,6 +206,7 @@
                         <button id="rouletteTabButton" class="tabButton">🎯 Roulette</button>
                         <button id="chickenTabButton" class="tabButton">🐔 Chicken</button>
                         <button id="hiloTabButton" class="tabButton">🎴 Hi-Low</button>
+                        <button id="dartTabButton" class="tabButton">🎯 Darts</button>
                         <button id="plinkoTabButton" class="tabButton">🔵 Plinko</button>
                         <button id="scratchTabButton" class="tabButton">🎫 Scratch</button>
                         <button id="lotteryTabButton" class="tabButton">🎟️ Lottery</button>
@@ -999,510 +1004,837 @@
                     </div>
                 </div>
 
-                <div id="plinkoPage" class="tabPage">
 
+                <div id="dartPage" class="tabPage">
                     <div class="gameMetaRow">
-                        <div class="gameBalanceLine">
-                            Balance:
-                            <span class="gameChipBalance">0 chips</span>
-                        </div>
-
-                        <div id="plinkoActiveBallsText" class="autoGameCountdown">
-                            No balls dropping
-                        </div>
+                        <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
+                        <div class="autoGameCountdown" id="dartStatusLine">Ready to throw</div>
                     </div>
-
-                    <div class="heroCard plinkoHero">
-
-                        <div class="panelHeader">
-                            <div>
-                                <div class="panelTitle">🎯 Plinko</div>
-                                <div class="panelHint">
-                                    Drop as many balls as you want
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="plinkoBoard" class="plinkoBoard">
-
-                            <div class="plinkoPegLayer" id="plinkoPegLayer"></div>
-
-                            <div id="plinkoBallLayer" class="plinkoBallLayer"></div>
-
-                            <div id="plinkoSlots" class="plinkoSlots"></div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="panel">
-
-                        <div class="panelHeader">
-                            <div class="panelTitle">
-                                🎯 Drop a Ball
-                            </div>
-
-                            <div class="panelHint">
-                                One bet per ball
-                            </div>
-                        </div>
-
-
-                        <div class="playerIdentityBox">
-
-                            <div class="playerIdentityLabel">
-                                Detected Player
-                            </div>
-
-                            <div class="playerIdentityName" id="plinkoDetectedPlayerName">
-                                Waiting for game data...
-                            </div>
-
-                            <div class="playerIdentityId" id="plinkoDetectedPlayerId">
-                                Waiting for Transport Tycoon game data...
-                            </div>
-
-                        </div>
-
-
-                        <div class="plinkoBetRow">
-
-                            <input id="plinkoBetAmount" type="text" inputmode="decimal" autocomplete="off"
-                                placeholder="Bet per ball, e.g. 30m" />
-
-                            <button id="plinkoDropButton" class="green plinkoDropButton" type="button">
-                                🎯 DROP BALL
-                            </button>
-
-                        </div>
-
-                        <button id="plinkoAutoPlayButton" type="button">
-                            ▶ AUTO PLAY
-                        </button>
-
-                        <div id="plinkoAutoPlayStatus" class="small">
-                            Auto Play is off
-                        </div>
-
-                        <div class="small">
-                            Autoplay drops one ball at the interval selected in Settings.
-                        </div>
-
-
-                        <div class="quickBetGrid">
-
-                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="1000000">
-                                1M
-                            </button>
-
-                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="10000000">
-                                10M
-                            </button>
-
-                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="100000000">
-                                100M
-                            </button>
-
-                            <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="1000000000">
-                                1B
-                            </button>
-
-                        </div>
-
-
-                        <div id="plinkoStatus" class="small">
-                            Enter your bet and drop a ball.
-                        </div>
-
-
-              
-                        <div id="plinkoLastResult" class="plinkoLastResult">
-
-                            <div class="plinkoLastResultIcon">
-                                🎯
-                            </div>
-
-                            <div class="plinkoLastResultContent">
-
-                                <div id="plinkoLastResultTitle" class="plinkoLastResultTitle">
-                                    Ready
-                                </div>
-
-                                <div id="plinkoLastResultAmount" class="plinkoLastResultAmount">
-                                    Drop a ball to play
-                                </div>
-
-                                <div id="plinkoLastResultDetail" class="plinkoLastResultDetail"></div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="panel">
-
-                        <div class="panelHeader">
-
-                            <div class="panelTitle">
-                                📊 Plinko Payouts
-                            </div>
-
-                            <div class="panelHint">
-                                Based on current bet
-                            </div>
-
-                        </div>
-
-                        <div id="plinkoPaytable" class="plinkoPaytable"></div>
-
-                    </div>
-
-
-                    <div class="panel">
-
-                        <div class="panelHeader">
-
-                            <div class="panelTitle">
-                                🧾 Recent Drops
-                            </div>
-
-                            <div class="panelHint">
-                                Your last 20 balls
-                            </div>
-
-                        </div>
-
-                        <div id="plinkoHistory" class="plinkoHistory">
-
-                            <div class="emptyState">
-                                No balls dropped yet.
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <div id="scratchPage" class="tabPage">
-                    <div class="gameMetaRow">
-                        <div class="gameBalanceLine">
-                            Balance: <span class="gameChipBalance">0 chips</span>
-                        </div>
-                    </div>
-
-                    <div id="scratchRewardBanner" class="rewardBanner"></div>
-
                     <div class="heroCard">
                         <div class="panelHeader">
-                            <div class="panelTitle">🎫 Scratch Cards</div>
-                            <div class="panelHint" id="scratchStatusText">
-                                Buy tickets and scratch to reveal
+                            <div class="panelTitle">🎯 Bullseye Darts</div>
+                            <div class="panelHint" id="dartMultiplierText">Random throw</div>
+                        </div>
+                        <div class="dart-board-wrap">
+                            <div id="dartBoard" class="dart-board" aria-label="Dart board">
+                                <svg viewBox="0 0 100 100" aria-hidden="true">
+                                    <circle cx="50" cy="50" r="49" fill="#171717" />
+                                    <path
+                                        d="M43.117,6.542 A44,44 0 0 1 56.883,6.542 L50.626,46.049 A4,4 0 0 0 49.374,46.049 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M56.883,6.542 A44,44 0 0 1 69.976,10.796 L51.816,46.436 A4,4 0 0 0 50.626,46.049 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M69.976,10.796 A44,44 0 0 1 81.113,18.887 L52.828,47.172 A4,4 0 0 0 51.816,46.436 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M81.113,18.887 A44,44 0 0 1 89.204,30.024 L53.564,48.184 A4,4 0 0 0 52.828,47.172 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M89.204,30.024 A44,44 0 0 1 93.458,43.117 L53.951,49.374 A4,4 0 0 0 53.564,48.184 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M93.458,43.117 A44,44 0 0 1 93.458,56.883 L53.951,50.626 A4,4 0 0 0 53.951,49.374 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M93.458,56.883 A44,44 0 0 1 89.204,69.976 L53.564,51.816 A4,4 0 0 0 53.951,50.626 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M89.204,69.976 A44,44 0 0 1 81.113,81.113 L52.828,52.828 A4,4 0 0 0 53.564,51.816 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M81.113,81.113 A44,44 0 0 1 69.976,89.204 L51.816,53.564 A4,4 0 0 0 52.828,52.828 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M69.976,89.204 A44,44 0 0 1 56.883,93.458 L50.626,53.951 A4,4 0 0 0 51.816,53.564 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M56.883,93.458 A44,44 0 0 1 43.117,93.458 L49.374,53.951 A4,4 0 0 0 50.626,53.951 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M43.117,93.458 A44,44 0 0 1 30.024,89.204 L48.184,53.564 A4,4 0 0 0 49.374,53.951 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M30.024,89.204 A44,44 0 0 1 18.887,81.113 L47.172,52.828 A4,4 0 0 0 48.184,53.564 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M18.887,81.113 A44,44 0 0 1 10.796,69.976 L46.436,51.816 A4,4 0 0 0 47.172,52.828 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M10.796,69.976 A44,44 0 0 1 6.542,56.883 L46.049,50.626 A4,4 0 0 0 46.436,51.816 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M6.542,56.883 A44,44 0 0 1 6.542,43.117 L46.049,49.374 A4,4 0 0 0 46.049,50.626 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M6.542,43.117 A44,44 0 0 1 10.796,30.024 L46.436,48.184 A4,4 0 0 0 46.049,49.374 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M10.796,30.024 A44,44 0 0 1 18.887,18.887 L47.172,47.172 A4,4 0 0 0 46.436,48.184 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M18.887,18.887 A44,44 0 0 1 30.024,10.796 L48.184,46.436 A4,4 0 0 0 47.172,47.172 Z"
+                                        fill="#181818" />
+                                    <path
+                                        d="M30.024,10.796 A44,44 0 0 1 43.117,6.542 L49.374,46.049 A4,4 0 0 0 48.184,46.436 Z"
+                                        fill="#d8d2c8" />
+                                    <path
+                                        d="M46.089,25.308 A25,25 0 0 1 53.911,25.308 L53.442,28.271 A22,22 0 0 0 46.558,28.271 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M43.273,7.529 A43,43 0 0 1 56.727,7.529 L56.257,10.492 A40,40 0 0 0 43.743,10.492 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M53.911,25.308 A25,25 0 0 1 61.350,27.725 L59.988,30.398 A22,22 0 0 0 53.442,28.271 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M56.727,7.529 A43,43 0 0 1 69.522,11.687 L68.160,14.360 A40,40 0 0 0 56.257,10.492 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M61.350,27.725 A25,25 0 0 1 67.678,32.322 L65.556,34.444 A22,22 0 0 0 59.988,30.398 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M69.522,11.687 A43,43 0 0 1 80.406,19.594 L78.284,21.716 A40,40 0 0 0 68.160,14.360 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M67.678,32.322 A25,25 0 0 1 72.275,38.650 L69.602,40.012 A22,22 0 0 0 65.556,34.444 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M80.406,19.594 A43,43 0 0 1 88.313,30.478 L85.640,31.840 A40,40 0 0 0 78.284,21.716 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M72.275,38.650 A25,25 0 0 1 74.692,46.089 L71.729,46.558 A22,22 0 0 0 69.602,40.012 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M88.313,30.478 A43,43 0 0 1 92.471,43.273 L89.508,43.743 A40,40 0 0 0 85.640,31.840 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M74.692,46.089 A25,25 0 0 1 74.692,53.911 L71.729,53.442 A22,22 0 0 0 71.729,46.558 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M92.471,43.273 A43,43 0 0 1 92.471,56.727 L89.508,56.257 A40,40 0 0 0 89.508,43.743 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M74.692,53.911 A25,25 0 0 1 72.275,61.350 L69.602,59.988 A22,22 0 0 0 71.729,53.442 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M92.471,56.727 A43,43 0 0 1 88.313,69.522 L85.640,68.160 A40,40 0 0 0 89.508,56.257 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M72.275,61.350 A25,25 0 0 1 67.678,67.678 L65.556,65.556 A22,22 0 0 0 69.602,59.988 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M88.313,69.522 A43,43 0 0 1 80.406,80.406 L78.284,78.284 A40,40 0 0 0 85.640,68.160 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M67.678,67.678 A25,25 0 0 1 61.350,72.275 L59.988,69.602 A22,22 0 0 0 65.556,65.556 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M80.406,80.406 A43,43 0 0 1 69.522,88.313 L68.160,85.640 A40,40 0 0 0 78.284,78.284 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M61.350,72.275 A25,25 0 0 1 53.911,74.692 L53.442,71.729 A22,22 0 0 0 59.988,69.602 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M69.522,88.313 A43,43 0 0 1 56.727,92.471 L56.257,89.508 A40,40 0 0 0 68.160,85.640 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M53.911,74.692 A25,25 0 0 1 46.089,74.692 L46.558,71.729 A22,22 0 0 0 53.442,71.729 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M56.727,92.471 A43,43 0 0 1 43.273,92.471 L43.743,89.508 A40,40 0 0 0 56.257,89.508 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M46.089,74.692 A25,25 0 0 1 38.650,72.275 L40.012,69.602 A22,22 0 0 0 46.558,71.729 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M43.273,92.471 A43,43 0 0 1 30.478,88.313 L31.840,85.640 A40,40 0 0 0 43.743,89.508 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M38.650,72.275 A25,25 0 0 1 32.322,67.678 L34.444,65.556 A22,22 0 0 0 40.012,69.602 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M30.478,88.313 A43,43 0 0 1 19.594,80.406 L21.716,78.284 A40,40 0 0 0 31.840,85.640 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M32.322,67.678 A25,25 0 0 1 27.725,61.350 L30.398,59.988 A22,22 0 0 0 34.444,65.556 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M19.594,80.406 A43,43 0 0 1 11.687,69.522 L14.360,68.160 A40,40 0 0 0 21.716,78.284 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M27.725,61.350 A25,25 0 0 1 25.308,53.911 L28.271,53.442 A22,22 0 0 0 30.398,59.988 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M11.687,69.522 A43,43 0 0 1 7.529,56.727 L10.492,56.257 A40,40 0 0 0 14.360,68.160 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M25.308,53.911 A25,25 0 0 1 25.308,46.089 L28.271,46.558 A22,22 0 0 0 28.271,53.442 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M7.529,56.727 A43,43 0 0 1 7.529,43.273 L10.492,43.743 A40,40 0 0 0 10.492,56.257 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M25.308,46.089 A25,25 0 0 1 27.725,38.650 L30.398,40.012 A22,22 0 0 0 28.271,46.558 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M7.529,43.273 A43,43 0 0 1 11.687,30.478 L14.360,31.840 A40,40 0 0 0 10.492,43.743 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M27.725,38.650 A25,25 0 0 1 32.322,32.322 L34.444,34.444 A22,22 0 0 0 30.398,40.012 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M11.687,30.478 A43,43 0 0 1 19.594,19.594 L21.716,21.716 A40,40 0 0 0 14.360,31.840 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M32.322,32.322 A25,25 0 0 1 38.650,27.725 L40.012,30.398 A22,22 0 0 0 34.444,34.444 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M19.594,19.594 A43,43 0 0 1 30.478,11.687 L31.840,14.360 A40,40 0 0 0 21.716,21.716 Z"
+                                        fill="#c9232e" />
+                                    <path
+                                        d="M38.650,27.725 A25,25 0 0 1 46.089,25.308 L46.558,28.271 A22,22 0 0 0 40.012,30.398 Z"
+                                        fill="#16894b" />
+                                    <path
+                                        d="M30.478,11.687 A43,43 0 0 1 43.273,7.529 L43.743,10.492 A40,40 0 0 0 31.840,14.360 Z"
+                                        fill="#16894b" />
+                                    <line x1="50" y1="50" x2="43.148" y2="6.739" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="56.852" y2="6.739" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="69.885" y2="10.974" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="80.971" y2="19.029" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="89.026" y2="30.115" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="93.261" y2="43.148" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="93.261" y2="56.852" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="89.026" y2="69.885" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="80.971" y2="80.971" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="69.885" y2="89.026" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="56.852" y2="93.261" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="43.148" y2="93.261" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="30.115" y2="89.026" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="19.029" y2="80.971" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="10.974" y2="69.885" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="6.739" y2="56.852" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="6.739" y2="43.148" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="10.974" y2="30.115" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="19.029" y2="19.029" stroke="#bdbdbd" stroke-width=".38" />
+                                    <line x1="50" y1="50" x2="30.115" y2="10.974" stroke="#bdbdbd" stroke-width=".38" />
+                                    <circle cx="50" cy="50" r="4" fill="none" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="10" fill="none" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="22" fill="none" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="25" fill="none" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="43" fill="none" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="44" fill="none" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="4" fill="#16894b" stroke="#bdbdbd" stroke-width=".55" />
+                                    <circle cx="50" cy="50" r="2.15" fill="#c9232e" stroke="#bdbdbd"
+                                        stroke-width=".45" />
+                                    <text x="50.00" y="4.10" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">20</text>
+                                    <text x="64.59" y="6.41" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">1</text>
+                                    <text x="77.74" y="13.11" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">18</text>
+                                    <text x="88.19" y="23.56" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">4</text>
+                                    <text x="94.89" y="36.71" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">13</text>
+                                    <text x="97.20" y="51.30" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">6</text>
+                                    <text x="94.89" y="65.89" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">10</text>
+                                    <text x="88.19" y="79.04" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">15</text>
+                                    <text x="77.74" y="89.49" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">2</text>
+                                    <text x="64.59" y="96.19" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">17</text>
+                                    <text x="50.00" y="98.50" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">3</text>
+                                    <text x="35.41" y="96.19" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">19</text>
+                                    <text x="22.26" y="89.49" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">7</text>
+                                    <text x="11.81" y="79.04" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">16</text>
+                                    <text x="5.11" y="65.89" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">8</text>
+                                    <text x="2.80" y="51.30" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">11</text>
+                                    <text x="5.11" y="36.71" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">14</text>
+                                    <text x="11.81" y="23.56" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">9</text>
+                                    <text x="22.26" y="13.11" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">12</text>
+                                    <text x="35.41" y="6.41" text-anchor="middle" font-size="4.2" font-weight="900"
+                                        fill="#f2f2f2" stroke="#111" stroke-width=".55" paint-order="stroke">5</text>
+                                    <circle cx="50" cy="50" r="47.3" fill="none" stroke="#080808" stroke-width="2.5" />
+                                    <circle cx="50" cy="50" r="45.0" fill="none" stroke="#999" stroke-width=".7" />
+                                </svg>
+                                <div id="dartCrosshair" class="dart-crosshair" style="left:50%;top:50%"><span></span>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="dart-aim-label" id="dartAimText">Your dart will land at a random point on the board</div>
+                    <div class="dart-meter">
+                        <div id="dartAccuracyFill" class="dart-meter-fill"></div>
+                    </div>
+                    <div class="bigResult" id="dartResultText">Ready</div>
+                    <div class="subResult" id="dartResultSub">Closer to the bullseye = bigger payout. Miss the board =
+                        bet lost.</div>
 
-                        <div id="scratchCardsGrid" class="scratchCardsGrid"></div>
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">💰 Place Dart Bet</div>
+                        <div class="panelHint">One throw per bet</div>
+                    </div>
+                    <div class="playerIdentityBox">
+                        <div class="playerIdentityLabel">Detected Player</div>
+                        <div class="playerIdentityName" id="dartDetectedPlayerName">Waiting for game data...</div>
+                        <div class="playerIdentityId" id="dartDetectedPlayerId">Press F1 within Transport Tycoon and
+                            Paste the URL and click Load.</div>
+                    </div>
+                    <div class="row">
+                        <input id="dartBetInput" type="text" inputmode="decimal" autocomplete="off"
+                            placeholder="Bet amount, e.g. 5m" />
+                        <button id="dartPlaceBetButton" class="green">💰 Place Bet</button>
+                    </div>
+                    <div class="quickBetGrid">
+                        <button class="quickBetButton" data-target="dartBetInput" data-amount="1000000">1M</button>
+                        <button class="quickBetButton" data-target="dartBetInput" data-amount="10000000">10M</button>
+                        <button class="quickBetButton" data-target="dartBetInput" data-amount="100000000">100M</button>
+                        <button class="quickBetButton" data-target="dartBetInput" data-amount="1000000000">1B</button>
+                    </div>
+                    <div class="small">Bullseye: 10× • Inner bull: 6× • Near edge: 0.20× • Outside board: 0×.</div>
+                </div>
 
-                        <button id="scratchRevealAllButton" class="gold" style="display:none;">
-                            Reveal All
-                        </button>
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">📊 Dart Payout Zones</div>
+                        <div class="panelHint">Approximate multiplier</div>
+                    </div>
+                    <div class="dart-legend">
+                        <div>🎯 Bullseye<br><b>10×</b></div>
+                        <div>⭕ Inner bull<br><b>6–10×</b></div>
+                        <div>🔴 Near centre<br><b>2–5×</b></div>
+                        <div>⚪ Edge<br><b>0.20×</b></div>
+                    </div>
+                </div>
 
-                        <div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
-                            <div class="scratchBatchSummaryLine">
-                                <span>Total Spent</span>
-                                <b id="scratchBatchSpent">0</b>
-                            </div>
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">📜 Dart History</div>
+                        <div class="panelHint">Your recent throws</div>
+                    </div>
+                    <div id="dartHistoryBox">
+                        <div class="emptyState">No darts thrown yet.</div>
+                    </div>
+                </div>
+            </div>
 
-                            <div class="scratchBatchSummaryLine">
-                                <span>Total Won</span>
-                                <b id="scratchBatchWon">0</b>
-                            </div>
+            <div id="plinkoPage" class="tabPage">
 
-                            <div class="scratchBatchSummaryLine scratchBatchSummaryNet">
-                                <span>Net Result</span>
-                                <b id="scratchBatchNet">0</b>
+                <div class="gameMetaRow">
+                    <div class="gameBalanceLine">
+                        Balance:
+                        <span class="gameChipBalance">0 chips</span>
+                    </div>
+
+                    <div id="plinkoActiveBallsText" class="autoGameCountdown">
+                        No balls dropping
+                    </div>
+                </div>
+
+                <div class="heroCard plinkoHero">
+
+                    <div class="panelHeader">
+                        <div>
+                            <div class="panelTitle">🎯 Plinko</div>
+                            <div class="panelHint">
+                                Drop as many balls as you want
                             </div>
                         </div>
                     </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">💰 Buy Tickets</div>
-                            <div class="panelHint">Up to 20 at once</div>
-                        </div>
+                    <div id="plinkoBoard" class="plinkoBoard">
 
-                        <div class="playerIdentityBox">
-                            <div class="playerIdentityLabel">Detected Player</div>
-                            <div class="playerIdentityName" id="scratchDetectedPlayerName">
-                                Waiting for game data...
-                            </div>
-                            <div class="playerIdentityId" id="scratchDetectedPlayerId">
-                                Press F1 within Transport Tycoon and Paste the URL and click Load.
-                            </div>
-                        </div>
+                        <div class="plinkoPegLayer" id="plinkoPegLayer"></div>
 
-                        <div class="row">
-                            <input id="scratchPriceInput" type="text" placeholder="Ticket price, e.g. 5m" />
-                            <input id="scratchQuantityInput" type="number" min="1" max="20" step="1" value="1"
-                                placeholder="Qty" />
-                            <button id="scratchBuyButton" class="green">Buy Tickets</button>
-                        </div>
+                        <div id="plinkoBallLayer" class="plinkoBallLayer"></div>
 
-                        <button id="scratchAutoPlayButton" type="button">
-                            ▶ AUTO SCRATCH
-                        </button>
+                        <div id="plinkoSlots" class="plinkoSlots"></div>
 
-                        <div id="scratchAutoPlayStatus" class="small">
-                            Auto Scratch is off
-                        </div>
-
-                        <div class="quickBetGrid">
-                            <button class="quickBetButton" data-target="scratchPriceInput"
-                                data-amount="1000000">1M</button>
-                            <button class="quickBetButton" data-target="scratchPriceInput"
-                                data-amount="10000000">10M</button>
-                            <button class="quickBetButton" data-target="scratchPriceInput"
-                                data-amount="100000000">100M</button>
-                            <button class="quickBetButton" data-target="scratchPriceInput"
-                                data-amount="1000000000">1B</button>
-                        </div>
-
-                        <div id="scratchPaytable" class="slotPaytable"></div>
                     </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">📜 Scratch History</div>
-                            <div class="panelHint">Recent purchases</div>
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panelHeader">
+                        <div class="panelTitle">
+                            🎯 Drop a Ball
                         </div>
 
-                        <div id="scratchHistoryBox">
-                            <div class="emptyState">
-                                No scratch tickets bought yet.
+                        <div class="panelHint">
+                            One bet per ball
+                        </div>
+                    </div>
+
+
+                    <div class="playerIdentityBox">
+
+                        <div class="playerIdentityLabel">
+                            Detected Player
+                        </div>
+
+                        <div class="playerIdentityName" id="plinkoDetectedPlayerName">
+                            Waiting for game data...
+                        </div>
+
+                        <div class="playerIdentityId" id="plinkoDetectedPlayerId">
+                            Waiting for Transport Tycoon game data...
+                        </div>
+
+                    </div>
+
+
+                    <div class="plinkoBetRow">
+
+                        <input id="plinkoBetAmount" type="text" inputmode="decimal" autocomplete="off"
+                            placeholder="Bet per ball, e.g. 30m" />
+
+                        <button id="plinkoDropButton" class="green plinkoDropButton" type="button">
+                            🎯 DROP BALL
+                        </button>
+
+                    </div>
+
+                    <button id="plinkoAutoPlayButton" type="button">
+                        ▶ AUTO PLAY
+                    </button>
+
+                    <div id="plinkoAutoPlayStatus" class="small">
+                        Auto Play is off
+                    </div>
+
+                    <div class="small">
+                        Autoplay drops one ball at the interval selected in Settings.
+                    </div>
+
+
+                    <div class="quickBetGrid">
+
+                        <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="1000000">
+                            1M
+                        </button>
+
+                        <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="10000000">
+                            10M
+                        </button>
+
+                        <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="100000000">
+                            100M
+                        </button>
+
+                        <button class="quickBetButton" data-target="plinkoBetAmount" data-amount="1000000000">
+                            1B
+                        </button>
+
+                    </div>
+
+
+                    <div id="plinkoStatus" class="small">
+                        Enter your bet and drop a ball.
+                    </div>
+
+
+
+                    <div id="plinkoLastResult" class="plinkoLastResult">
+
+                        <div class="plinkoLastResultIcon">
+                            🎯
+                        </div>
+
+                        <div class="plinkoLastResultContent">
+
+                            <div id="plinkoLastResultTitle" class="plinkoLastResultTitle">
+                                Ready
                             </div>
+
+                            <div id="plinkoLastResultAmount" class="plinkoLastResultAmount">
+                                Drop a ball to play
+                            </div>
+
+                            <div id="plinkoLastResultDetail" class="plinkoLastResultDetail"></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panelHeader">
+
+                        <div class="panelTitle">
+                            📊 Plinko Payouts
+                        </div>
+
+                        <div class="panelHint">
+                            Based on current bet
+                        </div>
+
+                    </div>
+
+                    <div id="plinkoPaytable" class="plinkoPaytable"></div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panelHeader">
+
+                        <div class="panelTitle">
+                            🧾 Recent Drops
+                        </div>
+
+                        <div class="panelHint">
+                            Your last 20 balls
+                        </div>
+
+                    </div>
+
+                    <div id="plinkoHistory" class="plinkoHistory">
+
+                        <div class="emptyState">
+                            No balls dropped yet.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="scratchPage" class="tabPage">
+                <div class="gameMetaRow">
+                    <div class="gameBalanceLine">
+                        Balance: <span class="gameChipBalance">0 chips</span>
+                    </div>
+                </div>
+
+                <div id="scratchRewardBanner" class="rewardBanner"></div>
+
+                <div class="heroCard">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🎫 Scratch Cards</div>
+                        <div class="panelHint" id="scratchStatusText">
+                            Buy tickets and scratch to reveal
+                        </div>
+                    </div>
+
+                    <div id="scratchCardsGrid" class="scratchCardsGrid"></div>
+
+                    <button id="scratchRevealAllButton" class="gold" style="display:none;">
+                        Reveal All
+                    </button>
+
+                    <div id="scratchBatchSummary" class="scratchBatchSummary" style="display:none;">
+                        <div class="scratchBatchSummaryLine">
+                            <span>Total Spent</span>
+                            <b id="scratchBatchSpent">0</b>
+                        </div>
+
+                        <div class="scratchBatchSummaryLine">
+                            <span>Total Won</span>
+                            <b id="scratchBatchWon">0</b>
+                        </div>
+
+                        <div class="scratchBatchSummaryLine scratchBatchSummaryNet">
+                            <span>Net Result</span>
+                            <b id="scratchBatchNet">0</b>
                         </div>
                     </div>
                 </div>
 
-                <div id="lotteryPage" class="tabPage">
-                    <div class="gameMetaRow">
-                        <div class="gameBalanceLine">
-                            Balance: <span class="gameChipBalance">0 chips</span>
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">💰 Buy Tickets</div>
+                        <div class="panelHint">Up to 20 at once</div>
+                    </div>
+
+                    <div class="playerIdentityBox">
+                        <div class="playerIdentityLabel">Detected Player</div>
+                        <div class="playerIdentityName" id="scratchDetectedPlayerName">
+                            Waiting for game data...
+                        </div>
+                        <div class="playerIdentityId" id="scratchDetectedPlayerId">
+                            Press F1 within Transport Tycoon and Paste the URL and click Load.
                         </div>
                     </div>
 
-                    <div class="heroCard">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🎟️ Weekly Lottery</div>
-                            <div class="panelHint" id="lotteryCountdownText">
-                                Loading...
-                            </div>
-                        </div>
-
-                        <div class="dailyProfitTotal">
-                            <span>Current Jackpot</span>
-                            <strong id="lotteryPotValue">0 chips</strong>
-                        </div>
-
-                        <div class="dailyProfitSplit">
-                            <div class="dailyProfitSplitCard">
-                                <span>Total Tickets Sold</span>
-                                <strong id="lotteryTotalTickets">0</strong>
-                            </div>
-
-                            <div class="dailyProfitSplitCard">
-                                <span>Your Chance</span>
-                                <strong id="lotteryMyChance">0%</strong>
-                            </div>
-                        </div>
+                    <div class="row">
+                        <input id="scratchPriceInput" type="text" placeholder="Ticket price, e.g. 5m" />
+                        <input id="scratchQuantityInput" type="number" min="1" max="20" step="1" value="1"
+                            placeholder="Qty" />
+                        <button id="scratchBuyButton" class="green">Buy Tickets</button>
                     </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🎫 Buy Tickets</div>
-                            <div class="panelHint">100M chips per ticket</div>
-                        </div>
+                    <button id="scratchAutoPlayButton" type="button">
+                        ▶ AUTO SCRATCH
+                    </button>
 
-                        <div class="playerIdentityBox">
-                            <div class="playerIdentityLabel">Detected Player</div>
-                            <div class="playerIdentityName" id="lotteryDetectedPlayerName">
-                                Waiting for game data...
-                            </div>
-                            <div class="playerIdentityId" id="lotteryDetectedPlayerId">
-                                Press F1 within Transport Tycoon and Paste the URL and click Load.
-                            </div>
-                        </div>
-                        <div id="lotteryEligibilityNotice" class="chipRequestStatus" style="display:none;"></div>
-
-                        <div class="row">
-                            <input id="lotteryQuantityInput" type="number" min="1" max="1000" step="1" value="1"
-                                placeholder="Number of tickets" />
-                            <button id="lotteryBuyButton" class="green">
-                                Buy Tickets
-                            </button>
-                        </div>
-
-                        <div class="quickBetGrid">
-                            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="1">1</button>
-                            <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="5">5</button>
-                            <button class="quickBetButton" data-target="lotteryQuantityInput"
-                                data-amount="10">10</button>
-                            <button class="quickBetButton" data-target="lotteryQuantityInput"
-                                data-amount="50">50</button>
-                        </div>
-
-                        <div class="small">
-                            Each ticket costs 100,000,000 chips. The more tickets you hold, the higher your chance of
-                            winning the entire jackpot. One winner is drawn every week.
-                        </div>
+                    <div id="scratchAutoPlayStatus" class="small">
+                        Auto Scratch is off
                     </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🧾 Ticket Holders</div>
-                            <div class="panelHint">This round</div>
-                        </div>
-
-                        <div id="lotteryEntriesBox">
-                            <div class="emptyState">
-                                No tickets sold yet this round.
-                            </div>
-                        </div>
+                    <div class="quickBetGrid">
+                        <button class="quickBetButton" data-target="scratchPriceInput" data-amount="1000000">1M</button>
+                        <button class="quickBetButton" data-target="scratchPriceInput"
+                            data-amount="10000000">10M</button>
+                        <button class="quickBetButton" data-target="scratchPriceInput"
+                            data-amount="100000000">100M</button>
+                        <button class="quickBetButton" data-target="scratchPriceInput"
+                            data-amount="1000000000">1B</button>
                     </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">📜 Past Draws</div>
-                            <div class="panelHint">Recent winners</div>
-                        </div>
+                    <div id="scratchPaytable" class="slotPaytable"></div>
+                </div>
 
-                        <div id="lotteryHistoryBox">
-                            <div class="emptyState">
-                                No draws yet.
-                            </div>
-                        </div>
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">📜 Scratch History</div>
+                        <div class="panelHint">Recent purchases</div>
                     </div>
 
-                    <div class="panel bankerOnly" id="lotteryRespinPanel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🔄 Respin Last Draw</div>
-                            <div class="panelHint">Banker only</div>
+                    <div id="scratchHistoryBox">
+                        <div class="emptyState">
+                            No scratch tickets bought yet.
                         </div>
-                        <div class="small">
-                            Redraws the most recent lottery winner from the same ticket pool and pot.
-                        </div>
-                        <button id="lotteryRespinButton" class="danger" type="button">
-                            Respin Last Draw
-                        </button>
-                        <div id="lotteryRespinStatus" class="small" style="margin-top:8px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="lotteryPage" class="tabPage">
+                <div class="gameMetaRow">
+                    <div class="gameBalanceLine">
+                        Balance: <span class="gameChipBalance">0 chips</span>
                     </div>
                 </div>
 
-                <div id="chipsPage" class="tabPage">
-                    <div class="gameMetaRow">
-                        <div class="gameBalanceLine">
-                            Balance: <span class="gameChipBalance">0 chips</span>
-                        </div>
-                    </div>
-                    <div class="chipWallet">
-                        <div class="chipWalletTop">
-                            <div>
-                                <div class="playerIdentityLabel">Casino Chip Balance</div>
-                                <div class="chipBalance" id="chipBalance">0 chips</div>
-                            </div>
-                            <div class="panelHint" id="chipPlayerLabel">Waiting for player...</div>
-                        </div>
-                        <div class="row">
-                            <input id="chipRequestAmount" type="text" placeholder="Amount, e.g. 50m" />
-                            <select id="chipRequestType" aria-label="Chip request type">
-                                <option value="paid">Paid chips</option>
-                                <option value="free">Free chips</option>
-                            </select>
-                            <button id="requestChipsButton" class="gold">Request Chips</button>
-                        </div>
-                        <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire, Nunu or Crackaddict
-                            to fulfill these requests.</div>
-                        <div class="chipValueStatus" id="chipValueStatus">1 Chip = 1$ In-Game Cash, All Requests are
-                            sent to discord, so be patient!</div>
-
-                        <div class="panelHeader" style="margin-top:14px;">
-                            <div>
-                                <div class="panelTitle">💵 Request Withdrawal</div>
-                                <div class="panelHint">Requests are sent to Bankers on Discord</div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <input id="withdrawRequestAmount" type="text" placeholder="Withdrawal amount, e.g. 100m" />
-                            <button id="requestWithdrawalButton" class="danger" type="button">
-                                Request Withdrawal
-                            </button>
-                        </div>
-
-                        <div class="quickBetGrid">
-                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="1000000">
-                                1M
-                            </button>
-                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="10000000">
-                                10M
-                            </button>
-                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="100000000">
-                                100M
-                            </button>
-                            <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="1000000000">
-                                1B
-                            </button>
-                        </div>
-
-                        <div class="chipRequestStatus" id="withdrawRequestStatus">
-                            Organise with Poire, Nunu or Crackaddict to fulfill these requests.
+                <div class="heroCard">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🎟️ Weekly Lottery</div>
+                        <div class="panelHint" id="lotteryCountdownText">
+                            Loading...
                         </div>
                     </div>
 
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div>
-                                <div class="panelTitle">🏆 Top Gamblers</div>
-                                <div class="panelHint">Ranked by total money spent</div>
-                            </div>
-                            <button id="refreshLeaderboardButton" type="button">Refresh</button>
+                    <div class="dailyProfitTotal">
+                        <span>Current Jackpot</span>
+                        <strong id="lotteryPotValue">0 chips</strong>
+                    </div>
+
+                    <div class="dailyProfitSplit">
+                        <div class="dailyProfitSplitCard">
+                            <span>Total Tickets Sold</span>
+                            <strong id="lotteryTotalTickets">0</strong>
                         </div>
-                        <div id="gamblingLeaderboardBox">
-                            <div class="emptyState">Loading leaderboard...</div>
-                        </div>
-                        <div id="myLeaderboardPosition" class="chipRequestStatus">
-                            Your position will appear here.
+
+                        <div class="dailyProfitSplitCard">
+                            <span>Your Chance</span>
+                            <strong id="lotteryMyChance">0%</strong>
                         </div>
                     </div>
-                    <div class="panel bankerOnly">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🔐 Banker Login</div>
-                            <div class="panelHint">Chip controls</div>
+                </div>
+
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🎫 Buy Tickets</div>
+                        <div class="panelHint">100M chips per ticket</div>
+                    </div>
+
+                    <div class="playerIdentityBox">
+                        <div class="playerIdentityLabel">Detected Player</div>
+                        <div class="playerIdentityName" id="lotteryDetectedPlayerName">
+                            Waiting for game data...
                         </div>
+                        <div class="playerIdentityId" id="lotteryDetectedPlayerId">
+                            Press F1 within Transport Tycoon and Paste the URL and click Load.
+                        </div>
+                    </div>
+                    <div id="lotteryEligibilityNotice" class="chipRequestStatus" style="display:none;"></div>
 
-                        <input id="adminPinInput" type="password" placeholder="Banker PIN" />
-
-                        <button id="loginAdminButton" class="gold" type="button">
-                            Unlock Banker
+                    <div class="row">
+                        <input id="lotteryQuantityInput" type="number" min="1" max="1000" step="1" value="1"
+                            placeholder="Number of tickets" />
+                        <button id="lotteryBuyButton" class="green">
+                            Buy Tickets
                         </button>
                     </div>
 
-                    <div class="panel" id="chipBankerControls" style="display:none !important;">
+                    <div class="quickBetGrid">
+                        <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="1">1</button>
+                        <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="5">5</button>
+                        <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="10">10</button>
+                        <button class="quickBetButton" data-target="lotteryQuantityInput" data-amount="50">50</button>
+                    </div>
 
-                        <div class="panelHeader" style="margin-top:12px;">
-                            <div class="panelTitle">🔑 Registration Code</div>
-                            <div class="panelHint">New casino account</div>
+                    <div class="small">
+                        Each ticket costs 100,000,000 chips. The more tickets you hold, the higher your chance of
+                        winning the entire jackpot. One winner is drawn every week.
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🧾 Ticket Holders</div>
+                        <div class="panelHint">This round</div>
+                    </div>
+
+                    <div id="lotteryEntriesBox">
+                        <div class="emptyState">
+                            No tickets sold yet this round.
                         </div>
+                    </div>
+                </div>
 
-                        <button id="generateRegistrationCodeButton" class="gold" type="button">
-                            Generate Registration Code
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">📜 Past Draws</div>
+                        <div class="panelHint">Recent winners</div>
+                    </div>
+
+                    <div id="lotteryHistoryBox">
+                        <div class="emptyState">
+                            No draws yet.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel bankerOnly" id="lotteryRespinPanel">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🔄 Respin Last Draw</div>
+                        <div class="panelHint">Banker only</div>
+                    </div>
+                    <div class="small">
+                        Redraws the most recent lottery winner from the same ticket pool and pot.
+                    </div>
+                    <button id="lotteryRespinButton" class="danger" type="button">
+                        Respin Last Draw
+                    </button>
+                    <div id="lotteryRespinStatus" class="small" style="margin-top:8px;"></div>
+                </div>
+            </div>
+
+            <div id="chipsPage" class="tabPage">
+                <div class="gameMetaRow">
+                    <div class="gameBalanceLine">
+                        Balance: <span class="gameChipBalance">0 chips</span>
+                    </div>
+                </div>
+                <div class="chipWallet">
+                    <div class="chipWalletTop">
+                        <div>
+                            <div class="playerIdentityLabel">Casino Chip Balance</div>
+                            <div class="chipBalance" id="chipBalance">0 chips</div>
+                        </div>
+                        <div class="panelHint" id="chipPlayerLabel">Waiting for player...</div>
+                    </div>
+                    <div class="row">
+                        <input id="chipRequestAmount" type="text" placeholder="Amount, e.g. 50m" />
+                        <select id="chipRequestType" aria-label="Chip request type">
+                            <option value="paid">Paid chips</option>
+                            <option value="free">Free chips</option>
+                        </select>
+                        <button id="requestChipsButton" class="gold">Request Chips</button>
+                    </div>
+                    <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire, Nunu or Crackaddict
+                        to fulfill these requests.</div>
+                    <div class="chipValueStatus" id="chipValueStatus">1 Chip = 1$ In-Game Cash, All Requests are
+                        sent to discord, so be patient!</div>
+
+                    <div class="panelHeader" style="margin-top:14px;">
+                        <div>
+                            <div class="panelTitle">💵 Request Withdrawal</div>
+                            <div class="panelHint">Requests are sent to Bankers on Discord</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <input id="withdrawRequestAmount" type="text" placeholder="Withdrawal amount, e.g. 100m" />
+                        <button id="requestWithdrawalButton" class="danger" type="button">
+                            Request Withdrawal
                         </button>
+                    </div>
 
-                        <div id="generatedRegistrationCode" class="registrationCodeDisplay" style="
+                    <div class="quickBetGrid">
+                        <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="1000000">
+                            1M
+                        </button>
+                        <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="10000000">
+                            10M
+                        </button>
+                        <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="100000000">
+                            100M
+                        </button>
+                        <button class="quickBetButton" data-target="withdrawRequestAmount" data-amount="1000000000">
+                            1B
+                        </button>
+                    </div>
+
+                    <div class="chipRequestStatus" id="withdrawRequestStatus">
+                        Organise with Poire, Nunu or Crackaddict to fulfill these requests.
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panelHeader">
+                        <div>
+                            <div class="panelTitle">🏆 Top Gamblers</div>
+                            <div class="panelHint">Ranked by total money spent</div>
+                        </div>
+                        <button id="refreshLeaderboardButton" type="button">Refresh</button>
+                    </div>
+                    <div id="gamblingLeaderboardBox">
+                        <div class="emptyState">Loading leaderboard...</div>
+                    </div>
+                    <div id="myLeaderboardPosition" class="chipRequestStatus">
+                        Your position will appear here.
+                    </div>
+                </div>
+                <div class="panel bankerOnly">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🔐 Banker Login</div>
+                        <div class="panelHint">Chip controls</div>
+                    </div>
+
+                    <input id="adminPinInput" type="password" placeholder="Banker PIN" />
+
+                    <button id="loginAdminButton" class="gold" type="button">
+                        Unlock Banker
+                    </button>
+                </div>
+
+                <div class="panel" id="chipBankerControls" style="display:none !important;">
+
+                    <div class="panelHeader" style="margin-top:12px;">
+                        <div class="panelTitle">🔑 Registration Code</div>
+                        <div class="panelHint">New casino account</div>
+                    </div>
+
+                    <button id="generateRegistrationCodeButton" class="gold" type="button">
+                        Generate Registration Code
+                    </button>
+
+                    <div id="generatedRegistrationCode" class="registrationCodeDisplay" style="
             display:none;
             margin-top:12px;
             padding:16px;
@@ -1510,603 +1842,596 @@
             border-radius:10px;
         ">
 
-                            <div style="
+                        <div style="
                 font-size:11px;
                 opacity:.7;
                 margin-bottom:6px;
             ">
-                                REGISTRATION CODE
-                            </div>
+                            REGISTRATION CODE
+                        </div>
 
-                            <div id="registrationCodeValue" style="
+                        <div id="registrationCodeValue" style="
                 font-size:30px;
                 font-weight:800;
                 letter-spacing:5px;
                 user-select:text;
             ">
-                                --------
-                            </div>
-
-                            <button id="copyRegistrationCodeButton" type="button" style="margin-top:12px;">
-                                📋 Copy Code
-                            </button>
+                            --------
                         </div>
 
-                        <div id="registrationCodeExpiry" class="small" style="
-            margin-top:6px;
-            text-align:center;
-            min-height:18px;
-        ">
-                        </div>
-
-                        <div id="registrationCodeStatus" class="small" style="
-            margin-top:6px;
-            text-align:center;
-            min-height:18px;
-        ">
-                        </div>
-<div class="panelHeader" style="margin-top:18px;">
-    <div class="panelTitle">✅ Manual Register Player</div>
-    <div class="panelHint">No code needed</div>
-</div>
-
-<input id="manualRegisterPlayerIdInput" type="text" placeholder="Player ID" />
-
-<input id="manualRegisterPlayerNameInput" type="text" placeholder="Player name" />
-
-<button id="manualRegisterPlayerButton" class="green" type="button">
-    Register Player
-</button>
-
-<div id="manualRegisterStatus" class="chipRequestStatus"></div>
-
-                        <div class="panelHeader" style="margin-top:18px;">
-                            <div class="panelTitle">🚪 Unregister Player</div>
-                            <div class="panelHint">Force re-registration</div>
-                        </div>
-
-                        <input id="unregisterPlayerIdInput" type="text" placeholder="Player ID" />
-
-                        <input id="unregisterPlayerNameInput" type="text" placeholder="Player name (optional)" />
-
-                        <input id="unregisterPlayerReasonInput" type="text" maxlength="240"
-                            placeholder="Reason (optional)" />
-
-                        <button id="unregisterPlayerButton" class="danger" type="button">
-                            Unregister Player
+                        <button id="copyRegistrationCodeButton" type="button" style="margin-top:12px;">
+                            📋 Copy Code
                         </button>
+                    </div>
 
-                        <div class="chipRequestStatus">
-                            This does not wipe the player's casino data.
-                            They will need a new banker registration code
-                            before they can use the casino again.
+                    <div id="registrationCodeExpiry" class="small" style="
+            margin-top:6px;
+            text-align:center;
+            min-height:18px;
+        ">
+                    </div>
+
+                    <div id="registrationCodeStatus" class="small" style="
+            margin-top:6px;
+            text-align:center;
+            min-height:18px;
+        ">
+                    </div>
+                    <div class="panelHeader" style="margin-top:18px;">
+                        <div class="panelTitle">✅ Manual Register Player</div>
+                        <div class="panelHint">No code needed</div>
+                    </div>
+
+                    <input id="manualRegisterPlayerIdInput" type="text" placeholder="Player ID" />
+
+                    <input id="manualRegisterPlayerNameInput" type="text" placeholder="Player name" />
+
+                    <button id="manualRegisterPlayerButton" class="green" type="button">
+                        Register Player
+                    </button>
+
+                    <div id="manualRegisterStatus" class="chipRequestStatus"></div>
+
+                    <div class="panelHeader" style="margin-top:18px;">
+                        <div class="panelTitle">🚪 Unregister Player</div>
+                        <div class="panelHint">Force re-registration</div>
+                    </div>
+
+                    <input id="unregisterPlayerIdInput" type="text" placeholder="Player ID" />
+
+                    <input id="unregisterPlayerNameInput" type="text" placeholder="Player name (optional)" />
+
+                    <input id="unregisterPlayerReasonInput" type="text" maxlength="240"
+                        placeholder="Reason (optional)" />
+
+                    <button id="unregisterPlayerButton" class="danger" type="button">
+                        Unregister Player
+                    </button>
+
+                    <div class="chipRequestStatus">
+                        This does not wipe the player's casino data.
+                        They will need a new banker registration code
+                        before they can use the casino again.
+                    </div>
+
+
+                    <div class="panelHeader">
+                        <div class="panelTitle">🪙 Give Chips</div>
+                        <div class="panelHint">Server balance</div>
+                    </div>
+
+                    <input id="grantChipPlayerId" type="text" placeholder="Player ID" />
+
+                    <input id="grantChipPlayerName" type="text" placeholder="Player name (optional)" />
+
+                    <input id="grantChipAmount" type="number" min="1" step="1" placeholder="Chips to give" />
+
+                    <select id="grantChipType" aria-label="How the chips were supplied">
+
+                        <option value="paid">
+                            Paid chips — player paid for them
+                        </option>
+
+                        <option value="free">
+                            Free chips — banker gave them free
+                        </option>
+                    </select>
+
+                    <button id="grantChipsButton" class="gold" type="button">
+                        Give Chips
+                    </button>
+
+                    <div class="panelHeader" style="margin-top:18px;">
+                        <div class="panelTitle">🎲 Random Active Player Rewards</div>
+                        <div class="panelHint">Gambled in last 3 days</div>
+                    </div>
+
+                    <input id="randomRewardAmountInput" type="text" inputmode="decimal" autocomplete="off"
+                        placeholder="Paid chips per user (e.g. 10M)" />
+
+                    <input id="randomRewardUserCountInput" type="number" min="1" max="1000" step="1"
+                        placeholder="Number of random users" />
+
+                    <button id="randomRewardButton" class="gold" type="button">
+                        🎲 Give Random Paid Chips
+                    </button>
+
+                    <div id="randomRewardStatus" class="chipRequestStatus" style="min-height:22px;"></div>
+
+                    <div id="randomRewardResults" style="margin-top:10px;">
+                        <div class="emptyState">No random rewards sent yet.</div>
+                    </div>
+
+
+                    <div class="panelHeader" style="margin-top:12px;">
+                        <div class="panelTitle">📥 Chip Requests</div>
+                        <div class="panelHint">Approve or reject</div>
+                    </div>
+
+                    <div id="chipRequestsBox">
+                        <div class="emptyState">
+                            No chip requests.
                         </div>
+                    </div>
 
+
+                    <div class="panelHeader" style="margin-top:12px;">
+                        <div class="panelTitle">💵 Withdrawal Requests</div>
+                        <div class="panelHint">Approve or deny</div>
+                    </div>
+
+                    <div id="withdrawalRequestsBox">
+                        <div class="emptyState">
+                            No withdrawal requests.
+                        </div>
+                    </div>
+
+
+                    <div class="panelHeader" style="margin-top:12px;">
+                        <div class="panelTitle">💵 Cash Out Player</div>
+                        <div class="panelHint">Remove paid chips</div>
+                    </div>
+
+                    <input id="cashoutPlayerIdInput" type="text" placeholder="Player ID" />
+
+                    <input id="cashoutAmountInput" type="number" min="1" step="1"
+                        placeholder="Amount of chips to cash out" />
+
+                    <button id="cashoutChipsButton" class="danger" type="button">
+                        Cash Out Chips
+                    </button>
+
+
+                    <div class="panelHeader" style="margin-top:12px;">
+                        <div class="panelTitle">🔐 Reset Player PIN</div>
+                        <div class="panelHint">
+                            PIN only • does not wipe casino data
+                        </div>
+                    </div>
+
+                    <input id="resetPinPlayerIdInput" type="text" placeholder="Player ID" />
+
+                    <button id="resetPlayerPinButton" class="danger" type="button">
+                        Reset Player PIN
+                    </button>
+
+                    <div class="chipRequestStatus">
+                        This removes only the player's current PIN.
+                        Their balance, winnings, statistics, requests
+                        and active games are not affected. The player
+                        will be asked to create a new PIN the next time
+                        they use the casino.
+                    </div>
+
+
+                    <div class="playerAuditPanel" id="blacklistManager">
 
                         <div class="panelHeader">
-                            <div class="panelTitle">🪙 Give Chips</div>
-                            <div class="panelHint">Server balance</div>
-                        </div>
-
-                        <input id="grantChipPlayerId" type="text" placeholder="Player ID" />
-
-                        <input id="grantChipPlayerName" type="text" placeholder="Player name (optional)" />
-
-                        <input id="grantChipAmount" type="number" min="1" step="1" placeholder="Chips to give" />
-
-                        <select id="grantChipType" aria-label="How the chips were supplied">
-
-                            <option value="paid">
-                                Paid chips — player paid for them
-                            </option>
-
-                            <option value="free">
-                                Free chips — banker gave them free
-                            </option>
-                        </select>
-
-                        <button id="grantChipsButton" class="gold" type="button">
-                            Give Chips
-                        </button>
-
-                        <div class="panelHeader" style="margin-top:18px;">
-                            <div class="panelTitle">🎲 Random Active Player Rewards</div>
-                            <div class="panelHint">Gambled in last 3 days</div>
-                        </div>
-
-                       <input
-    id="randomRewardAmountInput"
-    type="text"
-    inputmode="decimal"
-    autocomplete="off"
-    placeholder="Paid chips per user (e.g. 10M)"
-/>
-
-                        <input id="randomRewardUserCountInput" type="number" min="1" max="1000" step="1"
-                            placeholder="Number of random users" />
-
-                        <button id="randomRewardButton" class="gold" type="button">
-                            🎲 Give Random Paid Chips
-                        </button>
-
-                        <div id="randomRewardStatus" class="chipRequestStatus" style="min-height:22px;"></div>
-
-                        <div id="randomRewardResults" style="margin-top:10px;">
-                            <div class="emptyState">No random rewards sent yet.</div>
-                        </div>
-
-
-                        <div class="panelHeader" style="margin-top:12px;">
-                            <div class="panelTitle">📥 Chip Requests</div>
-                            <div class="panelHint">Approve or reject</div>
-                        </div>
-
-                        <div id="chipRequestsBox">
-                            <div class="emptyState">
-                                No chip requests.
-                            </div>
-                        </div>
-
-
-                        <div class="panelHeader" style="margin-top:12px;">
-                            <div class="panelTitle">💵 Withdrawal Requests</div>
-                            <div class="panelHint">Approve or deny</div>
-                        </div>
-
-                        <div id="withdrawalRequestsBox">
-                            <div class="emptyState">
-                                No withdrawal requests.
-                            </div>
-                        </div>
-
-
-                        <div class="panelHeader" style="margin-top:12px;">
-                            <div class="panelTitle">💵 Cash Out Player</div>
-                            <div class="panelHint">Remove paid chips</div>
-                        </div>
-
-                        <input id="cashoutPlayerIdInput" type="text" placeholder="Player ID" />
-
-                        <input id="cashoutAmountInput" type="number" min="1" step="1"
-                            placeholder="Amount of chips to cash out" />
-
-                        <button id="cashoutChipsButton" class="danger" type="button">
-                            Cash Out Chips
-                        </button>
-
-
-                        <div class="panelHeader" style="margin-top:12px;">
-                            <div class="panelTitle">🔐 Reset Player PIN</div>
-                            <div class="panelHint">
-                                PIN only • does not wipe casino data
-                            </div>
-                        </div>
-
-                        <input id="resetPinPlayerIdInput" type="text" placeholder="Player ID" />
-
-                        <button id="resetPlayerPinButton" class="danger" type="button">
-                            Reset Player PIN
-                        </button>
-
-                        <div class="chipRequestStatus">
-                            This removes only the player's current PIN.
-                            Their balance, winnings, statistics, requests
-                            and active games are not affected. The player
-                            will be asked to create a new PIN the next time
-                            they use the casino.
-                        </div>
-
-
-                        <div class="playerAuditPanel" id="blacklistManager">
-
-                            <div class="panelHeader">
-                                <div>
-                                    <div class="panelTitle">🚫 App Blacklist</div>
-                                    <div class="panelHint">
-                                        Block a player from the casino
-                                    </div>
+                            <div>
+                                <div class="panelTitle">🚫 App Blacklist</div>
+                                <div class="panelHint">
+                                    Block a player from the casino
                                 </div>
                             </div>
+                        </div>
 
-                            <input id="blacklistPlayerIdInput" type="text" placeholder="Player ID" />
+                        <input id="blacklistPlayerIdInput" type="text" placeholder="Player ID" />
 
-                            <input id="blacklistPlayerNameInput" type="text" placeholder="Player name (optional)" />
+                        <input id="blacklistPlayerNameInput" type="text" placeholder="Player name (optional)" />
 
-                            <input id="blacklistReasonInput" type="text" maxlength="240"
-                                placeholder="Reason (optional)" />
+                        <input id="blacklistReasonInput" type="text" maxlength="240" placeholder="Reason (optional)" />
 
-                            <button id="blacklistPlayerButton" class="danger" type="button">
-                                Blacklist Player
-                            </button>
+                        <button id="blacklistPlayerButton" class="danger" type="button">
+                            Blacklist Player
+                        </button>
 
-                            <div class="panelHeader" style="margin-top:12px;">
+                        <div class="panelHeader" style="margin-top:12px;">
+                            <div class="panelTitle">
+                                Blacklisted Players
+                            </div>
+                            <div class="panelHint">
+                                Remove to restore access
+                            </div>
+                        </div>
+
+                        <div id="blacklistPlayersBox">
+                            <div class="emptyState">
+                                No blacklisted players.
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="playerAuditPanel">
+
+                        <div class="panelHeader playerAuditHeader">
+                            <div>
                                 <div class="panelTitle">
-                                    Blacklisted Players
+                                    🕵️ Player Gambling Audit
                                 </div>
                                 <div class="panelHint">
-                                    Remove to restore access
+                                    Latest 20 wins and losses
                                 </div>
                             </div>
 
-                            <div id="blacklistPlayersBox">
-                                <div class="emptyState">
-                                    No blacklisted players.
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="playerAuditPanel">
-
-                            <div class="panelHeader playerAuditHeader">
-                                <div>
-                                    <div class="panelTitle">
-                                        🕵️ Player Gambling Audit
-                                    </div>
-                                    <div class="panelHint">
-                                        Latest 20 wins and losses
-                                    </div>
-                                </div>
-
-                                <button id="clearPlayerAuditButton" class="playerAuditClearButton" type="button"
-                                    title="Clear the current audit from this panel">
-                                    Clear Audit
-                                </button>
-                            </div>
-
-                            <div class="row">
-                                <input id="auditPlayerIdInput" type="text" placeholder="Player ID to inspect" />
-
-                                <button id="loadPlayerAuditButton" type="button">
-                                    Check Player
-                                </button>
-                            </div>
-
-                            <div id="playerAuditBox">
-                                <div class="emptyState">
-                                    Enter a player ID to inspect their recent gambling.
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="panelHeader" style="margin-top:12px;">
-                            <div class="panelTitle">
-                                ♻️ Reset Individual Player
-                            </div>
-                            <div class="panelHint">
-                                Clear one casino account
-                            </div>
-                        </div>
-
-                        <input id="resetPlayerIdInput" type="text" placeholder="Player ID to reset" />
-
-                        <input id="resetPlayerConfirmation" type="text" placeholder="Type RESET PLAYER" />
-
-                        <button id="resetPlayerButton" class="danger" type="button">
-                            Reset Player
-                        </button>
-
-                        <div class="chipRequestStatus">
-                            Clears only that player's casino balance,
-                            statistics, requests, spins and active games.
-                            They will receive the normal starting chips
-                            when they register again.
-                        </div>
-
-
-                        <div id="chipResetDangerZone" class="chipResetDangerZone">
-
-                            <div class="chipResetDangerTitle">
-                                ⚠️ Reset All Casino Chips
-                            </div>
-
-                            <div class="chipResetDangerText">
-                                Only Poire can use this!
-                            </div>
-
-                            <input id="resetAllChipsConfirmation" type="text" placeholder="Type RESET ALL CHIPS" />
-
-                            <button id="resetAllChipsButton" class="danger" type="button">
-                                Reset All Chips
+                            <button id="clearPlayerAuditButton" class="playerAuditClearButton" type="button"
+                                title="Clear the current audit from this panel">
+                                Clear Audit
                             </button>
                         </div>
 
-<div id="dailyProfitPanel" class="dailyProfitPanel" style="display:none !important;">
+                        <div class="row">
+                            <input id="auditPlayerIdInput" type="text" placeholder="Player ID to inspect" />
 
-                    <div class="dailyProfitHeader">
-                        <div>
-                            <div class="panelTitle">
-                                📈 Total House Profit
-                            </div>
-                            <div class="panelHint">
-                                Banker only • UTC day
-                            </div>
+                            <button id="loadPlayerAuditButton" type="button">
+                                Check Player
+                            </button>
                         </div>
 
-                        <button id="refreshDailyProfit" type="button">
-                            Refresh
+                        <div id="playerAuditBox">
+                            <div class="emptyState">
+                                Enter a player ID to inspect their recent gambling.
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="panelHeader" style="margin-top:12px;">
+                        <div class="panelTitle">
+                            ♻️ Reset Individual Player
+                        </div>
+                        <div class="panelHint">
+                            Clear one casino account
+                        </div>
+                    </div>
+
+                    <input id="resetPlayerIdInput" type="text" placeholder="Player ID to reset" />
+
+                    <input id="resetPlayerConfirmation" type="text" placeholder="Type RESET PLAYER" />
+
+                    <button id="resetPlayerButton" class="danger" type="button">
+                        Reset Player
+                    </button>
+
+                    <div class="chipRequestStatus">
+                        Clears only that player's casino balance,
+                        statistics, requests, spins and active games.
+                        They will receive the normal starting chips
+                        when they register again.
+                    </div>
+
+
+                    <div id="chipResetDangerZone" class="chipResetDangerZone">
+
+                        <div class="chipResetDangerTitle">
+                            ⚠️ Reset All Casino Chips
+                        </div>
+
+                        <div class="chipResetDangerText">
+                            Only Poire can use this!
+                        </div>
+
+                        <input id="resetAllChipsConfirmation" type="text" placeholder="Type RESET ALL CHIPS" />
+
+                        <button id="resetAllChipsButton" class="danger" type="button">
+                            Reset All Chips
                         </button>
                     </div>
 
-                    <div class="dailyProfitTotal">
-                        <span>All chip house profit</span>
-                        <strong id="dailyProfitValue">
-                            Loading...
-                        </strong>
-                    </div>
+                    <div id="dailyProfitPanel" class="dailyProfitPanel" style="display:none !important;">
 
-                    <div class="dailyProfitSplit">
+                        <div class="dailyProfitHeader">
+                            <div>
+                                <div class="panelTitle">
+                                    📈 Total House Profit
+                                </div>
+                                <div class="panelHint">
+                                    Banker only • UTC day
+                                </div>
+                            </div>
 
-                        <div class="dailyProfitSplitCard">
-                            <span>Real / paid-chip profit</span>
-                            <strong id="dailyRealProfitValue">
-                                0
+                            <button id="refreshDailyProfit" type="button">
+                                Refresh
+                            </button>
+                        </div>
+
+                        <div class="dailyProfitTotal">
+                            <span>All chip house profit</span>
+                            <strong id="dailyProfitValue">
+                                Loading...
                             </strong>
                         </div>
 
-                        <div class="dailyProfitSplitCard">
-                            <span>Promo-chip profit</span>
-                            <strong id="dailyPromoProfitValue">
-                                0
-                            </strong>
+                        <div class="dailyProfitSplit">
+
+                            <div class="dailyProfitSplitCard">
+                                <span>Real / paid-chip profit</span>
+                                <strong id="dailyRealProfitValue">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="dailyProfitSplitCard">
+                                <span>Promo-chip profit</span>
+                                <strong id="dailyPromoProfitValue">
+                                    0
+                                </strong>
+                            </div>
+
                         </div>
+
+                        <div class="dailyProfitStats">
+
+                            <div class="dailyProfitStat">
+                                Total Bets
+                                <strong id="dailyBetsValue">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="dailyProfitStat">
+                                Payouts
+                                <strong id="dailyPayoutsValue">
+                                    0
+                                </strong>
+                            </div>
+
+                            <div class="dailyProfitStat">
+                                Refunds
+                                <strong id="dailyRefundsValue">
+                                    0
+                                </strong>
+                            </div>
+
+                        </div>
+
+                        <div id="dailyGameBreakdown" class="dailyGameBreakdown">
+                            <div class="emptyState">
+                                Unlock banker controls to load today's figures.
+                            </div>
+                        </div>
+
+                        <div class="dailyProfitFootnote">
+                            Real/paid excludes welcome bonuses, daily-spin
+                            chips and banker grants marked free. Source
+                            tracking applies going forward and resets daily
+                            at 00:00 UTC.
+                        </div>
+
 
                     </div>
-
-                    <div class="dailyProfitStats">
-
-                        <div class="dailyProfitStat">
-                            Total Bets
-                            <strong id="dailyBetsValue">
-                                0
-                            </strong>
-                        </div>
-
-                        <div class="dailyProfitStat">
-                            Payouts
-                            <strong id="dailyPayoutsValue">
-                                0
-                            </strong>
-                        </div>
-
-                        <div class="dailyProfitStat">
-                            Refunds
-                            <strong id="dailyRefundsValue">
-                                0
-                            </strong>
-                        </div>
-
-                    </div>
-
-                    <div id="dailyGameBreakdown" class="dailyGameBreakdown">
-                        <div class="emptyState">
-                            Unlock banker controls to load today's figures.
-                        </div>
-                    </div>
-
-                    <div class="dailyProfitFootnote">
-                        Real/paid excludes welcome bonuses, daily-spin
-                        chips and banker grants marked free. Source
-                        tracking applies going forward and resets daily
-                        at 00:00 UTC.
-                    </div>
-
 
                 </div>
 
-                    </div>
 
-
-                </div>
-
-                
-            </div>
-       
-
-                <div id="dailySpinPage" class="tabPage">
-                    <div class="gameMetaRow">
-                        <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
-                    </div>
-                    <div class="heroCard">
-                        <div class="panelTitle">🎁 Daily Spin</div>
-                        <div class="small">One free spin per player every UTC day.</div>
-                        <div class="dailySpinWheelWrap">
-                            <div class="dailySpinPointer"></div>
-                            <div id="dailySpinWheel" class="dailySpinWheel"></div>
-                        </div>
-                        <div id="dailySpinResult" class="dailySpinResultBox">Loading your daily spin...</div>
-                        <button id="dailySpinButton" class="gold" disabled>Spin Daily Wheel</button>
-                        <div id="dailySpinResetText" class="small"></div>
-                    </div>
-                    <div class="panel bankerOnly" id="dailySpinAdminPanel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">🎟️ Grant Extra Spins</div>
-                            <div class="panelHint">Banker only</div>
-                        </div>
-                        <input id="dailySpinGrantPlayerId" type="text" inputmode="numeric" placeholder="Player ID" />
-                        <input id="dailySpinGrantAmount" type="number" min="1" max="1000" value="1"
-                            placeholder="Number of extra spins" />
-                        <button id="dailySpinGrantButton" class="green">Give Extra Spins</button>
-                        <div id="dailySpinGrantStatus" class="small"></div>
-                    </div>
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">Possible Prizes</div>
-                            <div class="panelHint">Server selected</div>
-                        </div>
-                        <div id="dailySpinPrizeList" class="dailySpinPrizeList"></div>
-                        <div class="small">Chip prizes are credited instantly. In-Game items will be delivered when a
-                            Banker is online, We get notified on Discord if you win in game Items</div>
-                    </div>
-                </div>
-
-                <div id="userSettingsPage" class="tabPage">
-                    <div class="gameMetaRow">
-                        <div class="gameBalanceLine">Hopefully saved between relogs</div>
-                    </div>
-                    <div class="panel">
-                        <div class="panelHeader">
-                            <div class="panelTitle">⚙️ User Settings</div>
-                            <div class="panelHint">ON = Green</div>
-                        </div>
-                        <div class="settingsOptions">
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Compact Game View</div>
-                                    <div class="settingsOptionHint">Shows only the tabs, active game and essential
-                                        controls.</div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingCompactMode" type="checkbox" />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-                            <div class="settingsOption settingsOptionRange">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">UI Transparency</div>
-                                    <div class="settingsOptionHint">Adjust the Transparency of the UI</div>
-                                </div>
-                                <div class="settingsRangeControl">
-                                    <span id="opacityValue">78%</span>
-                                    <input id="opacityInput" type="range" min="5" max="100" value="78"
-                                        aria-label="Whole UI transparency" />
-                                </div>
-                            </div>
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Casino Sounds</div>
-                                    <div class="settingsOptionHint">Enables slot payout sounds and free-spin bonus
-                                        sounds.</div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingSoundsEnabled" type="checkbox" checked />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Winning Confetti</div>
-                                    <div class="settingsOptionHint">Confetti winning (Snowfall)</div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingConfettiEnabled" type="checkbox" checked />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-                            <div class="settingsOption settingsOptionRange">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Plinko Auto Play Speed</div>
-                                    <div class="settingsOptionHint">Choose how often Plinko drops another ball while
-                                        Auto Play is running.</div>
-                                </div>
-                                <div class="settingsRangeControl">
-                                    <span id="plinkoAutoIntervalValue">5.0s</span>
-                                    <input id="plinkoAutoIntervalInput" type="range" min="1000" max="30000" step="500"
-                                        value="5000" aria-label="Plinko Auto Play interval" />
-                                </div>
-                            </div>
-
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">Hi-Low Card Display</div>
-                                    <div class="settingsOptionHint">Show cards as plain numbers, or as
-                                        Jack/Queen/King/Ace.</div>
-                                </div>
-                            </div>
-                            <div class="quickBetGrid" style="grid-template-columns: 1fr 1fr; margin-top: -6px;">
-                                <button id="hiloStyleNumbersButton" class="quickBetButton"
-                                    type="button">Numbers</button>
-                                <button id="hiloStyleNamesButton" class="quickBetButton" type="button">Card
-                                    Names</button>
-                            </div>
-                            <div class="settingsOption">
-                                <div class="settingsOptionText">
-                                    <div class="settingsOptionTitle">GIFs and Pictures</div>
-                                    <div class="settingsOptionHint">Pear and Mr President will be missed!.</div>
-                                </div>
-                                <label class="settingsToggle">
-                                    <input id="settingMediaEnabled" type="checkbox" checked />
-                                    <span class="settingsToggleSlider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="settingsSavedNote">Jelly Beans Requested to disable this, 'Confetti is like snow
-                            blocking my screen' Blah Blah Blah</div>
-                        <div class="panel" style="margin-top:14px;">
-                            <div class="panelHeader">
-                                <div class="panelTitle">🔄 Reload App</div>
-                                <div class="panelHint">Reload the current userapp link.</div>
-                            </div>
-                            <button id="reloadAppButton" class="gold">Reload App</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="casinoConfirmBackdrop" class="casinoConfirmBackdrop">
-                <div class="casinoConfirmModal">
-                    <div id="casinoConfirmTitle" class="casinoConfirmTitle">
-                        Confirm Action
-                    </div>
-                    <div id="casinoConfirmText" class="casinoConfirmText">
-                        Are you sure?
-                    </div>
-                    <div class="casinoConfirmActions">
-                        <button id="casinoConfirmCancel" type="button">
-                            Cancel
-                        </button>
-                        <button id="casinoConfirmAccept" class="danger" type="button">
-                            Confirm
-                        </button>
-                    </div>
-                </div>
             </div>
 
-            <div id="pinEntryBackdrop" class="casinoConfirmBackdrop">
-                <div class="casinoConfirmModal">
-                    <div id="pinEntryTitle" class="casinoConfirmTitle">Enter Your PIN</div>
-                    <div id="pinEntryText" class="casinoConfirmText">
-                        Enter your casino PIN to continue.
-                    </div>
-                    <input id="pinEntryInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8"
-                        placeholder="PIN"
-                        style="width:100%;text-align:center;font-size:20px;letter-spacing:6px;margin:10px 0;padding:10px;border-radius:8px;" />
-                    <div id="pinEntryError" class="small" style="color:#ff6262;min-height:16px;"></div>
-                    <div class="casinoConfirmActions">
-                        <button id="pinEntrySubmit" class="green" type="button">Confirm</button>
-                    </div>
-                </div>
-            </div>
 
-            <div id="roundResultPopup" class="roundResultPopup hidden">
-                <button id="roundResultClose" class="roundResultClose">×</button>
-                <div class="roundResultTitle" id="roundResultTitle">Round Results</div>
-                <div class="roundResultBody" id="roundResultBody"></div>
+        </div>
+
+
+        <div id="dailySpinPage" class="tabPage">
+            <div class="gameMetaRow">
+                <div class="gameBalanceLine">Balance: <span class="gameChipBalance">0 chips</span></div>
             </div>
-            <div id="settings" class="panel">
+            <div class="heroCard">
+                <div class="panelTitle">🎁 Daily Spin</div>
+                <div class="small">One free spin per player every UTC day.</div>
+                <div class="dailySpinWheelWrap">
+                    <div class="dailySpinPointer"></div>
+                    <div id="dailySpinWheel" class="dailySpinWheel"></div>
+                </div>
+                <div id="dailySpinResult" class="dailySpinResultBox">Loading your daily spin...</div>
+                <button id="dailySpinButton" class="gold" disabled>Spin Daily Wheel</button>
+                <div id="dailySpinResetText" class="small"></div>
+            </div>
+            <div class="panel bankerOnly" id="dailySpinAdminPanel">
                 <div class="panelHeader">
-                    <div class="panelTitle">⚙️ Settings</div>
-                    <div class="panelHint">Local app</div>
+                    <div class="panelTitle">🎟️ Grant Extra Spins</div>
+                    <div class="panelHint">Banker only</div>
                 </div>
-                <div class="small">
-
-                </div>
-                <button id="reloadButton">Reload App</button>
+                <input id="dailySpinGrantPlayerId" type="text" inputmode="numeric" placeholder="Player ID" />
+                <input id="dailySpinGrantAmount" type="number" min="1" max="1000" value="1"
+                    placeholder="Number of extra spins" />
+                <button id="dailySpinGrantButton" class="green">Give Extra Spins</button>
+                <div id="dailySpinGrantStatus" class="small"></div>
             </div>
-
-            <audio id="slotPayoutSound" preload="auto">
-                <source src="./slotmachine.mp3" type="audio/mpeg">
-            </audio>
-            <audio id="slotBonusSound" preload="auto">
-                <source src="./bonus.mp3" type="audio/mpeg">
-            </audio>
-            <img id="fivePearGif" class="fivePearGif" src="./dancing-donald.gif" alt="" />
-            <img id="sessionSpinGif" class="sessionSpinGif" src="./durp.gif" alt="" />
-
-            <div id="winOverlay">
+            <div class="panel">
+                <div class="panelHeader">
+                    <div class="panelTitle">Possible Prizes</div>
+                    <div class="panelHint">Server selected</div>
+                </div>
+                <div id="dailySpinPrizeList" class="dailySpinPrizeList"></div>
+                <div class="small">Chip prizes are credited instantly. In-Game items will be delivered when a
+                    Banker is online, We get notified on Discord if you win in game Items</div>
             </div>
         </div>
-        <div id="resizeHandle"></div>
+
+        <div id="userSettingsPage" class="tabPage">
+            <div class="gameMetaRow">
+                <div class="gameBalanceLine">Hopefully saved between relogs</div>
+            </div>
+            <div class="panel">
+                <div class="panelHeader">
+                    <div class="panelTitle">⚙️ User Settings</div>
+                    <div class="panelHint">ON = Green</div>
+                </div>
+                <div class="settingsOptions">
+                    <div class="settingsOption">
+                        <div class="settingsOptionText">
+                            <div class="settingsOptionTitle">Compact Game View</div>
+                            <div class="settingsOptionHint">Shows only the tabs, active game and essential
+                                controls.</div>
+                        </div>
+                        <label class="settingsToggle">
+                            <input id="settingCompactMode" type="checkbox" />
+                            <span class="settingsToggleSlider"></span>
+                        </label>
+                    </div>
+                    <div class="settingsOption settingsOptionRange">
+                        <div class="settingsOptionText">
+                            <div class="settingsOptionTitle">UI Transparency</div>
+                            <div class="settingsOptionHint">Adjust the Transparency of the UI</div>
+                        </div>
+                        <div class="settingsRangeControl">
+                            <span id="opacityValue">78%</span>
+                            <input id="opacityInput" type="range" min="5" max="100" value="78"
+                                aria-label="Whole UI transparency" />
+                        </div>
+                    </div>
+                    <div class="settingsOption">
+                        <div class="settingsOptionText">
+                            <div class="settingsOptionTitle">Casino Sounds</div>
+                            <div class="settingsOptionHint">Enables slot payout sounds and free-spin bonus
+                                sounds.</div>
+                        </div>
+                        <label class="settingsToggle">
+                            <input id="settingSoundsEnabled" type="checkbox" checked />
+                            <span class="settingsToggleSlider"></span>
+                        </label>
+                    </div>
+                    <div class="settingsOption">
+                        <div class="settingsOptionText">
+                            <div class="settingsOptionTitle">Winning Confetti</div>
+                            <div class="settingsOptionHint">Confetti winning (Snowfall)</div>
+                        </div>
+                        <label class="settingsToggle">
+                            <input id="settingConfettiEnabled" type="checkbox" checked />
+                            <span class="settingsToggleSlider"></span>
+                        </label>
+                    </div>
+                    <div class="settingsOption settingsOptionRange">
+                        <div class="settingsOptionText">
+                            <div class="settingsOptionTitle">Plinko Auto Play Speed</div>
+                            <div class="settingsOptionHint">Choose how often Plinko drops another ball while
+                                Auto Play is running.</div>
+                        </div>
+                        <div class="settingsRangeControl">
+                            <span id="plinkoAutoIntervalValue">5.0s</span>
+                            <input id="plinkoAutoIntervalInput" type="range" min="1000" max="30000" step="500"
+                                value="5000" aria-label="Plinko Auto Play interval" />
+                        </div>
+                    </div>
+
+                    <div class="settingsOption">
+                        <div class="settingsOptionText">
+                            <div class="settingsOptionTitle">Hi-Low Card Display</div>
+                            <div class="settingsOptionHint">Show cards as plain numbers, or as
+                                Jack/Queen/King/Ace.</div>
+                        </div>
+                    </div>
+                    <div class="quickBetGrid" style="grid-template-columns: 1fr 1fr; margin-top: -6px;">
+                        <button id="hiloStyleNumbersButton" class="quickBetButton" type="button">Numbers</button>
+                        <button id="hiloStyleNamesButton" class="quickBetButton" type="button">Card
+                            Names</button>
+                    </div>
+                    <div class="settingsOption">
+                        <div class="settingsOptionText">
+                            <div class="settingsOptionTitle">GIFs and Pictures</div>
+                            <div class="settingsOptionHint">Pear and Mr President will be missed!.</div>
+                        </div>
+                        <label class="settingsToggle">
+                            <input id="settingMediaEnabled" type="checkbox" checked />
+                            <span class="settingsToggleSlider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="settingsSavedNote">Jelly Beans Requested to disable this, 'Confetti is like snow
+                    blocking my screen' Blah Blah Blah</div>
+                <div class="panel" style="margin-top:14px;">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🔄 Reload App</div>
+                        <div class="panelHint">Reload the current userapp link.</div>
+                    </div>
+                    <button id="reloadAppButton" class="gold">Reload App</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="casinoConfirmBackdrop" class="casinoConfirmBackdrop">
+        <div class="casinoConfirmModal">
+            <div id="casinoConfirmTitle" class="casinoConfirmTitle">
+                Confirm Action
+            </div>
+            <div id="casinoConfirmText" class="casinoConfirmText">
+                Are you sure?
+            </div>
+            <div class="casinoConfirmActions">
+                <button id="casinoConfirmCancel" type="button">
+                    Cancel
+                </button>
+                <button id="casinoConfirmAccept" class="danger" type="button">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pinEntryBackdrop" class="casinoConfirmBackdrop">
+        <div class="casinoConfirmModal">
+            <div id="pinEntryTitle" class="casinoConfirmTitle">Enter Your PIN</div>
+            <div id="pinEntryText" class="casinoConfirmText">
+                Enter your casino PIN to continue.
+            </div>
+            <input id="pinEntryInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8"
+                placeholder="PIN"
+                style="width:100%;text-align:center;font-size:20px;letter-spacing:6px;margin:10px 0;padding:10px;border-radius:8px;" />
+            <div id="pinEntryError" class="small" style="color:#ff6262;min-height:16px;"></div>
+            <div class="casinoConfirmActions">
+                <button id="pinEntrySubmit" class="green" type="button">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="roundResultPopup" class="roundResultPopup hidden">
+        <button id="roundResultClose" class="roundResultClose">×</button>
+        <div class="roundResultTitle" id="roundResultTitle">Round Results</div>
+        <div class="roundResultBody" id="roundResultBody"></div>
+    </div>
+    <div id="settings" class="panel">
+        <div class="panelHeader">
+            <div class="panelTitle">⚙️ Settings</div>
+            <div class="panelHint">Local app</div>
+        </div>
+        <div class="small">
+
+        </div>
+        <button id="reloadButton">Reload App</button>
+    </div>
+
+    <audio id="slotPayoutSound" preload="auto">
+        <source src="./slotmachine.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="slotBonusSound" preload="auto">
+        <source src="./bonus.mp3" type="audio/mpeg">
+    </audio>
+    <img id="fivePearGif" class="fivePearGif" src="./dancing-donald.gif" alt="" />
+    <img id="sessionSpinGif" class="sessionSpinGif" src="./durp.gif" alt="" />
+
+    <div id="winOverlay">
+    </div>
+    </div>
+    <div id="resizeHandle"></div>
     </div>
     <script>
         const SERVER_URL = "https://gambling-backend-production.up.railway.app/";
@@ -2120,84 +2445,84 @@
         let casinoPin = null;
         const STORAGE_CASINO_PIN_PREFIX = "tt_shared_casino_pin_";
 
-function getCasinoPinStorageKey(playerId = autoUserId) {
-    const id = String(playerId || "").trim();
+        function getCasinoPinStorageKey(playerId = autoUserId) {
+            const id = String(playerId || "").trim();
 
-    if (!id) {
-        return "";
-    }
+            if (!id) {
+                return "";
+            }
 
-    return STORAGE_CASINO_PIN_PREFIX + id;
-}
-
-function loadSavedCasinoPin(playerId = autoUserId) {
-    const key = getCasinoPinStorageKey(playerId);
-
-    if (!key) {
-        casinoPin = null;
-        return;
-    }
-
-    try {
-        const savedPin = String(
-            localStorage.getItem(key) || ""
-        ).trim();
-
-        if (/^\d{4,8}$/.test(savedPin)) {
-            casinoPin = savedPin;
-        } else {
-            casinoPin = null;
+            return STORAGE_CASINO_PIN_PREFIX + id;
         }
-    } catch (error) {
-        console.warn(
-            "Could not load saved casino PIN:",
-            error
-        );
 
-        casinoPin = null;
-    }
-}
+        function loadSavedCasinoPin(playerId = autoUserId) {
+            const key = getCasinoPinStorageKey(playerId);
 
-function saveCasinoPin(pin, playerId = autoUserId) {
-    const key = getCasinoPinStorageKey(playerId);
+            if (!key) {
+                casinoPin = null;
+                return;
+            }
 
-    if (!key) {
-        return;
-    }
+            try {
+                const savedPin = String(
+                    localStorage.getItem(key) || ""
+                ).trim();
 
-    try {
-        localStorage.setItem(
-            key,
-            String(pin)
-        );
-    } catch (error) {
-        console.warn(
-            "Could not save casino PIN:",
-            error
-        );
-    }
-}
+                if (/^\d{4,8}$/.test(savedPin)) {
+                    casinoPin = savedPin;
+                } else {
+                    casinoPin = null;
+                }
+            } catch (error) {
+                console.warn(
+                    "Could not load saved casino PIN:",
+                    error
+                );
 
-function clearSavedCasinoPin(playerId = autoUserId) {
-    const key = getCasinoPinStorageKey(playerId);
+                casinoPin = null;
+            }
+        }
 
-    if (!key) {
-        return;
-    }
+        function saveCasinoPin(pin, playerId = autoUserId) {
+            const key = getCasinoPinStorageKey(playerId);
 
-    try {
-        localStorage.removeItem(key);
-    } catch (error) {
-        console.warn(
-            "Could not clear saved casino PIN:",
-            error
-        );
-    }
+            if (!key) {
+                return;
+            }
 
-    if (String(playerId) === String(autoUserId)) {
-        casinoPin = null;
-    }
-}
+            try {
+                localStorage.setItem(
+                    key,
+                    String(pin)
+                );
+            } catch (error) {
+                console.warn(
+                    "Could not save casino PIN:",
+                    error
+                );
+            }
+        }
+
+        function clearSavedCasinoPin(playerId = autoUserId) {
+            const key = getCasinoPinStorageKey(playerId);
+
+            if (!key) {
+                return;
+            }
+
+            try {
+                localStorage.removeItem(key);
+            } catch (error) {
+                console.warn(
+                    "Could not clear saved casino PIN:",
+                    error
+                );
+            }
+
+            if (String(playerId) === String(autoUserId)) {
+                casinoPin = null;
+            }
+        }
         function getBankerDiscordId(gameId) {
             return BANKER_DISCORD_IDS[String(gameId)] || String(gameId || "");
         }
@@ -2224,6 +2549,8 @@ function clearSavedCasinoPin(playerId = autoUserId) {
         let scratchAutoPlayRunning = false;
         let scratchAutoPlayPrice = 0;
         let scratchAutoPlayQuantity = 0;
+
+        
 
         function loadUserSettings() {
             try {
@@ -2503,6 +2830,7 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             }
 
             bindHiloStyleControls();
+            bindDartBoard();
             applyUserSettingsToUI();
         }
 
@@ -2564,6 +2892,9 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             },
             hilo: {
                 games: {},
+                history: []
+            },
+            dart: {
                 history: []
             },
         };
@@ -3195,40 +3526,40 @@ function clearSavedCasinoPin(playerId = autoUserId) {
         function getServerUrl() {
             return String(SERVER_URL || '').trim().replace(/\/$/, '')
         }
-   async function apiRequest(path, options) {
-    const response = await fetch(getServerUrl() + path, {
-        method: options?.method || 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            ...(options?.token ? {
-                Authorization: 'Bearer ' + options.token
-            } : {})
-        },
-        body: options?.body ? JSON.stringify(options.body) : undefined
-    });
+        async function apiRequest(path, options) {
+            const response = await fetch(getServerUrl() + path, {
+                method: options?.method || 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options?.token ? {
+                        Authorization: 'Bearer ' + options.token
+                    } : {})
+                },
+                body: options?.body ? JSON.stringify(options.body) : undefined
+            });
 
-    const text = await response.text();
-    let json;
-    try {
-        json = text ? JSON.parse(text) : {}
-    } catch (e) {
-        throw new Error(text || 'Bad server response')
-    }
+            const text = await response.text();
+            let json;
+            try {
+                json = text ? JSON.parse(text) : {}
+            } catch (e) {
+                throw new Error(text || 'Bad server response')
+            }
 
-    if (!response.ok || json.ok === false) {
-        const message = json.error || 'Server error';
+            if (!response.ok || json.ok === false) {
+                const message = json.error || 'Server error';
 
-    
-        if (options?.body?.pinProof && isPinAuthError(message)) {
-            casinoPin = null;
-            clearSavedCasinoPin(autoUserId);
+
+                if (options?.body?.pinProof && isPinAuthError(message)) {
+                    casinoPin = null;
+                    clearSavedCasinoPin(autoUserId);
+                }
+
+                throw new Error(message);
+            }
+
+            return json;
         }
-
-        throw new Error(message);
-    }
-
-    return json;
-}
         async function hmacSha256Hex(key, message) {
             const enc = new TextEncoder();
             const cryptoKey = await crypto.subtle.importKey(
@@ -3238,36 +3569,36 @@ function clearSavedCasinoPin(playerId = autoUserId) {
             return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-async function getPinProof() {
-    if (!casinoPin) {
-        throw new Error("PIN not entered yet");
-    }
+        async function getPinProof() {
+            if (!casinoPin) {
+                throw new Error("PIN not entered yet");
+            }
 
-    let challenge;
-    try {
-        challenge = await apiRequest('/chips/pin-challenge', {
-            method: 'POST',
-            body: { playerId: autoUserId }
-        });
-    } catch (error) {
-        const message = String(error.message || error);
-        if (isPinAuthError(message)) {
-            casinoPin = null;
-            clearSavedCasinoPin(autoUserId);
+            let challenge;
+            try {
+                challenge = await apiRequest('/chips/pin-challenge', {
+                    method: 'POST',
+                    body: { playerId: autoUserId }
+                });
+            } catch (error) {
+                const message = String(error.message || error);
+                if (isPinAuthError(message)) {
+                    casinoPin = null;
+                    clearSavedCasinoPin(autoUserId);
+                }
+                throw error;
+            }
+
+            if (!challenge.ok) {
+                if (isPinAuthError(challenge.error)) {
+                    casinoPin = null;
+                    clearSavedCasinoPin(autoUserId);
+                }
+                throw new Error(challenge.error || "Could not get PIN challenge");
+            }
+
+            return await hmacSha256Hex(casinoPin, challenge.nonce);
         }
-        throw error;
-    }
-
-    if (!challenge.ok) {
-        if (isPinAuthError(challenge.error)) {
-            casinoPin = null;
-            clearSavedCasinoPin(autoUserId);
-        }
-        throw new Error(challenge.error || "Could not get PIN challenge");
-    }
-
-    return await hmacSha256Hex(casinoPin, challenge.nonce);
-}
 
         async function checkPinStatus() {
             if (!autoUserId) return null;
@@ -3283,169 +3614,169 @@ async function getPinProof() {
             }
         }
 
-    async function setupPin(pin) {
-    const playerId = String(autoUserId || "").trim();
+        async function setupPin(pin) {
+            const playerId = String(autoUserId || "").trim();
 
-    if (!playerId) {
-        throw new Error("No player ID available");
-    }
+            if (!playerId) {
+                throw new Error("No player ID available");
+            }
 
-    const json = await apiRequest('/chips/set-pin', {
-        method: 'POST',
-        body: {
-            playerId,
-            pin
-        }
-    });
+            const json = await apiRequest('/chips/set-pin', {
+                method: 'POST',
+                body: {
+                    playerId,
+                    pin
+                }
+            });
 
-    if (!json.ok) {
-        throw new Error(
-            json.error || "Could not set PIN"
-        );
-    }
+            if (!json.ok) {
+                throw new Error(
+                    json.error || "Could not set PIN"
+                );
+            }
 
-    casinoPin = String(pin);
+            casinoPin = String(pin);
 
-    saveCasinoPin(
-        casinoPin,
-        playerId
-    );
-}
-   async function refreshState(silent) {
-    try {
-        const requestStartedAt = Date.now();
-        const requestStartedMinesVersion = minesActionVersion;
-        const requestStartedBjVersion = blackjackActionVersion;
-        const requestStartedChickenVersion = chickenActionVersion;
-
-        const stateQuery =
-            '?playerId=' +
-            encodeURIComponent(autoUserId || '') +
-            '&plinkoSessionId=' +
-            encodeURIComponent(plinkoSessionId);
-
-        const json = await apiRequest('/state' + stateQuery, {
-            token: adminToken || undefined
-        });
-
-        const requestFinishedAt = Date.now();
-
-        const minesVersionAtRequest =
-            requestStartedMinesVersion;
-
-        const currentBlackjackState =
-            state.blackjack;
-
-        const currentChickenState =
-            state.chicken;
-
-        const currentMinesState =
-            state.mines;
-
-        state = json.state || state;
-
-       
-        const currentPlayerId =
-            String(autoUserId || "").trim();
-
-        const registrationTransitionActive =
-            registrationTransitionUntil > Date.now();
-
-        if (
-            currentPlayerId &&
-            state.registrationRequired === true &&
-            !registrationRequestInProgress &&
-            !registrationTransitionActive &&
-            lastRegisteredCasinoPlayerId !== currentPlayerId
-        ) {
-            authCode = "";
-
-            showCasinoRegistrationModal(
-                currentPlayerId,
-                String(autoName || "").trim()
+            saveCasinoPin(
+                casinoPin,
+                playerId
             );
         }
+        async function refreshState(silent) {
+            try {
+                const requestStartedAt = Date.now();
+                const requestStartedMinesVersion = minesActionVersion;
+                const requestStartedBjVersion = blackjackActionVersion;
+                const requestStartedChickenVersion = chickenActionVersion;
 
-        if (
-            minesVersionAtRequest !== minesActionVersion &&
-            currentMinesState
-        ) {
-            state.mines =
-                currentMinesState;
+                const stateQuery =
+                    '?playerId=' +
+                    encodeURIComponent(autoUserId || '') +
+                    '&plinkoSessionId=' +
+                    encodeURIComponent(plinkoSessionId);
+
+                const json = await apiRequest('/state' + stateQuery, {
+                    token: adminToken || undefined
+                });
+
+                const requestFinishedAt = Date.now();
+
+                const minesVersionAtRequest =
+                    requestStartedMinesVersion;
+
+                const currentBlackjackState =
+                    state.blackjack;
+
+                const currentChickenState =
+                    state.chicken;
+
+                const currentMinesState =
+                    state.mines;
+
+                state = json.state || state;
+
+
+                const currentPlayerId =
+                    String(autoUserId || "").trim();
+
+                const registrationTransitionActive =
+                    registrationTransitionUntil > Date.now();
+
+                if (
+                    currentPlayerId &&
+                    state.registrationRequired === true &&
+                    !registrationRequestInProgress &&
+                    !registrationTransitionActive &&
+                    lastRegisteredCasinoPlayerId !== currentPlayerId
+                ) {
+                    authCode = "";
+
+                    showCasinoRegistrationModal(
+                        currentPlayerId,
+                        String(autoName || "").trim()
+                    );
+                }
+
+                if (
+                    minesVersionAtRequest !== minesActionVersion &&
+                    currentMinesState
+                ) {
+                    state.mines =
+                        currentMinesState;
+                }
+
+                if (
+                    requestStartedBjVersion !==
+                    blackjackActionVersion &&
+                    currentBlackjackState
+                ) {
+                    state.blackjack =
+                        currentBlackjackState;
+                }
+
+                if (
+                    requestStartedChickenVersion !==
+                    chickenActionVersion &&
+                    currentChickenState
+                ) {
+                    state.chicken =
+                        currentChickenState;
+                }
+
+                if (Number(json.serverTime)) {
+                    const estimatedNetworkDelay =
+                        (requestFinishedAt -
+                            requestStartedAt) / 2;
+
+                    window.casinoServerClockOffset =
+                        Number(json.serverTime) +
+                        estimatedNetworkDelay -
+                        requestFinishedAt;
+                }
+
+                failedPolls = 0;
+
+                setStatus(
+                    'Connected'
+                );
+
+                const active =
+                    state.wheel?.activeSpin;
+
+                if (
+                    active &&
+                    active.spinId &&
+                    active.spinId !== lastSeenSpinId
+                ) {
+                    lastSeenSpinId =
+                        active.spinId;
+
+                    playSpin(active);
+                }
+
+                render();
+
+            } catch (err) {
+                failedPolls++;
+
+                lastPollError =
+                    String(
+                        err.message || err
+                    );
+
+                if (
+                    !silent ||
+                    failedPolls >= 3
+                ) {
+                    setStatus(
+                        lastPollError.substring(
+                            0,
+                            28
+                        )
+                    );
+                }
+            }
         }
-
-        if (
-            requestStartedBjVersion !==
-                blackjackActionVersion &&
-            currentBlackjackState
-        ) {
-            state.blackjack =
-                currentBlackjackState;
-        }
-
-        if (
-            requestStartedChickenVersion !==
-                chickenActionVersion &&
-            currentChickenState
-        ) {
-            state.chicken =
-                currentChickenState;
-        }
-
-        if (Number(json.serverTime)) {
-            const estimatedNetworkDelay =
-                (requestFinishedAt -
-                    requestStartedAt) / 2;
-
-            window.casinoServerClockOffset =
-                Number(json.serverTime) +
-                estimatedNetworkDelay -
-                requestFinishedAt;
-        }
-
-        failedPolls = 0;
-
-        setStatus(
-            'Connected'
-        );
-
-        const active =
-            state.wheel?.activeSpin;
-
-        if (
-            active &&
-            active.spinId &&
-            active.spinId !== lastSeenSpinId
-        ) {
-            lastSeenSpinId =
-                active.spinId;
-
-            playSpin(active);
-        }
-
-        render();
-
-    } catch (err) {
-        failedPolls++;
-
-        lastPollError =
-            String(
-                err.message || err
-            );
-
-        if (
-            !silent ||
-            failedPolls >= 3
-        ) {
-            setStatus(
-                lastPollError.substring(
-                    0,
-                    28
-                )
-            );
-        }
-    }
-}
         function scheduleNextCasinoPoll() {
             if (pollTimeoutHandle) {
                 clearTimeout(pollTimeoutHandle);
@@ -3481,7 +3812,7 @@ async function getPinProof() {
                     Math.random().toString(36).slice(2)
                 );
 
-    
+
         let plinkoLockedMultipliers = null;
 
 
@@ -3500,11 +3831,11 @@ async function getPinProof() {
         ];
 
         function getPlinkoMultipliers() {
-          
+
             if (
                 Array.isArray(plinkoLockedMultipliers) &&
                 plinkoLockedMultipliers.length ===
-                    DEFAULT_PLINKO_MULTIPLIERS.length
+                DEFAULT_PLINKO_MULTIPLIERS.length
             ) {
                 return plinkoLockedMultipliers.slice();
             }
@@ -3514,7 +3845,7 @@ async function getPinProof() {
             if (
                 Array.isArray(slots) &&
                 slots.length ===
-                    DEFAULT_PLINKO_MULTIPLIERS.length
+                DEFAULT_PLINKO_MULTIPLIERS.length
             ) {
                 const receivedLayout =
                     slots
@@ -3769,7 +4100,7 @@ async function getPinProof() {
             const boardHeight =
                 board.clientHeight;
 
-       
+
             const slotElements =
                 Array.from(
                     document.querySelectorAll(
@@ -4252,7 +4583,7 @@ async function getPinProof() {
                 state =
                     json.state || state;
 
-          
+
                 if (
                     Array.isArray(
                         plinkoLockedMultipliers
@@ -4561,14 +4892,14 @@ async function getPinProof() {
                         if (isFirstTime) {
                             await setupPin(pin);
                         } else {
-                           casinoPin = pin;
+                            casinoPin = pin;
 
-await getPinProof();
+                            await getPinProof();
 
-saveCasinoPin(
-    casinoPin,
-    autoUserId
-);
+                            saveCasinoPin(
+                                casinoPin,
+                                autoUserId
+                            );
                         }
 
                         cleanup();
@@ -4713,9 +5044,9 @@ saveCasinoPin(
             $("resetPinPlayerIdInput").value = "";
 
 
-          if (String(playerId) === String(autoUserId)) {
-    clearSavedCasinoPin(playerId);
-}
+            if (String(playerId) === String(autoUserId)) {
+                clearSavedCasinoPin(playerId);
+            }
 
             state = json.state || state;
             setStatus(`PIN reset for ${playerId}`, 3000);
@@ -4846,81 +5177,81 @@ saveCasinoPin(
             render();
             await refreshState(true);
         }
-    function showCasinoRegistrationModal(playerId, playerName) {
-    const modal = $("casinoRegistrationGuide");
+        function showCasinoRegistrationModal(playerId, playerName) {
+            const modal = $("casinoRegistrationGuide");
 
-    if (!modal) {
-        console.error("casinoRegistrationGuide element not found");
-        return;
-    }
+            if (!modal) {
+                console.error("casinoRegistrationGuide element not found");
+                return;
+            }
 
-    const firstLoginGuide = $("firstLoginGuide");
+            const firstLoginGuide = $("firstLoginGuide");
 
-    if (firstLoginGuide) {
-        firstLoginGuide.classList.remove("active");
-        firstLoginGuide.style.display = "none";
-        firstLoginGuide.style.visibility = "hidden";
-        firstLoginGuide.style.pointerEvents = "none";
-    }
+            if (firstLoginGuide) {
+                firstLoginGuide.classList.remove("active");
+                firstLoginGuide.style.display = "none";
+                firstLoginGuide.style.visibility = "hidden";
+                firstLoginGuide.style.pointerEvents = "none";
+            }
 
-    const input = $("casinoRegistrationCode");
-    const status = $("casinoRegistrationStatus");
+            const input = $("casinoRegistrationCode");
+            const status = $("casinoRegistrationStatus");
 
-    const wasVisible =
-        modal.style.display === "flex" ||
-        getComputedStyle(modal).display === "flex";
+            const wasVisible =
+                modal.style.display === "flex" ||
+                getComputedStyle(modal).display === "flex";
 
-    modal.dataset.playerId = String(playerId || "");
-    modal.dataset.playerName = String(playerName || "");
+            modal.dataset.playerId = String(playerId || "");
+            modal.dataset.playerName = String(playerName || "");
 
-    if (!wasVisible && input) {
-        input.value = "";
-    }
+            if (!wasVisible && input) {
+                input.value = "";
+            }
 
-    if (!wasVisible && status) {
-        status.textContent = "";
-        status.className = "firstLoginGuideStatus";
-    }
+            if (!wasVisible && status) {
+                status.textContent = "";
+                status.className = "firstLoginGuideStatus";
+            }
 
-    modal.style.display = "flex";
-    modal.style.visibility = "visible";
-    modal.style.opacity = "1";
-    modal.style.pointerEvents = "auto";
-    modal.style.zIndex = "999999";
+            modal.style.display = "flex";
+            modal.style.visibility = "visible";
+            modal.style.opacity = "1";
+            modal.style.pointerEvents = "auto";
+            modal.style.zIndex = "999999";
 
-    const registrationModal =
-        modal.querySelector(".firstLoginGuideModal");
+            const registrationModal =
+                modal.querySelector(".firstLoginGuideModal");
 
-    if (registrationModal) {
-        registrationModal.style.visibility = "visible";
-        registrationModal.style.opacity = "1";
-        registrationModal.style.pointerEvents = "auto";
-        registrationModal.style.zIndex = "1000000";
-    }
+            if (registrationModal) {
+                registrationModal.style.visibility = "visible";
+                registrationModal.style.opacity = "1";
+                registrationModal.style.pointerEvents = "auto";
+                registrationModal.style.zIndex = "1000000";
+            }
 
-    if (!wasVisible) {
-        setTimeout(() => {
-            input?.focus();
-        }, 50);
-    }
-}
+            if (!wasVisible) {
+                setTimeout(() => {
+                    input?.focus();
+                }, 50);
+            }
+        }
 
 
-function hideCasinoRegistrationModal() {
-    const modal = $("casinoRegistrationGuide");
+        function hideCasinoRegistrationModal() {
+            const modal = $("casinoRegistrationGuide");
 
-    if (!modal) {
-        return;
-    }
+            if (!modal) {
+                return;
+            }
 
-    modal.style.display = "none";
-    modal.style.visibility = "hidden";
-    modal.style.opacity = "0";
-    modal.style.pointerEvents = "none";
+            modal.style.display = "none";
+            modal.style.visibility = "hidden";
+            modal.style.opacity = "0";
+            modal.style.pointerEvents = "none";
 
-    modal.removeAttribute("data-player-id");
-    modal.removeAttribute("data-player-name");
-}
+            modal.removeAttribute("data-player-id");
+            modal.removeAttribute("data-player-name");
+        }
 
         function setCasinoRegistrationStatus(
             message,
@@ -5090,7 +5421,7 @@ function hideCasinoRegistrationModal() {
                 }
             }
 
-          
+
             lastRegisteredCasinoPlayerId = playerId;
 
             hideCasinoRegistrationModal?.();
@@ -5120,240 +5451,240 @@ function hideCasinoRegistrationModal() {
         }
 
         async function submitCasinoRegistration() {
-    const modal = $("casinoRegistrationGuide");
+            const modal = $("casinoRegistrationGuide");
 
-    if (!modal || registrationRequestInProgress) {
-        return;
-    }
+            if (!modal || registrationRequestInProgress) {
+                return;
+            }
 
-    const playerId =
-        String(modal.dataset.playerId || "").trim();
+            const playerId =
+                String(modal.dataset.playerId || "").trim();
 
-    const playerName =
-        String(modal.dataset.playerName || "").trim();
+            const playerName =
+                String(modal.dataset.playerName || "").trim();
 
-    const input = $("casinoRegistrationCode");
-    const button = $("casinoRegistrationSubmit");
+            const input = $("casinoRegistrationCode");
+            const button = $("casinoRegistrationSubmit");
 
-    const code =
-        String(input?.value || "")
-            .trim()
-            .toUpperCase();
+            const code =
+                String(input?.value || "")
+                    .trim()
+                    .toUpperCase();
 
-    if (!playerId || !playerName) {
-        return setCasinoRegistrationStatus(
-            "Waiting for your player details...",
-            "error"
-        );
-    }
+            if (!playerId || !playerName) {
+                return setCasinoRegistrationStatus(
+                    "Waiting for your player details...",
+                    "error"
+                );
+            }
 
-    if (!code) {
-        return setCasinoRegistrationStatus(
-            "Enter your banker registration code.",
-            "error"
-        );
-    }
+            if (!code) {
+                return setCasinoRegistrationStatus(
+                    "Enter your banker registration code.",
+                    "error"
+                );
+            }
 
-    if (code.length !== 8) {
-        return setCasinoRegistrationStatus(
-            "Registration codes are 8 characters.",
-            "error"
-        );
-    }
+            if (code.length !== 8) {
+                return setCasinoRegistrationStatus(
+                    "Registration codes are 8 characters.",
+                    "error"
+                );
+            }
 
-    registrationRequestInProgress = true;
+            registrationRequestInProgress = true;
 
-    if (button) {
-        button.disabled = true;
-        button.dataset.originalText =
-            button.textContent || "Register Casino Account";
-        button.textContent = "Registering...";
-    }
+            if (button) {
+                button.disabled = true;
+                button.dataset.originalText =
+                    button.textContent || "Register Casino Account";
+                button.textContent = "Registering...";
+            }
 
-    setCasinoRegistrationStatus(
-        "Registering...",
-        ""
-    );
+            setCasinoRegistrationStatus(
+                "Registering...",
+                ""
+            );
 
-    try {
-        const json = await apiRequest(
-            "/chips/register-player",
-            {
-                method: "POST",
-                body: {
-                    playerId,
-                    playerName,
-                    authCode: code,
-                    plinkoSessionId
+            try {
+                const json = await apiRequest(
+                    "/chips/register-player",
+                    {
+                        method: "POST",
+                        body: {
+                            playerId,
+                            playerName,
+                            authCode: code,
+                            plinkoSessionId
+                        }
+                    }
+                );
+
+                if (!json?.ok) {
+                    throw new Error(
+                        json?.error ||
+                        "Could not register casino player"
+                    );
+                }
+
+                lastRegisteredCasinoPlayerId = playerId;
+                registrationTransitionUntil = Date.now() + 5000;
+                authCode = "";
+
+                const registeredState =
+                    json.state || null;
+
+                if (registeredState) {
+                    const currentChickenState =
+                        state.chicken;
+
+                    state = registeredState;
+
+                    if (
+                        chickenActionVersion > 0 &&
+                        currentChickenState
+                    ) {
+                        state.chicken =
+                            currentChickenState;
+                    }
+                }
+
+                hideCasinoRegistrationModal();
+
+                if (
+                    Number(
+                        json.startingBonusGranted || 0
+                    ) > 0
+                ) {
+                    setStatus(
+                        `Welcome bonus: +${shortMoney(
+                            json.startingBonusGranted
+                        )} chips`,
+                        5000
+                    );
+                } else if (json.reRegistered) {
+                    setStatus(
+                        "CASINO REGISTRATION RESTORED",
+                        4000
+                    );
+                } else {
+                    setStatus(
+                        "CASINO REGISTERED",
+                        3000
+                    );
+                }
+
+                render();
+
+
+                await refreshState(true);
+
+            } catch (error) {
+                console.error(
+                    "Casino registration failed:",
+                    error
+                );
+
+                setCasinoRegistrationStatus(
+                    String(
+                        error?.message ||
+                        error ||
+                        "Registration failed"
+                    ),
+                    "error"
+                );
+
+            } finally {
+                registrationRequestInProgress = false;
+
+                if (button) {
+                    button.disabled = false;
+                    button.textContent =
+                        button.dataset.originalText ||
+                        "Register Casino Account";
                 }
             }
-        );
-
-        if (!json?.ok) {
-            throw new Error(
-                json?.error ||
-                "Could not register casino player"
-            );
         }
 
-        lastRegisteredCasinoPlayerId = playerId;
-        registrationTransitionUntil = Date.now() + 5000;
-        authCode = "";
 
-        const registeredState =
-            json.state || null;
+        async function requestChips() {
+            const playerId = String(
+                autoUserId || ""
+            ).trim();
 
-        if (registeredState) {
-            const currentChickenState =
-                state.chicken;
+            const playerName = String(
+                autoName || ""
+            ).trim();
 
-            state = registeredState;
+            const amount = parseMoneyInput(
+                $("chipRequestAmount").value
+            );
 
-            if (
-                chickenActionVersion > 0 &&
-                currentChickenState
-            ) {
-                state.chicken =
-                    currentChickenState;
+            const requestType =
+                $("chipRequestType")?.value === "free"
+                    ? "free"
+                    : "paid";
+
+            if (!playerId || !playerName) {
+                return setStatus(
+                    "NO GAME DATA",
+                    1800
+                );
+            }
+
+            if (!amount || amount < 1) {
+                return setStatus(
+                    "NO CHIP AMOUNT",
+                    1800
+                );
+            }
+
+
+            if (!(await ensurePinReady())) {
+                return setStatus(
+                    "PIN REQUIRED",
+                    2200
+                );
+            }
+
+            try {
+
+                const pinProof = await getPinProof();
+
+                const json = await apiRequest(
+                    "/chips/request",
+                    {
+                        method: "POST",
+                        body: {
+                            playerId,
+                            playerName,
+                            amount,
+                            requestType,
+                            pinProof
+                        }
+                    }
+                );
+
+                state = json.state || state;
+
+                $("chipRequestAmount").value = "";
+
+                setStatus(
+                    json.autoApproved
+                        ? `FREE CHIPS AUTO-APPROVED: ${shortMoney(amount)}`
+                        : `${requestType.toUpperCase()} CHIPS REQUESTED`,
+                    2500
+                );
+
+                render();
+
+            } catch (e) {
+                setStatus(
+                    String(e.message || e),
+                    2500
+                );
             }
         }
-
-        hideCasinoRegistrationModal();
-
-        if (
-            Number(
-                json.startingBonusGranted || 0
-            ) > 0
-        ) {
-            setStatus(
-                `Welcome bonus: +${shortMoney(
-                    json.startingBonusGranted
-                )} chips`,
-                5000
-            );
-        } else if (json.reRegistered) {
-            setStatus(
-                "CASINO REGISTRATION RESTORED",
-                4000
-            );
-        } else {
-            setStatus(
-                "CASINO REGISTERED",
-                3000
-            );
-        }
-
-        render();
-
-
-        await refreshState(true);
-
-    } catch (error) {
-        console.error(
-            "Casino registration failed:",
-            error
-        );
-
-        setCasinoRegistrationStatus(
-            String(
-                error?.message ||
-                error ||
-                "Registration failed"
-            ),
-            "error"
-        );
-
-    } finally {
-        registrationRequestInProgress = false;
-
-        if (button) {
-            button.disabled = false;
-            button.textContent =
-                button.dataset.originalText ||
-                "Register Casino Account";
-        }
-    }
-}
-
-
-async function requestChips() {
-    const playerId = String(
-        autoUserId || ""
-    ).trim();
-
-    const playerName = String(
-        autoName || ""
-    ).trim();
-
-    const amount = parseMoneyInput(
-        $("chipRequestAmount").value
-    );
-
-    const requestType =
-        $("chipRequestType")?.value === "free"
-            ? "free"
-            : "paid";
-
-    if (!playerId || !playerName) {
-        return setStatus(
-            "NO GAME DATA",
-            1800
-        );
-    }
-
-    if (!amount || amount < 1) {
-        return setStatus(
-            "NO CHIP AMOUNT",
-            1800
-        );
-    }
-
- 
-    if (!(await ensurePinReady())) {
-        return setStatus(
-            "PIN REQUIRED",
-            2200
-        );
-    }
-
-    try {
-     
-        const pinProof = await getPinProof();
-
-        const json = await apiRequest(
-            "/chips/request",
-            {
-                method: "POST",
-                body: {
-                    playerId,
-                    playerName,
-                    amount,
-                    requestType,
-                    pinProof
-                }
-            }
-        );
-
-        state = json.state || state;
-
-        $("chipRequestAmount").value = "";
-
-        setStatus(
-            json.autoApproved
-                ? `FREE CHIPS AUTO-APPROVED: ${shortMoney(amount)}`
-                : `${requestType.toUpperCase()} CHIPS REQUESTED`,
-            2500
-        );
-
-        render();
-
-    } catch (e) {
-        setStatus(
-            String(e.message || e),
-            2500
-        );
-    }
-}
 
         async function requestChipWithdrawal() {
             const playerId = String(
@@ -8279,7 +8610,7 @@ async function requestChips() {
             const myRewards = rewards[String(playerId)] || {};
             const hasFreeBet = Number(myRewards.scratchTickets || 0) > 0;
 
-       
+
             if (isAutoplay && hasFreeBet) {
                 setStatus(
                     "AUTOPLAY REQUIRES PAID TICKETS",
@@ -8471,7 +8802,7 @@ async function requestChips() {
 
                 while (scratchAutoPlayRunning) {
 
-                 
+
 
                     const bought = await buyScratchTickets({
                         ticketPrice: scratchAutoPlayPrice,
@@ -8501,7 +8832,7 @@ async function requestChips() {
                         break;
                     }
 
-                
+
                     await wait(250);
 
                     if (scratchAutoPlayRunning) {
@@ -10961,199 +11292,199 @@ async function requestChips() {
                         }).join("");
             }
         }
-  async function unregisterCasinoPlayer() {
-    if (!adminToken) {
-        return setStatus(
-            "BANKER LOCKED",
-            1800
-        );
-    }
-
-    const playerId = String(
-        $("unregisterPlayerIdInput")?.value || ""
-    ).trim();
-
-    const playerName = String(
-        $("unregisterPlayerNameInput")?.value || ""
-    ).trim();
-
-    const reason = String(
-        $("unregisterPlayerReasonInput")?.value || ""
-    ).trim();
-
-    if (!playerId) {
-        return setStatus(
-            "ENTER PLAYER ID",
-            1800
-        );
-    }
-
-    const confirmed = await showCasinoConfirm({
-        title: "🚪 Unregister Player",
-        message:
-            `This will force player ${playerId} to register again with a new banker registration code.\n\n` +
-            "Their casino balance and history will NOT be wiped, but their current PIN will be removed.",
-        confirmText:
-            "Yes, Unregister",
-        cancelText:
-            "Cancel"
-    });
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-        setStatus(
-            "UNREGISTERING PLAYER...",
-            0
-        );
-
-        const json = await apiRequest(
-            "/chips/unregister-player",
-            {
-                method: "POST",
-                token: adminToken,
-                body: {
-                    playerId,
-                    playerName,
-                    reason,
-                    bankerId:
-                        autoUserId || "",
-                    bankerName:
-                        autoName ||
-                        "Unknown banker"
-                }
+        async function unregisterCasinoPlayer() {
+            if (!adminToken) {
+                return setStatus(
+                    "BANKER LOCKED",
+                    1800
+                );
             }
-        );
 
-        if (!json.ok) {
-            throw new Error(
-                json.error ||
-                "Could not unregister player"
-            );
-        }
+            const playerId = String(
+                $("unregisterPlayerIdInput")?.value || ""
+            ).trim();
 
-        state =
-            json.state ||
-            state;
+            const playerName = String(
+                $("unregisterPlayerNameInput")?.value || ""
+            ).trim();
 
-      
-        if (
-            String(autoUserId || "").trim() ===
-            playerId
-        ) {
-            lastRegisteredCasinoPlayerId = "";
+            const reason = String(
+                $("unregisterPlayerReasonInput")?.value || ""
+            ).trim();
 
-            authCode = "";
+            if (!playerId) {
+                return setStatus(
+                    "ENTER PLAYER ID",
+                    1800
+                );
+            }
 
-            hideCasinoRegistrationModal();
+            const confirmed = await showCasinoConfirm({
+                title: "🚪 Unregister Player",
+                message:
+                    `This will force player ${playerId} to register again with a new banker registration code.\n\n` +
+                    "Their casino balance and history will NOT be wiped, but their current PIN will be removed.",
+                confirmText:
+                    "Yes, Unregister",
+                cancelText:
+                    "Cancel"
+            });
 
-         
-            setTimeout(() => {
-                registerCasinoPlayer().catch(error => {
-                    console.error(
-                        "Re-registration check failed:",
-                        error
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                setStatus(
+                    "UNREGISTERING PLAYER...",
+                    0
+                );
+
+                const json = await apiRequest(
+                    "/chips/unregister-player",
+                    {
+                        method: "POST",
+                        token: adminToken,
+                        body: {
+                            playerId,
+                            playerName,
+                            reason,
+                            bankerId:
+                                autoUserId || "",
+                            bankerName:
+                                autoName ||
+                                "Unknown banker"
+                        }
+                    }
+                );
+
+                if (!json.ok) {
+                    throw new Error(
+                        json.error ||
+                        "Could not unregister player"
                     );
-                });
-            }, 100);
-        }
-
-        $("unregisterPlayerIdInput").value =
-            "";
-
-        $("unregisterPlayerNameInput").value =
-            "";
-
-        $("unregisterPlayerReasonInput").value =
-            "";
-
-        setStatus(
-            "PLAYER UNREGISTERED",
-            3000
-        );
-
-        render();
-
-    } catch (error) {
-        setStatus(
-            String(
-                error.message ||
-                error
-            ),
-            3000
-        );
-    }
-}
-
-async function manualRegisterPlayer() {
-    if (!adminToken) {
-        return setStatus("BANKER LOCKED", 1800);
-    }
-
-    const playerId = String(
-        $("manualRegisterPlayerIdInput")?.value || ""
-    ).trim();
-
-    const playerName = String(
-        $("manualRegisterPlayerNameInput")?.value || ""
-    ).trim();
-
-    if (!playerId) {
-        return setStatus("ENTER PLAYER ID", 1800);
-    }
-
-    try {
-        const json = await apiRequest(
-            "/chips/manual-register-player",
-            {
-                method: "POST",
-                token: adminToken,
-                body: {
-                    playerId,
-                    playerName: playerName || "Player",
-                    bankerId: autoUserId || "",
-                    bankerName: autoName || "Unknown banker"
                 }
+
+                state =
+                    json.state ||
+                    state;
+
+
+                if (
+                    String(autoUserId || "").trim() ===
+                    playerId
+                ) {
+                    lastRegisteredCasinoPlayerId = "";
+
+                    authCode = "";
+
+                    hideCasinoRegistrationModal();
+
+
+                    setTimeout(() => {
+                        registerCasinoPlayer().catch(error => {
+                            console.error(
+                                "Re-registration check failed:",
+                                error
+                            );
+                        });
+                    }, 100);
+                }
+
+                $("unregisterPlayerIdInput").value =
+                    "";
+
+                $("unregisterPlayerNameInput").value =
+                    "";
+
+                $("unregisterPlayerReasonInput").value =
+                    "";
+
+                setStatus(
+                    "PLAYER UNREGISTERED",
+                    3000
+                );
+
+                render();
+
+            } catch (error) {
+                setStatus(
+                    String(
+                        error.message ||
+                        error
+                    ),
+                    3000
+                );
             }
-        );
-
- 
-        if (String(autoUserId || "").trim() === playerId) {
-            lastRegisteredCasinoPlayerId = playerId;
-            authCode = "";
-            hideCasinoRegistrationModal?.();
         }
 
-        state = json.state || state;
+        async function manualRegisterPlayer() {
+            if (!adminToken) {
+                return setStatus("BANKER LOCKED", 1800);
+            }
 
-        $("manualRegisterPlayerIdInput").value = "";
-        $("manualRegisterPlayerNameInput").value = "";
+            const playerId = String(
+                $("manualRegisterPlayerIdInput")?.value || ""
+            ).trim();
 
-        const statusBox = $("manualRegisterStatus");
-        if (statusBox) {
-            statusBox.textContent = json.alreadyRegistered
-                ? `${json.playerName} (${json.playerId}) was already registered.`
-                : `Registered ${json.playerName} (${json.playerId}) — starting chips granted.`;
+            const playerName = String(
+                $("manualRegisterPlayerNameInput")?.value || ""
+            ).trim();
+
+            if (!playerId) {
+                return setStatus("ENTER PLAYER ID", 1800);
+            }
+
+            try {
+                const json = await apiRequest(
+                    "/chips/manual-register-player",
+                    {
+                        method: "POST",
+                        token: adminToken,
+                        body: {
+                            playerId,
+                            playerName: playerName || "Player",
+                            bankerId: autoUserId || "",
+                            bankerName: autoName || "Unknown banker"
+                        }
+                    }
+                );
+
+
+                if (String(autoUserId || "").trim() === playerId) {
+                    lastRegisteredCasinoPlayerId = playerId;
+                    authCode = "";
+                    hideCasinoRegistrationModal?.();
+                }
+
+                state = json.state || state;
+
+                $("manualRegisterPlayerIdInput").value = "";
+                $("manualRegisterPlayerNameInput").value = "";
+
+                const statusBox = $("manualRegisterStatus");
+                if (statusBox) {
+                    statusBox.textContent = json.alreadyRegistered
+                        ? `${json.playerName} (${json.playerId}) was already registered.`
+                        : `Registered ${json.playerName} (${json.playerId}) — starting chips granted.`;
+                }
+
+                setStatus(
+                    json.alreadyRegistered
+                        ? "ALREADY REGISTERED"
+                        : "PLAYER REGISTERED",
+                    2500
+                );
+
+                render();
+            } catch (error) {
+                const message = String(error.message || error);
+                setStatus(message, 3000);
+
+                const statusBox = $("manualRegisterStatus");
+                if (statusBox) statusBox.textContent = message;
+            }
         }
-
-        setStatus(
-            json.alreadyRegistered
-                ? "ALREADY REGISTERED"
-                : "PLAYER REGISTERED",
-            2500
-        );
-
-        render();
-    } catch (error) {
-        const message = String(error.message || error);
-        setStatus(message, 3000);
-
-        const statusBox = $("manualRegisterStatus");
-        if (statusBox) statusBox.textContent = message;
-    }
-}
         function renderLottery() {
             let lottery = state.lottery || {
                 ticketPrice: 100000000,
@@ -11395,8 +11726,156 @@ async function manualRegisterPlayer() {
             }
         }
 
+
+        let dartThrowBusy = false;
+        let dartBetArmed = false;
+        let dartArmedBetAmount = 0;
+
+        function getMyDartHistory() {
+            return (state.dart?.history || [])
+                .filter(entry => String(entry.playerId) === String(autoUserId))
+                .slice(0, 10);
+        }
+
+        function bindDartBoard() {
+            const board = $("dartBoard");
+            const button = $("dartPlaceBetButton");
+
+            if (!board || !button || board.dataset.bound === "true") return;
+            board.dataset.bound = "true";
+
+           
+            board.addEventListener("pointerdown", () => {
+                if (!dartBetArmed || dartThrowBusy) return;
+                throwDart();
+            });
+
+            button.addEventListener("click", placeDartBet);
+        }
+
+        async function placeDartBet() {
+            if (dartThrowBusy || dartBetArmed) return;
+
+            const playerId = String(autoUserId || "").trim();
+            const playerName = String(autoName || "").trim();
+            const amount = parseMoneyInput($("dartBetInput")?.value);
+
+            if (!playerId || !playerName) {
+                window.parent.postMessage({ type: "getData" }, "*");
+                return setStatus("NO GAME DATA", 2200);
+            }
+
+            if (!amount || amount < 1) return setStatus("NO DART BET", 1800);
+            if (amount > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
+            if (!(await ensurePinReady())) return setStatus("PIN REQUIRED", 2200);
+
+            dartBetArmed = true;
+            dartArmedBetAmount = amount;
+
+            const button = $("dartPlaceBetButton");
+            if (button) {
+                button.disabled = true;
+                button.textContent = "🎯 Click the Board";
+            }
+
+            $("dartStatusLine").textContent = "Bet placed • click the board to throw";
+            $("dartResultText").textContent = "READY TO THROW";
+            $("dartResultSub").textContent = "Click the board to trigger a server-controlled random throw.";
+        }
+
+        async function throwDart() {
+            if (dartThrowBusy || !dartBetArmed) return;
+            const playerId = String(autoUserId || "").trim();
+            const playerName = String(autoName || "").trim();
+            const amount = dartArmedBetAmount;
+
+            if (!playerId || !playerName) {
+                window.parent.postMessage({ type: "getData" }, "*");
+                return setStatus("NO GAME DATA", 2200);
+            }
+            if (!amount || amount < 1) return setStatus("NO DART BET", 1800);
+            if (amount > getMyChipBalance()) return setStatus("NOT ENOUGH CHIPS", 2200);
+            if (!(await ensurePinReady())) return setStatus("PIN REQUIRED", 2200);
+
+            dartThrowBusy = true;
+            const button = $("dartPlaceBetButton");
+            if (button) button.disabled = true;
+            $("dartStatusLine").textContent = "Throwing...";
+            $("dartBoard")?.classList.add("throwing");
+
+            try {
+                const pinProof = await getPinProof();
+                const json = await apiRequest("/dart/throw", {
+                    method: "POST",
+                    body: {
+                        playerId,
+                        playerName,
+                        amount,
+                        pinProof
+                    }
+                });
+
+                state = json.state || state;
+                const result = json.result || {};
+
+             
+                if (Number.isFinite(Number(result.impactX)) && Number.isFinite(Number(result.impactY))) {
+                    const crosshair = $("dartCrosshair");
+                    if (crosshair) {
+                        crosshair.style.left = `${Number(result.impactX) * 100}%`;
+                        crosshair.style.top = `${Number(result.impactY) * 100}%`;
+                    }
+                }
+
+                $("dartResultText").textContent =
+                    result.missed ? "MISS — BET LOST" :
+                        `${Number(result.multiplier || 0).toFixed(2)}× • ${shortMoney(result.payout || 0)}`;
+                $("dartResultSub").textContent = result.missed
+                    ? `The dart missed the board. You lost ${shortMoney(amount)}.`
+                    : `${Number(result.distancePercent || 0).toFixed(1)}% from centre • ${result.zoneLabel || "Board hit"}`;
+                $("dartStatusLine").textContent = result.missed ? "Missed the board" : "Throw complete";
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2800);
+            } finally {
+                dartThrowBusy = false;
+                dartBetArmed = false;
+                dartArmedBetAmount = 0;
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "💰 Place Bet";
+                }
+                $("dartBoard")?.classList.remove("aiming");
+                stopDartAimShake();
+            }
+        }
+
+        function renderDart() {
+            const balance = getMyChipBalance();
+            document.querySelectorAll(".gameChipBalance").forEach(el => {
+                el.textContent = shortMoney(balance) + " chips";
+            });
+            const nameBox = $("dartDetectedPlayerName");
+            const idBox = $("dartDetectedPlayerId");
+            if (nameBox) nameBox.textContent = autoName || "Waiting for game data...";
+            if (idBox) idBox.textContent = autoUserId
+                ? "User ID: " + autoUserId + " • locked from game data"
+                : "Press F1 within Transport Tycoon and Paste the URL and click Load.";
+
+            const history = getMyDartHistory();
+            $("dartHistoryBox").innerHTML = !history.length
+                ? '<div class="emptyState">No darts thrown yet.</div>'
+                : history.map(entry => {
+                    const won = Number(entry.payout || 0) > 0;
+                    return `<div class="historyRow">
+                        <div>🎯 ${escapeHtml(entry.zoneLabel || (entry.missed ? "Miss" : "Board hit"))} • ${Number(entry.multiplier || 0).toFixed(2)}×</div>
+                        <div class="betRight ${won ? "win" : "loss"}">${won ? "+" : "-"}${shortMoney(won ? entry.payout : entry.betAmount)}</div>
+                    </div>`;
+                }).join("");
+        }
+
         function render() {
-         
+
             updateAutomaticGameCountdowns();
             renderSlots();
             renderMines();
@@ -11405,6 +11884,7 @@ async function manualRegisterPlayer() {
             renderScratchHistory();
             renderRewardBanners();
             renderHilo();
+            renderDart();
             renderPlinko();
 
             try {
@@ -11999,41 +12479,41 @@ async function manualRegisterPlayer() {
             } catch (e) { }
         }
 
- function updateresizeHandlePosition() {
-    const handle = $("resizeHandle");
-    const overlay = $("overlay");
+        function updateresizeHandlePosition() {
+            const handle = $("resizeHandle");
+            const overlay = $("overlay");
 
-    if (!handle || !overlay) return;
+            if (!handle || !overlay) return;
 
- 
-    if (document.body.classList.contains("userappHidden")) {
-        handle.style.display = "none";
-        handle.style.pointerEvents = "none";
-        return;
-    }
 
-    const rect = overlay.getBoundingClientRect();
+            if (document.body.classList.contains("userappHidden")) {
+                handle.style.display = "none";
+                handle.style.pointerEvents = "none";
+                return;
+            }
 
-   
-    if (
-        !Number.isFinite(rect.width) ||
-        !Number.isFinite(rect.height) ||
-        rect.width <= 0 ||
-        rect.height <= 0
-    ) {
-        handle.style.display = "none";
-        handle.style.pointerEvents = "none";
-        return;
-    }
+            const rect = overlay.getBoundingClientRect();
 
-    handle.style.display = "block";
-    handle.style.pointerEvents = "auto";
-    handle.style.position = "fixed";
-    handle.style.left = (rect.right - 20) + "px";
-    handle.style.top = (rect.bottom - 20) + "px";
-    handle.style.right = "auto";
-    handle.style.bottom = "auto";
-}
+
+            if (
+                !Number.isFinite(rect.width) ||
+                !Number.isFinite(rect.height) ||
+                rect.width <= 0 ||
+                rect.height <= 0
+            ) {
+                handle.style.display = "none";
+                handle.style.pointerEvents = "none";
+                return;
+            }
+
+            handle.style.display = "block";
+            handle.style.pointerEvents = "auto";
+            handle.style.position = "fixed";
+            handle.style.left = (rect.right - 20) + "px";
+            handle.style.top = (rect.bottom - 20) + "px";
+            handle.style.right = "auto";
+            handle.style.bottom = "auto";
+        }
         function syncOverlayContentHeight() {
             const content = $('overlayContent');
 
@@ -12156,6 +12636,7 @@ async function manualRegisterPlayer() {
                 plinko: "plinkoPage",
                 userSettings: "userSettingsPage",
                 hilo: "hiloPage",
+                dart: "dartPage",
             };
 
             const tabButtons = {
@@ -12174,6 +12655,7 @@ async function manualRegisterPlayer() {
                 chips: "chipsTabButton",
                 userSettings: "userSettingsTabButton",
                 hilo: "hiloTabButton",
+                dart: "dartTabButton",
             };
 
             Object.entries(pages).forEach(([name, id]) => {
@@ -12227,6 +12709,7 @@ async function manualRegisterPlayer() {
             rouletteTabButton: "roulette",
             chickenTabButton: "chicken",
             hiloTabButton: "hilo",
+            dartTabButton: "dart",
             plinkoTabButton: "plinko",
             scratchTabButton: "scratch",
             lotteryTabButton: "lottery",
@@ -12944,7 +13427,7 @@ async function manualRegisterPlayer() {
         function extractGameData(message) {
             if (!message) return null;
 
-         
+
             const seen = new Set();
 
             function walk(value, depth = 0) {
@@ -12991,13 +13474,13 @@ async function manualRegisterPlayer() {
                         user_id: String(userId).trim(),
                         name:
                             playerName !== undefined &&
-                            playerName !== null
+                                playerName !== null
                                 ? String(playerName).trim()
                                 : undefined
                     };
                 }
 
-           
+
                 const values = Array.isArray(value)
                     ? value
                     : Object.values(value);
@@ -13022,80 +13505,80 @@ async function manualRegisterPlayer() {
             return walk(message);
         }
 
-function applyGameData(data) {
-    if (!data) {
-        return false;
-    }
+        function applyGameData(data) {
+            if (!data) {
+                return false;
+            }
 
-    let changed = false;
+            let changed = false;
 
-    const rawId =
-        data.user_id ??
-        data.userId ??
-        data.userid ??
-        data.player_id ??
-        data.playerId ??
-        data.id;
+            const rawId =
+                data.user_id ??
+                data.userId ??
+                data.userid ??
+                data.player_id ??
+                data.playerId ??
+                data.id;
 
-    const nextId =
-        rawId !== undefined &&
-        rawId !== null
-            ? String(rawId).trim()
-            : "";
+            const nextId =
+                rawId !== undefined &&
+                    rawId !== null
+                    ? String(rawId).trim()
+                    : "";
 
-    if (
-        nextId &&
-        autoUserId !== nextId
-    ) {
-        const previousPlayerId = String(
-            autoUserId || ""
-        ).trim();
+            if (
+                nextId &&
+                autoUserId !== nextId
+            ) {
+                const previousPlayerId = String(
+                    autoUserId || ""
+                ).trim();
 
-        autoUserId = nextId;
+                autoUserId = nextId;
 
-      
-        if (previousPlayerId !== nextId) {
-            loadSavedCasinoPin(nextId);
+
+                if (previousPlayerId !== nextId) {
+                    loadSavedCasinoPin(nextId);
+                }
+
+                changed = true;
+            }
+
+            const rawName =
+                data.name ??
+                data.username ??
+                data.player_name ??
+                data.playerName ??
+                data.displayName;
+
+            if (
+                rawName !== undefined &&
+                rawName !== null
+            ) {
+                const nextName =
+                    String(rawName).trim();
+
+                if (
+                    nextName &&
+                    autoName !== nextName
+                ) {
+                    autoName = nextName;
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                updateBankerUI();
+                updateDetectedPlayerDisplay();
+                render();
+
+                if (autoUserId && !autoName) {
+                    requestGameData();
+                }
+            }
+
+            return changed;
         }
-
-        changed = true;
-    }
-
-    const rawName =
-        data.name ??
-        data.username ??
-        data.player_name ??
-        data.playerName ??
-        data.displayName;
-
-    if (
-        rawName !== undefined &&
-        rawName !== null
-    ) {
-        const nextName =
-            String(rawName).trim();
-
-        if (
-            nextName &&
-            autoName !== nextName
-        ) {
-            autoName = nextName;
-            changed = true;
-        }
-    }
-
-    if (changed) {
-        updateBankerUI();
-        updateDetectedPlayerDisplay();
-        render();
-
-        if (autoUserId && !autoName) {
-            requestGameData();
-        }
-    }
-
-    return changed;
-}
 
         function requestGameData() {
             try {
@@ -13226,14 +13709,14 @@ function applyGameData(data) {
             return colours[Math.floor(Math.random() * colours.length)];
         }
         function isPinAuthError(message) {
-    const text = String(message || "").toLowerCase();
-    return (
-        text.includes("no pin set") ||
-        text.includes("incorrect pin") ||
-        text.includes("pin challenge expired") ||
-        text.includes("too many failed attempts")
-    );
-}
+            const text = String(message || "").toLowerCase();
+            return (
+                text.includes("no pin set") ||
+                text.includes("incorrect pin") ||
+                text.includes("pin challenge expired") ||
+                text.includes("too many failed attempts")
+            );
+        }
         async function generateCasinoRegistrationCode() {
             try {
                 const json = await apiRequest(
@@ -13733,9 +14216,9 @@ function applyGameData(data) {
                 generateRegistrationCode
             );
             $("manualRegisterPlayerButton")?.addEventListener(
-    "click",
-    manualRegisterPlayer
-);
+                "click",
+                manualRegisterPlayer
+            );
 
             $("copyRegistrationCodeButton")?.addEventListener(
                 "click",
@@ -13797,7 +14280,7 @@ function applyGameData(data) {
                 }
             }, 1000);
 
-          
+
             window.casinoGameDataRetry = gameDataRetry;
             startPolling();
             setInterval(updateAutomaticGameCountdowns, 250);
@@ -13852,40 +14335,40 @@ function applyGameData(data) {
                 }
             }
 
-           function hideCasinoUserapp() {
-    closeFirstLoginGuide();
+            function hideCasinoUserapp() {
+                closeFirstLoginGuide();
 
-    document.body.classList.add("userappHidden");
+                document.body.classList.add("userappHidden");
 
-    const handle = $("resizeHandle");
-    if (handle) {
-        handle.style.display = "none";
-        handle.style.pointerEvents = "none";
-    }
-}
+                const handle = $("resizeHandle");
+                if (handle) {
+                    handle.style.display = "none";
+                    handle.style.pointerEvents = "none";
+                }
+            }
 
-        function showCasinoUserapp() {
-    document.body.classList.remove("userappHidden");
+            function showCasinoUserapp() {
+                document.body.classList.remove("userappHidden");
 
-    requestAnimationFrame(() => {
-        updateresizeHandlePosition();
-    });
+                requestAnimationFrame(() => {
+                    updateresizeHandlePosition();
+                });
 
-    if (typeof pokeCasinoPolling === "function") {
-        pokeCasinoPolling();
-    }
+                if (typeof pokeCasinoPolling === "function") {
+                    pokeCasinoPolling();
+                }
 
-    if (typeof render === "function") {
-        try {
-            render();
-        } catch (error) {
-            console.warn(
-                "Could not refresh casino after unhide:",
-                error
-            );
-        }
-    }
-}
+                if (typeof render === "function") {
+                    try {
+                        render();
+                    } catch (error) {
+                        console.warn(
+                            "Could not refresh casino after unhide:",
+                            error
+                        );
+                    }
+                }
+            }
 
             function addHelpButtonsToPages() {
                 document.querySelectorAll(".tabPage").forEach(page => {
@@ -13961,24 +14444,24 @@ function applyGameData(data) {
 
                 addHelpButtonsToPages();
                 setTimeout(() => {
-    const registrationModal = $("casinoRegistrationGuide");
+                    const registrationModal = $("casinoRegistrationGuide");
 
-    if (
-        registrationRequestInProgress ||
-        (
-            registrationModal &&
-            registrationModal.style.display === "flex"
-        ) ||
-        (
-            String(autoUserId || "").trim() &&
-            state.registrationRequired === true
-        )
-    ) {
-        return;
-    }
+                    if (
+                        registrationRequestInProgress ||
+                        (
+                            registrationModal &&
+                            registrationModal.style.display === "flex"
+                        ) ||
+                        (
+                            String(autoUserId || "").trim() &&
+                            state.registrationRequired === true
+                        )
+                    ) {
+                        return;
+                    }
 
-    openFirstLoginGuide(false);
-}, 5200);
+                    openFirstLoginGuide(false);
+                }, 5200);
             });
         })();
     </script>
