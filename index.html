@@ -1756,7 +1756,7 @@
                         </select>
                         <button id="requestChipsButton" class="gold">Request Chips</button>
                     </div>
-                    <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire, Nunu or Crackaddict
+                    <div class="chipRequestStatus" id="chipRequestStatus">Organise with Poire Nunu or Jelly Beans
                         to fulfill these requests.</div>
                     <div class="chipValueStatus" id="chipValueStatus">1 Chip = 1$ In-Game Cash, All Requests are
                         sent to discord, so be patient!</div>
@@ -1791,7 +1791,7 @@
                     </div>
 
                     <div class="chipRequestStatus" id="withdrawRequestStatus">
-                        Organise with Poire, Nunu or Crackaddict to fulfill these requests.
+                        Organise with Poire, Nunu or Jelly Beans to fulfill these requests.
                     </div>
                 </div>
 
@@ -11970,7 +11970,7 @@
             $('chipPlayerLabel').textContent = autoName ? `${autoName} (${autoUserId})` : 'Waiting for player...';
             $('chipRequestStatus').textContent = myRequest
                 ? `Pending ${myRequest.requestType === 'free' ? 'free' : 'paid'} request: ${shortMoney(myRequest.amount)} chips`
-                : 'Organise with Poire, Nunu or Crackaddict to fulfill these requests.';
+                : 'Organise with Poire, Nunu or Jelly Beans to fulfill these requests.';
             $('requestChipsButton').disabled = !autoUserId || !autoName || !!myRequest;
 
             if ($("withdrawRequestStatus")) {
@@ -11979,7 +11979,7 @@
                         ? `Pending withdrawal: ${shortMoney(
                             myWithdrawalRequest.amount
                         )} chips`
-                        : "Organise with Poire, Nunu or Crackaddict to fulfill this requests.";
+                        : "Organise with Poire, Nunu or Jelly Beans to fulfill this requests.";
             }
 
             const withdrawalButton =
