@@ -1825,7 +1825,27 @@
 
                 <div class="panel" id="chipBankerControls" style="display:none !important;">
 
-                    <div class="panelHeader" style="margin-top:12px;">
+                    <div class="panelHeader">
+                        <div class="panelTitle">🎁 Paid Chip Promotion</div>
+                        <div class="panelHint">Automatic Daily Spins</div>
+                    </div>
+
+                    <div class="small" style="margin-bottom:8px;">
+                        When active, paid chip purchases are fulfilled instantly and count toward the selected Daily Spin promotion.
+                    </div>
+
+                    <select id="paidSpinPromotionSelect" aria-label="Paid chip Daily Spin promotion">
+                        <option value="100m">Every 100M chips purchased → 1 Daily Spin</option>
+                        <option value="200m">Every 200M chips purchased → 1 Daily Spin</option>
+                    </select>
+
+                    <button id="paidSpinPromotionToggleButton" class="green" type="button">
+                        Activate Promotion
+                    </button>
+
+                    <div id="paidSpinPromotionStatus" class="chipRequestStatus" style="min-height:22px;"></div>
+
+                    <div class="panelHeader" style="margin-top:18px;">
                         <div class="panelTitle">🔑 Registration Code</div>
                         <div class="panelHint">New casino account</div>
                     </div>
@@ -5606,6 +5626,34 @@
         }
 
 
+        async function savePaidSpinPromotion() {
+            if (!adminToken) return setStatus('LOCKED', 1500);
+
+            const select = $('paidSpinPromotionSelect');
+            const button = $('paidSpinPromotionToggleButton');
+            const active = !((getChipState().paidSpinPromotion || {}).active);
+            const promotion = select?.value === '200m' ? '200m' : '100m';
+
+            if (button) button.disabled = true;
+
+            try {
+                const json = await apiRequest('/chips/promotion', {
+                    method: 'POST',
+                    token: adminToken,
+                    body: { active, promotion }
+                });
+
+                state = json.state || state;
+                setStatus(active
+                    ? `PROMOTION ON: ${promotion === '200m' ? '200M' : '100M'} → 1 SPIN`
+                    : 'PROMOTION OFF', 2200);
+                render();
+            } catch (e) {
+                setStatus(String(e.message || e), 2500);
+                render();
+            }
+        }
+
         async function requestChips() {
             const playerId = String(
                 autoUserId || ""
@@ -5670,7 +5718,9 @@
 
                 setStatus(
                     json.autoApproved
-                        ? `FREE CHIPS AUTO-APPROVED: ${shortMoney(amount)}`
+                        ? (requestType === 'paid'
+                            ? `PAID CHIPS FULFILLED: ${shortMoney(amount)}${json.promotion?.awarded ? ` + ${json.promotion.awarded} DAILY SPIN${json.promotion.awarded === 1 ? '' : 'S'}` : ''}`
+                            : `FREE CHIPS AUTO-APPROVED: ${shortMoney(amount)}`)
                         : `${requestType.toUpperCase()} CHIPS REQUESTED`,
                     2500
                 );
@@ -12012,6 +12062,30 @@
                 isBanker() && adminToken
                     ? 'block'
                     : 'none';
+            const paidSpinPromotion = chipState.paidSpinPromotion || {};
+            const promotionSelect = $('paidSpinPromotionSelect');
+            const promotionButton = $('paidSpinPromotionToggleButton');
+            const promotionStatus = $('paidSpinPromotionStatus');
+
+            if (promotionSelect) {
+                promotionSelect.value = paidSpinPromotion.promotion === '200m' ? '200m' : '100m';
+                promotionSelect.disabled = !adminToken;
+            }
+            if (promotionButton) {
+                promotionButton.disabled = !adminToken;
+                promotionButton.textContent = paidSpinPromotion.active
+                    ? 'Deactivate Promotion'
+                    : 'Activate Promotion';
+                promotionButton.className = paidSpinPromotion.active ? 'danger' : 'green';
+            }
+            if (promotionStatus) {
+                const threshold = Number(paidSpinPromotion.threshold || 0);
+                const progress = Number(paidSpinPromotion.progress?.[String(autoUserId)] || 0);
+                promotionStatus.textContent = paidSpinPromotion.active
+                    ? `Active: every ${shortMoney(threshold)} purchased → 1 Daily Spin.`
+                    : 'Promotion inactive. Paid chip requests use the normal manual flow.';
+            }
+
             $('chipRequestsBox').innerHTML = !requests.length
                 ? '<div class="emptyState">No chip requests.</div>'
                 : requests.map(r => `
@@ -14066,6 +14140,7 @@
             }
 
             $('requestChipsButton').addEventListener('click', requestChips);
+            $('paidSpinPromotionToggleButton')?.addEventListener('click', savePaidSpinPromotion);
             $('grantChipsButton').addEventListener('click', () => grantChips());
             $('randomRewardButton')?.addEventListener('click', giveRandomActivePlayerRewards);
             $("blacklistPlayerButton")?.addEventListener("click", blacklistPlayer);
